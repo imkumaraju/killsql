@@ -1,0 +1,33 @@
+{
+  "id": "084",
+  "slug": "case-in-order-by",
+  "title": "Custom Sort Priority with CASE in ORDER BY",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CASE", "ORDER BY"],
+  "description": "Return all orders sorted by a **custom priority**: `'pending'` orders first, then `'completed'`, then anything else. Within each status group, sort by `total_amount` descending.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `id`, `status`, `total_amount`. Order by custom priority then `total_amount` descending.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,2,DATE '2026-01-06','pending',300.00),(3,3,DATE '2026-01-07','pending',150.00),(4,4,DATE '2026-01-08','cancelled',80.00),(5,5,DATE '2026-01-09','completed',200.00);",
+  "solution_sql": "SELECT id, status, total_amount FROM orders ORDER BY CASE status WHEN 'pending' THEN 1 WHEN 'completed' THEN 2 ELSE 3 END, total_amount DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Pending (300, 150) first, then completed (200, 100), then cancelled (80)",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "status", "total_amount"],
+      "expected_rows": [
+        { "id": 2, "status": "pending",   "total_amount": 300.00 },
+        { "id": 3, "status": "pending",   "total_amount": 150.00 },
+        { "id": 5, "status": "completed", "total_amount": 200.00 },
+        { "id": 1, "status": "completed", "total_amount": 100.00 },
+        { "id": 4, "status": "cancelled", "total_amount": 80.00  }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "You can use a CASE expression directly inside ORDER BY.",
+    "The CASE maps each status to a sort number (1, 2, 3)."
+  ],
+  "explanation": "CASE in ORDER BY translates status values to priority numbers. Pending → 1 sorts first; completed → 2 second; everything else → 3 last. Within each group, ORDER BY total_amount DESC further sorts by amount.",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-20"
+}

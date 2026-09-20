@@ -1,0 +1,31 @@
+{
+  "id": "019",
+  "slug": "orders-in-price-range",
+  "title": "Orders in a Price Range",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "BETWEEN"],
+  "description": "Return all orders where `total_amount` is **between 50 and 200 (inclusive)**.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| status | VARCHAR |\n| total_amount | DECIMAL |\n\nOutput columns: `id`, `total_amount`. Order by `total_amount`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1, 1, DATE '2026-01-05', 'completed', 30.00), (2, 2, DATE '2026-01-06', 'completed', 75.50), (3, 3, DATE '2026-01-07', 'pending', 150.00), (4, 4, DATE '2026-01-08', 'completed', 200.00), (5, 5, DATE '2026-01-09', 'completed', 250.00);",
+  "solution_sql": "SELECT id, total_amount FROM orders WHERE total_amount BETWEEN 50 AND 200 ORDER BY total_amount",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Orders 2, 3, 4 fall in the 50–200 range",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "total_amount"],
+      "expected_rows": [
+        { "id": 2, "total_amount": 75.50 },
+        { "id": 3, "total_amount": 150.00 },
+        { "id": 4, "total_amount": 200.00 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "BETWEEN a AND b is inclusive — it includes both endpoints a and b.",
+    "It is equivalent to: col >= a AND col <= b."
+  ],
+  "explanation": "`BETWEEN 50 AND 200` is inclusive on both ends. Order 1 (30.00) is below the range; order 5 (250.00) is above. Orders 2, 3, and 4 fall within 50–200.",
+  "companies": ["Stripe", "Shopify"],
+  "created_at": "2026-09-20"
+}

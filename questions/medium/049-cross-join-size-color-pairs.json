@@ -1,0 +1,26 @@
+{
+  "id": "049",
+  "slug": "cross-join-size-color-pairs",
+  "title": "All Size-Color Combinations (Cross Join)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CROSS JOIN"],
+  "description": "A clothing store has a `sizes` table and a `colors` table. Generate **every possible size-color combination** using a CROSS JOIN.\n\n**Table: sizes**\n\n| Column | Type |\n|--------|------|\n| size | VARCHAR |\n\n**Table: colors**\n\n| Column | Type |\n|--------|------|\n| color | VARCHAR |\n\nOutput columns: `size`, `color`. Order by `size`, `color`.",
+  "schema_sql": "CREATE TABLE sizes (size VARCHAR); INSERT INTO sizes VALUES ('S'),('M'),('L'); CREATE TABLE colors (color VARCHAR); INSERT INTO colors VALUES ('Red'),('Blue'),('Green');",
+  "solution_sql": "SELECT s.size, c.color FROM sizes s CROSS JOIN colors c ORDER BY s.size, c.color",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 sizes × 3 colors = 9 rows",
+      "expected_row_count": 9,
+      "expected_columns": ["size", "color"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "CROSS JOIN produces the Cartesian product — every row from the left combined with every row from the right.",
+    "With m rows on the left and n rows on the right, the result has m × n rows."
+  ],
+  "explanation": "A CROSS JOIN has no ON condition. Every size pairs with every color: S×Red, S×Blue, S×Green, M×Red… totalling 3×3 = 9 rows. This pattern is useful for generating combinations or filling in missing time-series data.",
+  "companies": ["Shopify", "Etsy"],
+  "created_at": "2026-09-20"
+}

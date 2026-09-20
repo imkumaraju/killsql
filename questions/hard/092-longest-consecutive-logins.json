@@ -1,0 +1,30 @@
+{
+  "id": "092",
+  "slug": "longest-consecutive-logins",
+  "title": "Longest Consecutive Login Streak",
+  "difficulty": "hard",
+  "tags": ["gaps and islands", "window functions", "date functions"],
+  "description": "Each row in `logins` is a day a user logged in. For every user, compute their **longest streak of consecutive calendar days**.\n\n**Table: logins**\n\n| Column | Type |\n|--------|------|\n| user_id | INT |\n| login_date | DATE |\n\nDates may contain duplicates for the same user; count a day only once. Output columns: `user_id`, `longest_streak`. Order by `user_id`.",
+  "schema_sql": "CREATE TABLE logins (user_id INT, login_date DATE); INSERT INTO logins VALUES (1, DATE '2026-01-01'), (1, DATE '2026-01-02'), (1, DATE '2026-01-03'), (1, DATE '2026-01-05'), (2, DATE '2026-01-01'), (2, DATE '2026-01-03'), (2, DATE '2026-01-04'), (2, DATE '2026-01-04');",
+  "solution_sql": "WITH distinct_days AS (SELECT DISTINCT user_id, login_date FROM logins), marked AS (SELECT user_id, login_date, login_date - CAST(ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY login_date) AS INTEGER) AS grp FROM distinct_days), streaks AS (SELECT user_id, COUNT(*) AS streak FROM marked GROUP BY user_id, grp) SELECT user_id, MAX(streak) AS longest_streak FROM streaks GROUP BY user_id ORDER BY user_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "User 1 longest streak 3; user 2 longest streak 2",
+      "expected_row_count": 2,
+      "expected_columns": ["user_id", "longest_streak"],
+      "expected_rows": [
+        { "user_id": 1, "longest_streak": 3 },
+        { "user_id": 2, "longest_streak": 2 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Deduplicate (user_id, login_date) first.",
+    "The classic islands trick: date minus row_number is constant inside a consecutive streak."
+  ],
+  "explanation": "Gaps-and-islands: after numbering each user's dates, `login_date - row_number` is identical for consecutive days. Grouping by that island id yields streak lengths; take the MAX per user.",
+  "companies": ["Databricks", "Snowflake"],
+  "created_at": "2026-09-20"
+}

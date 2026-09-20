@@ -1,0 +1,26 @@
+{
+  "id": "056",
+  "slug": "last-order-per-customer",
+  "title": "Most Recent Order per Customer",
+  "difficulty": "medium",
+  "tags": ["SELECT", "LAST_VALUE", "window functions", "CTE"],
+  "description": "For each customer, return their **most recent order** (latest order_date): customer_id, latest order date, and the total_amount of that last order.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `customer_id`, `last_order_date`, `last_order_amount`. Order by `customer_id`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,1,DATE '2026-02-10','completed',200.00),(3,1,DATE '2026-03-15','completed',150.00),(4,2,DATE '2026-01-20','completed',300.00),(5,2,DATE '2026-04-05','completed',250.00);",
+  "solution_sql": "WITH last_vals AS (SELECT customer_id, order_date, total_amount, LAST_VALUE(order_date) OVER (PARTITION BY customer_id ORDER BY order_date ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS last_order_date, LAST_VALUE(total_amount) OVER (PARTITION BY customer_id ORDER BY order_date ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS last_order_amount FROM orders) SELECT DISTINCT customer_id, last_order_date, last_order_amount FROM last_vals ORDER BY customer_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Customer 1 last order 2026-03-15/150; customer 2 last order 2026-04-05/250",
+      "expected_row_count": 2,
+      "expected_columns": ["customer_id", "last_order_date", "last_order_amount"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LAST_VALUE needs the full frame: ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING, otherwise it only looks at rows up to the current row.",
+    "Add DISTINCT to collapse the repeated rows per customer."
+  ],
+  "explanation": "Without the explicit full frame, LAST_VALUE by default uses RANGE UNBOUNDED PRECEDING TO CURRENT ROW, which gives the current row's value — not the last. With UNBOUNDED FOLLOWING in the frame, it truly returns the partition's last value.",
+  "companies": ["Shopify", "Amazon"],
+  "created_at": "2026-09-20"
+}

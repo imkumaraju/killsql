@@ -1,0 +1,33 @@
+{
+  "id": "021",
+  "slug": "coalesce-missing-department",
+  "title": "Coalesce Missing Department Name",
+  "difficulty": "easy",
+  "tags": ["SELECT", "COALESCE", "LEFT JOIN"],
+  "description": "Join employees to their department. If an employee has no department, display `'Unassigned'` instead of NULL.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| department_id | INT |\n\n**Table: departments**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n\nOutput columns: `employee_name`, `department_name`. Order by `employee_name`.",
+  "schema_sql": "CREATE TABLE departments (id INT, name VARCHAR); INSERT INTO departments VALUES (1, 'Engineering'), (2, 'Sales'); CREATE TABLE employees (id INT, name VARCHAR, department_id INT); INSERT INTO employees VALUES (1, 'Alice', 1), (2, 'Bob', 2), (3, 'Carol', NULL), (4, 'Dan', NULL), (5, 'Eve', 1);",
+  "solution_sql": "SELECT e.name AS employee_name, COALESCE(d.name, 'Unassigned') AS department_name FROM employees e LEFT JOIN departments d ON e.department_id = d.id ORDER BY employee_name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Carol and Dan show Unassigned; others show their department",
+      "expected_row_count": 5,
+      "expected_columns": ["employee_name", "department_name"],
+      "expected_rows": [
+        { "employee_name": "Alice", "department_name": "Engineering" },
+        { "employee_name": "Bob",   "department_name": "Sales"       },
+        { "employee_name": "Carol", "department_name": "Unassigned"  },
+        { "employee_name": "Dan",   "department_name": "Unassigned"  },
+        { "employee_name": "Eve",   "department_name": "Engineering" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LEFT JOIN returns all employees, even those without a department (d.name will be NULL).",
+    "COALESCE(value, fallback) returns value if it is not NULL, otherwise returns fallback."
+  ],
+  "explanation": "After the LEFT JOIN, employees without a department have `d.name = NULL`. `COALESCE(d.name, 'Unassigned')` replaces that NULL with the string `'Unassigned'`.",
+  "companies": ["Google", "Microsoft"],
+  "created_at": "2026-09-20"
+}

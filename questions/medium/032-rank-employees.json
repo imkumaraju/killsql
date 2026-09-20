@@ -1,0 +1,26 @@
+{
+  "id": "032",
+  "slug": "rank-employees",
+  "title": "Rank Employees by Salary",
+  "difficulty": "medium",
+  "tags": ["window functions", "RANK", "ORDER BY"],
+  "description": "Rank employees by salary **within their department** (highest salary = rank 1). Ties should share a rank, and the next rank should skip (RANK, not DENSE_RANK).\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| department | VARCHAR |\n| salary | INT |\n\nOutput columns: `name`, `department`, `salary`, `salary_rank`. Order by department ascending, then salary_rank ascending.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT); INSERT INTO employees VALUES (1, 'Alice', 'Eng', 120000), (2, 'Bob', 'Eng', 120000), (3, 'Carol', 'Eng', 90000), (4, 'Dan', 'Sales', 80000), (5, 'Eve', 'Sales', 70000);",
+  "solution_sql": "SELECT name, department, salary, RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS salary_rank FROM employees ORDER BY department, salary_rank",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Five rows with RANK() per department; Alice and Bob both rank 1 in Eng",
+      "expected_row_count": 5,
+      "expected_columns": ["name", "department", "salary", "salary_rank"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "RANK() OVER (PARTITION BY department ORDER BY salary DESC) is the window you need.",
+    "RANK leaves gaps after ties; DENSE_RANK does not."
+  ],
+  "explanation": "Window functions compute a value per row without collapsing the result. `PARTITION BY department` restarts ranking for each team. Alice and Bob both earn 120000 so both receive rank 1; Carol receives rank 3.",
+  "companies": ["Google", "Netflix"],
+  "created_at": "2026-09-20"
+}

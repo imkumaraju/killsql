@@ -1,0 +1,36 @@
+{
+  "id": "100",
+  "slug": "employee-hierarchy-depth",
+  "title": "Employee Hierarchy Depth",
+  "difficulty": "hard",
+  "tags": ["SELECT", "recursive CTE", "COUNT", "window functions"],
+  "description": "For every employee, compute their **depth in the org hierarchy** (CEO = depth 0) and the **total number of direct and indirect reports** under them (leaf nodes count as 0).\n\n**Table: employees** — `id`, `name`, `salary`, `manager_id`\n\nOutput columns: `name`, `depth`, `total_reports`. Order by `depth`, `name`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, manager_id INT); INSERT INTO employees VALUES (1,'Ada',200000,NULL),(2,'Ben',150000,1),(3,'Cara',90000,2),(4,'Drew',80000,2),(5,'Eve',120000,1),(6,'Fay',70000,5),(7,'Gil',65000,3);",
+  "solution_sql": "WITH RECURSIVE depth_cte AS (SELECT id, name, 0 AS depth FROM employees WHERE manager_id IS NULL UNION ALL SELECT e.id, e.name, d.depth + 1 FROM employees e JOIN depth_cte d ON e.manager_id = d.id), subtree AS (SELECT id AS root_id, id AS member_id FROM employees UNION ALL SELECT s.root_id, e.id FROM subtree s JOIN employees e ON e.manager_id = s.member_id) SELECT d.name, d.depth, COUNT(s.member_id) - 1 AS total_reports FROM depth_cte d JOIN subtree s ON d.id = s.root_id GROUP BY d.id, d.name, d.depth ORDER BY d.depth, d.name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Ada depth 0 reports 6; Ben depth 1 reports 3; Eve depth 1 reports 1; Cara depth 2 reports 1; Drew+Fay depth 2 reports 0; Gil depth 3 reports 0",
+      "expected_row_count": 7,
+      "expected_columns": ["name", "depth", "total_reports"],
+      "expected_rows": [
+        { "name": "Ada", "depth": 0, "total_reports": 6 },
+        { "name": "Ben", "depth": 1, "total_reports": 3 },
+        { "name": "Eve", "depth": 1, "total_reports": 1 },
+        { "name": "Cara", "depth": 2, "total_reports": 1 },
+        { "name": "Drew", "depth": 2, "total_reports": 0 },
+        { "name": "Fay", "depth": 2, "total_reports": 0 },
+        { "name": "Gil", "depth": 3, "total_reports": 0 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use one recursive CTE for depth (top-down traversal from root).",
+    "Use another recursive CTE for subtree membership (to count all descendants per node).",
+    "total_reports = count of subtree members - 1 (excluding self)."
+  ],
+  "explanation": "Recursive CTE `depth_cte` assigns depths top-down. Recursive CTE `subtree` expands each node to all its descendants (including itself). Joining them and counting descendants (minus self) gives total_reports. Ada (root) has 6 reports under her. Ben has 3 (Cara, Drew, Gil). Eve has 1 (Fay). Cara has 1 (Gil). Drew, Fay, Gil are leaf nodes with 0 reports.",
+  "companies": ["Meta", "LinkedIn", "Google"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "050",
+  "slug": "conditional-aggregation-order-status",
+  "title": "Order Count by Status (Conditional Aggregation)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CASE", "conditional aggregation", "GROUP BY"],
+  "description": "Using a **single query** and conditional aggregation, return one row per month showing the count of `completed` orders and the count of `pending` orders side by side.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| status | VARCHAR |\n| total_amount | DECIMAL |\n\nOutput columns: `order_month`, `completed_count`, `pending_count`. Order by `order_month`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,2,DATE '2026-01-15','pending',200.00),(3,3,DATE '2026-02-07','completed',150.00),(4,4,DATE '2026-02-20','pending',250.00),(5,5,DATE '2026-02-28','completed',90.00),(6,1,DATE '2026-03-10','completed',60.00);",
+  "solution_sql": "SELECT EXTRACT(MONTH FROM order_date) AS order_month, COUNT(CASE WHEN status = 'completed' THEN 1 END) AS completed_count, COUNT(CASE WHEN status = 'pending' THEN 1 END) AS pending_count FROM orders GROUP BY order_month ORDER BY order_month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan: 1 completed 1 pending; Feb: 2 completed 1 pending; Mar: 1 completed 0 pending",
+      "expected_row_count": 3,
+      "expected_columns": ["order_month", "completed_count", "pending_count"],
+      "expected_rows": [
+        { "order_month": 1, "completed_count": 1, "pending_count": 1 },
+        { "order_month": 2, "completed_count": 2, "pending_count": 1 },
+        { "order_month": 3, "completed_count": 1, "pending_count": 0 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "COUNT(CASE WHEN condition THEN 1 END) counts only rows satisfying the condition.",
+    "Rows that don't match return NULL from CASE, and COUNT ignores NULLs."
+  ],
+  "explanation": "Conditional aggregation pivots status values into columns. `COUNT(CASE WHEN status = 'completed' THEN 1 END)` counts only completed orders per group; NULLs (from non-matching rows) are not counted by COUNT.",
+  "companies": ["Shopify", "Stripe"],
+  "created_at": "2026-09-20"
+}

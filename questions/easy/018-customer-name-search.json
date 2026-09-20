@@ -1,0 +1,31 @@
+{
+  "id": "018",
+  "slug": "customer-name-search",
+  "title": "Customer Name Search",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "LIKE"],
+  "description": "Find all customers whose name **starts with the letter 'A'**.\n\n**Table: customers**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |\n| city | VARCHAR |\n| country | VARCHAR |\n\nOutput columns: `id`, `name`. Order by `name`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR); INSERT INTO customers VALUES (1, 'Alice', 'alice@example.com', 'New York', 'USA'), (2, 'Bob', 'bob@example.com', 'London', 'UK'), (3, 'Aaron', 'aaron@example.com', 'Chicago', 'USA'), (4, 'Dan', 'dan@example.com', 'Mumbai', 'India'), (5, 'Amy', 'amy@example.com', 'Los Angeles', 'USA');",
+  "solution_sql": "SELECT id, name FROM customers WHERE name LIKE 'A%' ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Aaron, Alice, and Amy start with A",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "name"],
+      "expected_rows": [
+        { "id": 3, "name": "Aaron" },
+        { "id": 1, "name": "Alice" },
+        { "id": 5, "name": "Amy" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LIKE 'A%' matches any string starting with 'A'. The % wildcard matches zero or more characters.",
+    "LIKE '_a%' would match names whose second character is 'a'."
+  ],
+  "explanation": "The `%` wildcard in LIKE patterns matches any sequence of characters. `'A%'` means: start with A, followed by anything. Aaron, Alice, and Amy all qualify.",
+  "companies": ["Uber", "Lyft"],
+  "created_at": "2026-09-20"
+}

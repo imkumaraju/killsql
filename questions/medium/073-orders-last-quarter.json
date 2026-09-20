@@ -1,0 +1,31 @@
+{
+  "id": "073",
+  "slug": "orders-last-quarter",
+  "title": "Orders from Last Quarter",
+  "difficulty": "medium",
+  "tags": ["SELECT", "WHERE", "BETWEEN", "date functions"],
+  "description": "Return all orders placed during **Q3 2026** (July 1 – September 30, 2026).\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| status | VARCHAR |\n| total_amount | DECIMAL |\n\nOutput columns: `id`, `order_date`, `total_amount`. Order by `order_date`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-05-15','completed',100.00),(2,2,DATE '2026-07-01','completed',200.00),(3,3,DATE '2026-08-20','pending',150.00),(4,4,DATE '2026-09-30','completed',300.00),(5,5,DATE '2026-10-01','completed',250.00);",
+  "solution_sql": "SELECT id, order_date, total_amount FROM orders WHERE order_date BETWEEN DATE '2026-07-01' AND DATE '2026-09-30' ORDER BY order_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Orders 2, 3, 4 fall in Q3 2026",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "order_date", "total_amount"],
+      "expected_rows": [
+        { "id": 2, "order_date": "2026-07-01", "total_amount": 200.00 },
+        { "id": 3, "order_date": "2026-08-20", "total_amount": 150.00 },
+        { "id": 4, "order_date": "2026-09-30", "total_amount": 300.00 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "BETWEEN date1 AND date2 is inclusive on both ends.",
+    "Q3 = July, August, September: 2026-07-01 to 2026-09-30."
+  ],
+  "explanation": "BETWEEN with dates uses the same inclusive semantics as with numbers. Order 1 (May) is before Q3; order 5 (Oct 1) is after. Orders 2, 3, 4 all fall within July–September.",
+  "companies": ["Shopify", "Amazon"],
+  "created_at": "2026-09-20"
+}

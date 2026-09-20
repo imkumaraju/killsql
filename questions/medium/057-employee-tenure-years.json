@@ -1,0 +1,26 @@
+{
+  "id": "057",
+  "slug": "employee-tenure-years",
+  "title": "Employee Tenure in Full Years",
+  "difficulty": "medium",
+  "tags": ["SELECT", "date functions"],
+  "description": "Calculate how many **full years** each employee has worked at the company, based on their `hire_date` relative to a reference date of **2026-09-01**.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| hire_date | DATE |\n\nOutput columns: `name`, `hire_date`, `tenure_years`. Order by `tenure_years` descending.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, hire_date DATE); INSERT INTO employees VALUES (1,'Alice',DATE '2020-01-15'),(2,'Bob',DATE '2022-06-01'),(3,'Carol',DATE '2015-11-20'),(4,'Dan',DATE '2024-03-10'),(5,'Eve',DATE '2026-09-01');",
+  "solution_sql": "SELECT name, hire_date, DATE_DIFF('year', hire_date, DATE '2026-09-01') AS tenure_years FROM employees ORDER BY tenure_years DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Carol has the longest tenure; Eve has 0 (same day)",
+      "expected_row_count": 5,
+      "expected_columns": ["name", "hire_date", "tenure_years"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "DATE_DIFF('year', start_date, end_date) computes the difference in full years in DuckDB.",
+    "Eve was hired exactly on the reference date, so her tenure is 0."
+  ],
+  "explanation": "Carol (2015-11-20) has 10 full years by 2026-09-01. Alice (2020-01-15) has 6, Bob (2022-06-01) has 4, Dan (2024-03-10) has 2, Eve (2026-09-01) has 0.",
+  "companies": ["Microsoft", "Google"],
+  "created_at": "2026-09-20"
+}

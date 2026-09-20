@@ -1,0 +1,31 @@
+{
+  "id": "047",
+  "slug": "lead-next-month-revenue",
+  "title": "Preview Next Month Revenue with LEAD",
+  "difficulty": "medium",
+  "tags": ["SELECT", "LEAD", "window functions", "CTE", "date functions"],
+  "description": "For each month, show the current revenue and the **following month's revenue** (using LEAD), aliased as `next_month_revenue`. The last month should show NULL.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| status | VARCHAR |\n| total_amount | DECIMAL |\n\nOutput columns: `order_year`, `order_month`, `revenue`, `next_month_revenue`. Order by `order_year`, `order_month`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,2,DATE '2026-01-15','completed',200.00),(3,3,DATE '2026-02-07','completed',150.00),(4,4,DATE '2026-02-20','completed',250.00),(5,5,DATE '2026-03-10','completed',500.00),(6,1,DATE '2026-03-25','completed',100.00);",
+  "solution_sql": "WITH monthly AS (SELECT EXTRACT(YEAR FROM order_date) AS order_year, EXTRACT(MONTH FROM order_date) AS order_month, SUM(total_amount) AS revenue FROM orders GROUP BY order_year, order_month) SELECT order_year, order_month, revenue, LEAD(revenue) OVER (ORDER BY order_year, order_month) AS next_month_revenue FROM monthly ORDER BY order_year, order_month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan next=400, Feb next=600, Mar next=NULL",
+      "expected_row_count": 3,
+      "expected_columns": ["order_year", "order_month", "revenue", "next_month_revenue"],
+      "expected_rows": [
+        { "order_year": 2026, "order_month": 1, "revenue": 300.00, "next_month_revenue": 400.00 },
+        { "order_year": 2026, "order_month": 2, "revenue": 400.00, "next_month_revenue": 600.00 },
+        { "order_year": 2026, "order_month": 3, "revenue": 600.00, "next_month_revenue": null }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LEAD(value) returns the value from the next row in the window.",
+    "LAG looks backward; LEAD looks forward."
+  ],
+  "explanation": "LEAD is the forward-looking counterpart of LAG. `LEAD(revenue) OVER (ORDER BY year, month)` returns the next month's revenue. March has no next month, so it returns NULL.",
+  "companies": ["Stripe", "Meta"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "071",
+  "slug": "rank-departments-by-payroll",
+  "title": "Rank Departments by Total Payroll",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "SUM", "RANK", "window functions", "CTE"],
+  "description": "Rank departments by their **total payroll** (highest = rank 1). Show the department name, total payroll, and rank.\n\n**Table: departments** — `id`, `name`\n\n**Table: employees** — `id`, `name`, `salary`, `department_id`\n\nOutput columns: `department_name`, `total_payroll`, `payroll_rank`. Order by `payroll_rank`.",
+  "schema_sql": "CREATE TABLE departments (id INT, name VARCHAR); INSERT INTO departments VALUES (1,'Engineering'),(2,'Sales'),(3,'HR'); CREATE TABLE employees (id INT, name VARCHAR, salary INT, department_id INT); INSERT INTO employees VALUES (1,'Alice',120000,1),(2,'Bob',80000,2),(3,'Carol',140000,1),(4,'Dan',70000,3),(5,'Eve',90000,2),(6,'Fay',100000,1);",
+  "solution_sql": "WITH dept_totals AS (SELECT d.name AS department_name, SUM(e.salary) AS total_payroll FROM employees e JOIN departments d ON e.department_id = d.id GROUP BY d.name) SELECT department_name, total_payroll, RANK() OVER (ORDER BY total_payroll DESC) AS payroll_rank FROM dept_totals ORDER BY payroll_rank",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Engineering (360k) rank 1, Sales (170k) rank 2, HR (70k) rank 3",
+      "expected_row_count": 3,
+      "expected_columns": ["department_name", "total_payroll", "payroll_rank"],
+      "expected_rows": [
+        { "department_name": "Engineering", "total_payroll": 360000, "payroll_rank": 1 },
+        { "department_name": "Sales",       "total_payroll": 170000, "payroll_rank": 2 },
+        { "department_name": "HR",          "total_payroll": 70000,  "payroll_rank": 3 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use a CTE to aggregate first, then apply RANK() in the outer query.",
+    "RANK() OVER (ORDER BY total_payroll DESC) ranks from highest payroll."
+  ],
+  "explanation": "The CTE computes per-department totals. RANK() applied over the CTE's result ranks them. Engineering 120k+140k+100k=360k, Sales 80k+90k=170k, HR 70k.",
+  "companies": ["Microsoft", "LinkedIn"],
+  "created_at": "2026-09-20"
+}

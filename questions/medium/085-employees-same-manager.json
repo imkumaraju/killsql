@@ -1,0 +1,26 @@
+{
+  "id": "085",
+  "slug": "employees-same-manager",
+  "title": "Employees Who Share the Same Manager",
+  "difficulty": "medium",
+  "tags": ["SELECT", "self join", "GROUP BY", "HAVING"],
+  "description": "Find all pairs of employees who report to the **same manager** (list each unique pair once, with the lower id first). Also show the manager's id.\n\n**Table: employees** — `id`, `name`, `salary`, `manager_id`\n\nOutput columns: `employee_1`, `employee_2`, `manager_id`. Order by `manager_id`, `employee_1`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, manager_id INT); INSERT INTO employees VALUES (1,'Ada',200000,NULL),(2,'Ben',150000,1),(3,'Cara',90000,2),(4,'Drew',80000,2),(5,'Eve',120000,1),(6,'Fay',70000,1);",
+  "solution_sql": "SELECT a.name AS employee_1, b.name AS employee_2, a.manager_id FROM employees a JOIN employees b ON a.manager_id = b.manager_id AND a.id < b.id WHERE a.manager_id IS NOT NULL ORDER BY a.manager_id, a.name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Cara-Drew share manager 2; Ben-Eve, Ben-Fay, Eve-Fay share manager 1",
+      "expected_row_count": 4,
+      "expected_columns": ["employee_1", "employee_2", "manager_id"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Self join on a.manager_id = b.manager_id with a.id < b.id avoids duplicate and self pairs.",
+    "Filter WHERE a.manager_id IS NOT NULL to exclude top-level employees."
+  ],
+  "explanation": "Joining on same manager_id with a.id < b.id: Manager 1's reports: Ben, Eve, Fay → pairs (Ben,Eve), (Ben,Fay), (Eve,Fay). Manager 2's reports: Cara, Drew → pair (Cara, Drew).",
+  "companies": ["Google", "Microsoft"],
+  "created_at": "2026-09-20"
+}

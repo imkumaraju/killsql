@@ -1,0 +1,26 @@
+{
+  "id": "001",
+  "slug": "select-all-employees",
+  "title": "Select All Employees",
+  "difficulty": "easy",
+  "tags": ["SELECT"],
+  "description": "Write a SQL query to return **all rows and columns** from the `employees` table.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nReturn every employee exactly as stored.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1, 'Alice', 70000), (2, 'Bob', 55000), (3, 'Carol', 90000);",
+  "solution_sql": "SELECT * FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns all 3 employees with id, name, and salary",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "name", "salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The `*` wildcard selects all columns.",
+    "You do not need a WHERE clause to return every row."
+  ],
+  "explanation": "`SELECT * FROM employees` returns every column and every row from the table. This is the simplest form of a SELECT statement.",
+  "companies": ["Google", "Meta"],
+  "created_at": "2026-09-20"
+}

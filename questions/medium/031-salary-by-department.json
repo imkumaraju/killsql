@@ -1,0 +1,31 @@
+{
+  "id": "031",
+  "slug": "salary-by-department",
+  "title": "Average Salary by Department",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "AVG", "aggregate"],
+  "description": "For each department, return the department name and the average employee salary, rounded to the nearest integer, as `avg_salary`.\n\n**Table: departments**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| department_id | INT |\n\nOutput columns: `department_name`, `avg_salary`. Order by `avg_salary` descending.",
+  "schema_sql": "CREATE TABLE departments (id INT, name VARCHAR); INSERT INTO departments VALUES (1, 'Engineering'), (2, 'Sales'), (3, 'HR'); CREATE TABLE employees (id INT, name VARCHAR, salary INT, department_id INT); INSERT INTO employees VALUES (1, 'Alice', 120000, 1), (2, 'Bob', 80000, 2), (3, 'Carol', 140000, 1), (4, 'Dan', 70000, 3), (5, 'Eve', 90000, 2);",
+  "solution_sql": "SELECT d.name AS department_name, CAST(ROUND(AVG(e.salary)) AS INTEGER) AS avg_salary FROM employees e JOIN departments d ON e.department_id = d.id GROUP BY d.name ORDER BY avg_salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Three departments ordered by average salary",
+      "expected_row_count": 3,
+      "expected_columns": ["department_name", "avg_salary"],
+      "expected_rows": [
+        { "department_name": "Engineering", "avg_salary": 130000 },
+        { "department_name": "Sales", "avg_salary": 85000 },
+        { "department_name": "HR", "avg_salary": 70000 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "GROUP BY department to collapse employees into one row per team.",
+    "AVG plus ROUND gives a whole-number average."
+  ],
+  "explanation": "Join employees to departments, then `GROUP BY` department name. Engineering averages (120000+140000)/2 = 130000, Sales (80000+90000)/2 = 85000, HR 70000.",
+  "companies": ["Uber", "Airbnb"],
+  "created_at": "2026-09-20"
+}

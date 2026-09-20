@@ -1,0 +1,31 @@
+{
+  "id": "014",
+  "slug": "customer-count-by-country",
+  "title": "Customer Count by Country",
+  "difficulty": "easy",
+  "tags": ["SELECT", "GROUP BY", "COUNT"],
+  "description": "Count how many customers are from each country. Return the country and the count.\n\n**Table: customers**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |\n| city | VARCHAR |\n| country | VARCHAR |\n\nOutput columns: `country`, `customer_count`. Order by `customer_count` descending.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR); INSERT INTO customers VALUES (1, 'Alice', 'alice@example.com', 'New York', 'USA'), (2, 'Bob', 'bob@example.com', 'London', 'UK'), (3, 'Carol', 'carol@example.com', 'Chicago', 'USA'), (4, 'Dan', 'dan@example.com', 'Mumbai', 'India'), (5, 'Eve', 'eve@example.com', 'Los Angeles', 'USA'), (6, 'Fay', 'fay@example.com', 'Manchester', 'UK');",
+  "solution_sql": "SELECT country, COUNT(*) AS customer_count FROM customers GROUP BY country ORDER BY customer_count DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "USA: 3, UK: 2, India: 1",
+      "expected_row_count": 3,
+      "expected_columns": ["country", "customer_count"],
+      "expected_rows": [
+        { "country": "USA", "customer_count": 3 },
+        { "country": "UK", "customer_count": 2 },
+        { "country": "India", "customer_count": 1 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "GROUP BY country collapses all rows for the same country into one.",
+    "COUNT(*) counts the number of rows in each group."
+  ],
+  "explanation": "`GROUP BY country` creates one group per country. `COUNT(*)` counts the rows in each group. The result is ordered by count descending so the most-represented country appears first.",
+  "companies": ["Uber", "Airbnb"],
+  "created_at": "2026-09-20"
+}

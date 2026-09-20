@@ -1,0 +1,26 @@
+{
+  "id": "044",
+  "slug": "dense-rank-products-by-price",
+  "title": "Dense Rank Products by Price Within Category",
+  "difficulty": "medium",
+  "tags": ["SELECT", "DENSE_RANK", "window functions"],
+  "description": "Assign a **dense rank** to each product within its category based on price (most expensive = rank 1). Ties receive the same rank and the next rank does **not** skip.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| category | VARCHAR |\n| price | DECIMAL |\n| stock_quantity | INT |\n\nOutput columns: `name`, `category`, `price`, `price_rank`. Order by `category`, `price_rank`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL, stock_quantity INT); INSERT INTO products VALUES (1,'Laptop','Electronics',999.99,10),(2,'Phone','Electronics',699.99,25),(3,'Monitor','Electronics',699.99,15),(4,'Desk','Furniture',299.99,5),(5,'Chair','Furniture',149.99,8),(6,'Stool','Furniture',149.99,12);",
+  "solution_sql": "SELECT name, category, price, DENSE_RANK() OVER (PARTITION BY category ORDER BY price DESC) AS price_rank FROM products ORDER BY category, price_rank",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Phone and Monitor tie at rank 2 in Electronics; Chair and Stool tie at rank 2 in Furniture",
+      "expected_row_count": 6,
+      "expected_columns": ["name", "category", "price", "price_rank"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "DENSE_RANK() assigns the same rank to ties, and the next rank immediately follows (no gap).",
+    "RANK() also ties but leaves a gap after tied values."
+  ],
+  "explanation": "In Electronics: Laptop ranks 1 (unique price 999.99), Phone and Monitor both rank 2 (tied at 699.99) — with DENSE_RANK no rank 3 is skipped (there's no rank 3 here since only 2 distinct prices). In Furniture: Desk ranks 1; Chair and Stool both rank 2.",
+  "companies": ["Google", "Netflix"],
+  "created_at": "2026-09-20"
+}

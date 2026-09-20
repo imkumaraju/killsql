@@ -1,0 +1,29 @@
+{
+  "id": "041",
+  "slug": "top-earning-departments-cte",
+  "title": "Top-Earning Departments (CTE)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CTE", "GROUP BY", "SUM"],
+  "description": "Use a **CTE** to first compute the total salary spend per department, then return only the departments whose total payroll is above 200,000.\n\n**Table: departments** — `id`, `name`\n\n**Table: employees** — `id`, `name`, `salary`, `department_id`\n\nOutput columns: `department_name`, `total_salary`. Order by `total_salary` descending.",
+  "schema_sql": "CREATE TABLE departments (id INT, name VARCHAR); INSERT INTO departments VALUES (1,'Engineering'),(2,'Sales'),(3,'HR'); CREATE TABLE employees (id INT, name VARCHAR, salary INT, department_id INT); INSERT INTO employees VALUES (1,'Alice',120000,1),(2,'Bob',80000,2),(3,'Carol',140000,1),(4,'Dan',70000,3),(5,'Eve',90000,2),(6,'Fay',100000,1);",
+  "solution_sql": "WITH dept_totals AS (SELECT d.name AS department_name, SUM(e.salary) AS total_salary FROM employees e JOIN departments d ON e.department_id = d.id GROUP BY d.name) SELECT department_name, total_salary FROM dept_totals WHERE total_salary > 200000 ORDER BY total_salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Engineering (360k) and Sales (170k) — only Engineering exceeds 200k",
+      "expected_row_count": 1,
+      "expected_columns": ["department_name", "total_salary"],
+      "expected_rows": [
+        { "department_name": "Engineering", "total_salary": 360000 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "A CTE starts with: WITH cte_name AS (SELECT ...)",
+    "You can filter on the aggregated value in the outer query after the CTE."
+  ],
+  "explanation": "The CTE `dept_totals` aggregates salaries per department. Engineering total = 120000+140000+100000 = 360000; Sales = 80000+90000 = 170000; HR = 70000. Only Engineering exceeds 200000.",
+  "companies": ["Google", "Netflix"],
+  "created_at": "2026-09-20"
+}

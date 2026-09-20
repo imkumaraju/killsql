@@ -1,0 +1,30 @@
+{
+  "id": "070",
+  "slug": "products-with-zero-sales",
+  "title": "Products with Zero Total Sales",
+  "difficulty": "medium",
+  "tags": ["SELECT", "LEFT JOIN", "IS NULL", "GROUP BY"],
+  "description": "Find products that have **no sales at all** — they never appeared in `order_items`. Return their name and category.\n\n**Table: products** — `id`, `name`, `category`, `price`, `stock_quantity`\n\n**Table: order_items** — `id`, `order_id`, `product_id`, `quantity`, `unit_price`\n\nOutput columns: `name`, `category`. Order by `name`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL, stock_quantity INT); INSERT INTO products VALUES (1,'Laptop','Electronics',999.99,10),(2,'Phone','Electronics',699.99,25),(3,'Desk','Furniture',299.99,5),(4,'Chair','Furniture',149.99,8),(5,'Monitor','Electronics',349.99,15); CREATE TABLE order_items (id INT, order_id INT, product_id INT, quantity INT, unit_price DECIMAL); INSERT INTO order_items VALUES (1,1,1,1,999.99),(2,1,2,2,699.99),(3,2,3,1,299.99);",
+  "solution_sql": "SELECT p.name, p.category FROM products p LEFT JOIN order_items oi ON p.id = oi.product_id WHERE oi.id IS NULL ORDER BY p.name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Chair and Monitor have no sales",
+      "expected_row_count": 2,
+      "expected_columns": ["name", "category"],
+      "expected_rows": [
+        { "name": "Chair",   "category": "Furniture"   },
+        { "name": "Monitor", "category": "Electronics" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LEFT JOIN from products to order_items keeps all products.",
+    "WHERE oi.id IS NULL filters to products with no matching order_items row."
+  ],
+  "explanation": "A LEFT JOIN retains all products. Products 4 (Chair) and 5 (Monitor) have no order_items matches, so oi.id is NULL for them. The WHERE clause isolates these unsold products.",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-20"
+}

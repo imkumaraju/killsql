@@ -1,0 +1,33 @@
+{
+  "id": "029",
+  "slug": "paginate-products",
+  "title": "Paginate Products (Page 3, 5 per page)",
+  "difficulty": "easy",
+  "tags": ["SELECT", "ORDER BY", "LIMIT"],
+  "description": "Return products for **page 3** of a catalog, where each page shows **5 products**, sorted by `id` ascending. (Skip the first 10, return the next 5.)\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| category | VARCHAR |\n| price | DECIMAL |\n| stock_quantity | INT |\n\nOutput columns: `id`, `name`, `price`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL, stock_quantity INT); INSERT INTO products VALUES (1,'Laptop','Electronics',999.99,10),(2,'Phone','Electronics',699.99,25),(3,'Desk','Furniture',299.99,5),(4,'Chair','Furniture',149.99,8),(5,'Monitor','Electronics',349.99,15),(6,'Keyboard','Electronics',79.99,50),(7,'Mouse','Electronics',39.99,80),(8,'Webcam','Electronics',59.99,30),(9,'Headset','Electronics',89.99,20),(10,'USB Hub','Electronics',29.99,60),(11,'Notebook','Stationery',4.99,200),(12,'Pen Set','Stationery',9.99,150),(13,'Stapler','Stationery',14.99,75),(14,'Tape','Stationery',3.99,300),(15,'Scissors','Stationery',6.99,100);",
+  "solution_sql": "SELECT id, name, price FROM products ORDER BY id LIMIT 5 OFFSET 10",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Products 11–15 (ids 11 to 15)",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "name", "price"],
+      "expected_rows": [
+        { "id": 11, "name": "Notebook", "price": 4.99 },
+        { "id": 12, "name": "Pen Set",  "price": 9.99 },
+        { "id": 13, "name": "Stapler",  "price": 14.99 },
+        { "id": 14, "name": "Tape",     "price": 3.99  },
+        { "id": 15, "name": "Scissors", "price": 6.99  }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LIMIT n OFFSET m skips the first m rows and returns the next n.",
+    "For page p with page_size s: OFFSET = (p - 1) * s."
+  ],
+  "explanation": "Page 3 with 5 items per page means skip 10 rows (`OFFSET 10`) and take the next 5 (`LIMIT 5`). This retrieves products with ids 11–15.",
+  "companies": ["Shopify", "Amazon"],
+  "created_at": "2026-09-20"
+}

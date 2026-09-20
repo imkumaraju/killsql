@@ -1,0 +1,27 @@
+{
+  "name": "killsql",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source LeetCode-for-SQL. Queries run in the browser via DuckDB-WASM.",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run build:index && npm run copy:questions && npm run dev --workspace=web",
+    "build": "npm run build:index && npm run copy:questions && npm run build --workspace=web",
+    "lint": "npm run lint --workspace=web",
+    "build:index": "tsx scripts/build-index.ts",
+    "copy:questions": "tsx scripts/copy-questions.ts",
+    "validate:questions": "tsx scripts/validate-questions.ts"
+  },
+  "devDependencies": {
+    "@duckdb/node-api": "^1.5.5-r.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "096",
+  "slug": "churned-vs-retained-customers",
+  "title": "Churned vs Retained Customers",
+  "difficulty": "hard",
+  "tags": ["SELECT", "CTE", "date functions", "EXCEPT", "conditional aggregation"],
+  "description": "Classify customers as **'retained'** (ordered in both Q1 2026 and Q2 2026) or **'churned'** (ordered in Q1 2026 but NOT in Q2 2026). Return the classification and count.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `classification`, `customer_count`. Order by `classification`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-10','completed',100.00),(2,2,DATE '2026-02-15','completed',200.00),(3,3,DATE '2026-03-20','completed',300.00),(4,1,DATE '2026-04-05','completed',150.00),(5,3,DATE '2026-05-10','completed',250.00),(6,4,DATE '2026-04-15','completed',80.00);",
+  "solution_sql": "WITH q1 AS (SELECT DISTINCT customer_id FROM orders WHERE order_date BETWEEN DATE '2026-01-01' AND DATE '2026-03-31'), q2 AS (SELECT DISTINCT customer_id FROM orders WHERE order_date BETWEEN DATE '2026-04-01' AND DATE '2026-06-30') SELECT 'churned' AS classification, COUNT(*) AS customer_count FROM q1 WHERE customer_id NOT IN (SELECT customer_id FROM q2) UNION ALL SELECT 'retained' AS classification, COUNT(*) AS customer_count FROM q1 WHERE customer_id IN (SELECT customer_id FROM q2) ORDER BY classification",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Q1 customers: 1,2,3. Q2 orderers: 1,3,4. Retained (in both Q1 and Q2): 1,3 → count 2. Churned (Q1 only): 2 → count 1.",
+      "expected_row_count": 2,
+      "expected_columns": ["classification", "customer_count"],
+      "expected_rows": [
+        { "classification": "churned",  "customer_count": 1 },
+        { "classification": "retained", "customer_count": 2 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Build two sets: Q1 customers and Q2 customers.",
+    "Retained = Q1 ∩ Q2; Churned = Q1 - Q2.",
+    "Use IN / NOT IN subqueries or set operations (INTERSECT / EXCEPT)."
+  ],
+  "explanation": "Q1 customers (ordered Jan–Mar): 1, 2, 3. Q2 active customers (ordered Apr–Jun): 1, 3, 4. Retained = Q1 ∩ Q2 = {1, 3} → count 2. Churned = Q1 − Q2 = {2} → count 1. Customer 4 is a new Q2 customer, not counted as either retained or churned from Q1.",
+  "companies": ["Shopify", "Stripe", "HubSpot"],
+  "created_at": "2026-09-20"
+}

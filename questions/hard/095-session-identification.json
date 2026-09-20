@@ -1,0 +1,35 @@
+{
+  "id": "095",
+  "slug": "session-identification",
+  "title": "Session Identification from Login Events",
+  "difficulty": "hard",
+  "tags": ["SELECT", "window functions", "LAG", "date functions", "CTE"],
+  "description": "Assign a **session id** to each login event. A new session starts when the gap between the current login and the previous login (for the same user) is **more than 30 minutes**. Within a session the gap is ≤ 30 min.\n\n**Table: login_events**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| user_id | INT |\n| login_time | TIMESTAMP |\n\nOutput columns: `user_id`, `login_time`, `session_id`. `session_id` should be a sequential integer per user starting from 1. Order by `user_id`, `login_time`.",
+  "schema_sql": "CREATE TABLE login_events (id INT, user_id INT, login_time TIMESTAMP); INSERT INTO login_events VALUES (1,1,TIMESTAMP '2026-01-01 09:00:00'),(2,1,TIMESTAMP '2026-01-01 09:20:00'),(3,1,TIMESTAMP '2026-01-01 10:05:00'),(4,1,TIMESTAMP '2026-01-01 10:30:00'),(5,2,TIMESTAMP '2026-01-01 14:00:00'),(6,2,TIMESTAMP '2026-01-01 15:00:00');",
+  "solution_sql": "WITH gaps AS (SELECT user_id, login_time, CASE WHEN DATE_DIFF('minute', LAG(login_time) OVER (PARTITION BY user_id ORDER BY login_time), login_time) > 30 OR LAG(login_time) OVER (PARTITION BY user_id ORDER BY login_time) IS NULL THEN 1 ELSE 0 END AS new_session FROM login_events) SELECT user_id, login_time, SUM(new_session) OVER (PARTITION BY user_id ORDER BY login_time ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS session_id FROM gaps ORDER BY user_id, login_time",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "User 1: events 1+2 in session 1 (20 min gap), events 3+4 in session 2 (45 min gap after event 2). User 2: each event is its own session (60 min gap).",
+      "expected_row_count": 6,
+      "expected_columns": ["user_id", "login_time", "session_id"],
+      "expected_rows": [
+        { "user_id": 1, "login_time": "2026-01-01 09:00:00", "session_id": 1 },
+        { "user_id": 1, "login_time": "2026-01-01 09:20:00", "session_id": 1 },
+        { "user_id": 1, "login_time": "2026-01-01 10:05:00", "session_id": 2 },
+        { "user_id": 1, "login_time": "2026-01-01 10:30:00", "session_id": 2 },
+        { "user_id": 2, "login_time": "2026-01-01 14:00:00", "session_id": 1 },
+        { "user_id": 2, "login_time": "2026-01-01 15:00:00", "session_id": 2 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use LAG to compute the gap to the previous event per user.",
+    "Flag rows where gap > 30 min (or no previous row) as new_session = 1.",
+    "A running SUM of new_session over time gives the session number."
+  ],
+  "explanation": "Step 1: LAG computes minutes since last event. Step 2: CASE flags new sessions (gap > 30 min or first event). Step 3: Running SUM of the flag gives session_id — it increments each time a new session starts. User 1: 09:00 (sess 1), 09:20 (+20min, sess 1), 10:05 (+45min, sess 2), 10:30 (+25min, sess 2). User 2: 14:00 (sess 1), 15:00 (+60min, sess 2).",
+  "companies": ["Meta", "Snap", "Netflix"],
+  "created_at": "2026-09-20"
+}

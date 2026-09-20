@@ -1,0 +1,26 @@
+{
+  "id": "023",
+  "slug": "extract-order-year",
+  "title": "Extract Order Year",
+  "difficulty": "easy",
+  "tags": ["SELECT", "date functions", "EXTRACT"],
+  "description": "For each order, extract the **year** from `order_date` as a separate column called `order_year`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| status | VARCHAR |\n| total_amount | DECIMAL |\n\nOutput columns: `id`, `order_date`, `order_year`. Order by `order_date`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1, 1, DATE '2024-03-15', 'completed', 120.00), (2, 2, DATE '2024-11-20', 'completed', 75.50), (3, 3, DATE '2025-01-07', 'pending', 200.00), (4, 4, DATE '2025-08-22', 'completed', 350.00), (5, 5, DATE '2026-02-10', 'completed', 90.00);",
+  "solution_sql": "SELECT id, order_date, EXTRACT(YEAR FROM order_date) AS order_year FROM orders ORDER BY order_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Years 2024, 2024, 2025, 2025, 2026",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "order_date", "order_year"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "EXTRACT(YEAR FROM date_column) pulls out the year as a number.",
+    "You can also extract MONTH, DAY, HOUR, etc."
+  ],
+  "explanation": "`EXTRACT(YEAR FROM order_date)` returns the four-digit year as an integer. Orders 1 and 2 return 2024, orders 3 and 4 return 2025, order 5 returns 2026.",
+  "companies": ["Stripe", "Shopify"],
+  "created_at": "2026-09-20"
+}

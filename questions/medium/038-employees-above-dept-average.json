@@ -1,0 +1,30 @@
+{
+  "id": "038",
+  "slug": "employees-above-dept-average",
+  "title": "Employees Earning Above Their Department Average",
+  "difficulty": "medium",
+  "tags": ["SELECT", "correlated subquery", "AVG", "WHERE"],
+  "description": "Return every employee whose salary is **strictly above the average salary of their own department**.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| department_id | INT |\n\nOutput columns: `name`, `salary`, `department_id`. Order by `department_id`, `salary` descending.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, department_id INT); INSERT INTO employees VALUES (1,'Alice',120000,1),(2,'Bob',80000,2),(3,'Carol',140000,1),(4,'Dan',70000,2),(5,'Eve',90000,2),(6,'Fay',100000,1);",
+  "solution_sql": "SELECT name, salary, department_id FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees WHERE department_id = e.department_id) ORDER BY department_id, salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Carol (140k) beats dept 1 avg 120k; Eve (90k) beats dept 2 avg 80k",
+      "expected_row_count": 2,
+      "expected_columns": ["name", "salary", "department_id"],
+      "expected_rows": [
+        { "name": "Carol", "salary": 140000, "department_id": 1 },
+        { "name": "Eve",   "salary": 90000,  "department_id": 2 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "A correlated subquery references a column from the outer query (e.department_id).",
+    "It re-executes for every row in the outer query."
+  ],
+  "explanation": "Dept 1 average = (120000 + 140000 + 100000) / 3 = 120000. Carol (140000) > 120000 ✓; Alice (120000) = 120000, excluded; Fay (100000) < 120000, excluded. Dept 2 average = (80000 + 70000 + 90000) / 3 = 80000. Eve (90000) > 80000 ✓.",
+  "companies": ["Google", "Meta"],
+  "created_at": "2026-09-20"
+}

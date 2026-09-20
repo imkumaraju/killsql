@@ -1,0 +1,26 @@
+{
+  "id": "075",
+  "slug": "avg-days-between-orders",
+  "title": "Average Days Between Customer Orders",
+  "difficulty": "medium",
+  "tags": ["SELECT", "LAG", "window functions", "date functions", "AVG", "CTE"],
+  "description": "For each customer, compute the **average number of days between consecutive orders**. Only include customers with 2 or more orders.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `customer_id`, `avg_days_between_orders`. Round to 1 decimal. Order by `customer_id`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,1,DATE '2026-01-20','completed',200.00),(3,1,DATE '2026-02-10','completed',150.00),(4,2,DATE '2026-01-10','completed',300.00),(5,2,DATE '2026-03-10','completed',250.00),(6,3,DATE '2026-01-15','completed',80.00);",
+  "solution_sql": "WITH gaps AS (SELECT customer_id, order_date, DATE_DIFF('day', LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date), order_date) AS days_since_prev FROM orders) SELECT customer_id, ROUND(AVG(days_since_prev), 1) AS avg_days_between_orders FROM gaps WHERE days_since_prev IS NOT NULL GROUP BY customer_id ORDER BY customer_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Customer 1 avg ~18.5 days; customer 2 avg 59 days; customer 3 excluded (1 order)",
+      "expected_row_count": 2,
+      "expected_columns": ["customer_id", "avg_days_between_orders"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LAG(order_date) OVER (PARTITION BY customer ORDER BY order_date) gives the previous order date.",
+    "DATE_DIFF('day', prev_date, curr_date) computes the gap in days."
+  ],
+  "explanation": "LAG gives the previous order date per customer. DATE_DIFF computes the gap. The CTE builds a 'days_since_prev' column; the outer query averages it. Customer 3 has only one order so no LAG value exists — they're excluded via IS NOT NULL.",
+  "companies": ["Shopify", "Amazon"],
+  "created_at": "2026-09-20"
+}

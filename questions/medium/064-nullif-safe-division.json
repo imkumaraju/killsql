@@ -1,0 +1,33 @@
+{
+  "id": "064",
+  "slug": "nullif-safe-division",
+  "title": "Revenue per Unit Sold (Safe Division with NULLIF)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "NULLIF", "CASE"],
+  "description": "For each product, compute the **revenue per unit** (total_revenue / units_sold). Some products have zero units sold — use NULLIF to avoid a division-by-zero error and return NULL instead.\n\n**Table: product_sales**\n\n| Column | Type |\n|--------|------|\n| product_id | INT |\n| product_name | VARCHAR |\n| total_revenue | DECIMAL |\n| units_sold | INT |\n\nOutput columns: `product_name`, `units_sold`, `revenue_per_unit` (rounded to 2 decimal places). Order by `product_name`.",
+  "schema_sql": "CREATE TABLE product_sales (product_id INT, product_name VARCHAR, total_revenue DECIMAL, units_sold INT); INSERT INTO product_sales VALUES (1,'Laptop',4999.95,5),(2,'Phone',0.00,0),(3,'Desk',1499.95,5),(4,'Chair',0.00,0),(5,'Monitor',699.98,2);",
+  "solution_sql": "SELECT product_name, units_sold, ROUND(total_revenue / NULLIF(units_sold, 0), 2) AS revenue_per_unit FROM product_sales ORDER BY product_name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Phone and Chair show NULL; others show computed revenue per unit",
+      "expected_row_count": 5,
+      "expected_columns": ["product_name", "units_sold", "revenue_per_unit"],
+      "expected_rows": [
+        { "product_name": "Chair",   "units_sold": 0, "revenue_per_unit": null   },
+        { "product_name": "Desk",    "units_sold": 5, "revenue_per_unit": 299.99 },
+        { "product_name": "Laptop",  "units_sold": 5, "revenue_per_unit": 999.99 },
+        { "product_name": "Monitor", "units_sold": 2, "revenue_per_unit": 349.99 },
+        { "product_name": "Phone",   "units_sold": 0, "revenue_per_unit": null   }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "NULLIF(value, 0) returns NULL if value equals 0, otherwise returns value.",
+    "Dividing by NULL returns NULL — no error."
+  ],
+  "explanation": "`NULLIF(units_sold, 0)` converts zero to NULL. SQL division by NULL returns NULL rather than throwing an error. Products with 5 units: Laptop 4999.95/5 = 999.99, Desk 1499.95/5 = 299.99. Monitor: 699.98/2 = 349.99.",
+  "companies": ["Stripe", "Meta"],
+  "created_at": "2026-09-20"
+}

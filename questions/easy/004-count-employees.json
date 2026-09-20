@@ -1,0 +1,27 @@
+{
+  "id": "004",
+  "slug": "count-employees",
+  "title": "Count Employees",
+  "difficulty": "easy",
+  "tags": ["COUNT", "aggregate"],
+  "description": "Return a single row with the total number of employees as `employee_count`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| department | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR); INSERT INTO employees VALUES (1, 'Alice', 'Eng'), (2, 'Bob', 'Sales'), (3, 'Carol', 'Eng'), (4, 'Dan', 'HR');",
+  "solution_sql": "SELECT COUNT(*) AS employee_count FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "One row with employee_count = 4",
+      "expected_row_count": 1,
+      "expected_columns": ["employee_count"],
+      "expected_rows": [{ "employee_count": 4 }],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "COUNT(*) counts every row in the table.",
+    "Alias the result as employee_count using AS."
+  ],
+  "explanation": "Aggregate functions like COUNT collapse many rows into a summary. `COUNT(*) AS employee_count` produces a one-row, one-column result.",
+  "companies": ["Stripe"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,1562 @@
+[
+  {
+    "id": "001",
+    "slug": "select-all-employees",
+    "title": "Select All Employees",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT"
+    ],
+    "companies": [
+      "Google",
+      "Meta"
+    ]
+  },
+  {
+    "id": "002",
+    "slug": "filter-by-salary",
+    "title": "Filter Employees by Salary",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE"
+    ],
+    "companies": [
+      "Amazon"
+    ]
+  },
+  {
+    "id": "003",
+    "slug": "order-employees-by-salary",
+    "title": "Order Employees by Salary",
+    "difficulty": "easy",
+    "tags": [
+      "ORDER BY",
+      "SELECT"
+    ]
+  },
+  {
+    "id": "004",
+    "slug": "count-employees",
+    "title": "Count Employees",
+    "difficulty": "easy",
+    "tags": [
+      "COUNT",
+      "aggregate"
+    ],
+    "companies": [
+      "Stripe"
+    ]
+  },
+  {
+    "id": "005",
+    "slug": "employees-with-departments",
+    "title": "Employees With Departments",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "INNER JOIN"
+    ],
+    "companies": [
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "006",
+    "slug": "distinct-job-titles",
+    "title": "Distinct Job Titles",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "DISTINCT"
+    ],
+    "companies": [
+      "Amazon",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "007",
+    "slug": "top-5-earners",
+    "title": "Top 5 Highest-Paid Employees",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "ORDER BY",
+      "LIMIT"
+    ],
+    "companies": [
+      "Google",
+      "Meta"
+    ]
+  },
+  {
+    "id": "008",
+    "slug": "employees-hired-after-2022",
+    "title": "Employees Hired After 2022",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "date functions"
+    ],
+    "companies": [
+      "Amazon",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "009",
+    "slug": "employees-without-manager",
+    "title": "Employees Without a Manager",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "IS NULL"
+    ],
+    "companies": [
+      "Microsoft",
+      "Google"
+    ]
+  },
+  {
+    "id": "010",
+    "slug": "total-salary-budget",
+    "title": "Total Salary Budget",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "SUM",
+      "aggregate"
+    ],
+    "companies": [
+      "Stripe",
+      "Airbnb"
+    ]
+  },
+  {
+    "id": "011",
+    "slug": "average-product-price",
+    "title": "Average Product Price",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "AVG",
+      "aggregate"
+    ],
+    "companies": [
+      "Shopify",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "012",
+    "slug": "most-expensive-product",
+    "title": "Most Expensive Product",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "MAX",
+      "aggregate"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "013",
+    "slug": "cheapest-product",
+    "title": "Cheapest Product",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "MIN",
+      "aggregate"
+    ],
+    "companies": [
+      "Amazon",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "014",
+    "slug": "customer-count-by-country",
+    "title": "Customer Count by Country",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "COUNT"
+    ],
+    "companies": [
+      "Uber",
+      "Airbnb"
+    ]
+  },
+  {
+    "id": "015",
+    "slug": "products-out-of-stock",
+    "title": "Products Out of Stock",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE"
+    ],
+    "companies": [
+      "Shopify",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "016",
+    "slug": "employees-no-department",
+    "title": "Employees With No Department",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "LEFT JOIN",
+      "IS NULL"
+    ],
+    "companies": [
+      "Microsoft",
+      "Google"
+    ]
+  },
+  {
+    "id": "017",
+    "slug": "salary-tier-label",
+    "title": "Salary Tier Label",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "CASE"
+    ],
+    "companies": [
+      "Meta",
+      "LinkedIn"
+    ]
+  },
+  {
+    "id": "018",
+    "slug": "customer-name-search",
+    "title": "Customer Name Search",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "LIKE"
+    ],
+    "companies": [
+      "Uber",
+      "Lyft"
+    ]
+  },
+  {
+    "id": "019",
+    "slug": "orders-in-price-range",
+    "title": "Orders in a Price Range",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "BETWEEN"
+    ],
+    "companies": [
+      "Stripe",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "020",
+    "slug": "customers-from-specific-cities",
+    "title": "Customers from Specific Cities",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "IN"
+    ],
+    "companies": [
+      "Airbnb",
+      "Booking.com"
+    ]
+  },
+  {
+    "id": "021",
+    "slug": "coalesce-missing-department",
+    "title": "Coalesce Missing Department Name",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "COALESCE",
+      "LEFT JOIN"
+    ],
+    "companies": [
+      "Google",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "022",
+    "slug": "uppercase-product-names",
+    "title": "Uppercase Product Names",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "string functions"
+    ],
+    "companies": [
+      "Shopify",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "023",
+    "slug": "extract-order-year",
+    "title": "Extract Order Year",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "date functions",
+      "EXTRACT"
+    ],
+    "companies": [
+      "Stripe",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "024",
+    "slug": "total-orders-per-customer",
+    "title": "Total Orders per Customer",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "COUNT"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "025",
+    "slug": "count-unique-categories",
+    "title": "Count Unique Product Categories",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "COUNT",
+      "DISTINCT"
+    ],
+    "companies": [
+      "Amazon",
+      "Google"
+    ]
+  },
+  {
+    "id": "026",
+    "slug": "pending-orders",
+    "title": "Orders with Status Pending",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "027",
+    "slug": "high-salary-employees",
+    "title": "Employees Earning Above 100k",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE"
+    ],
+    "companies": [
+      "Meta",
+      "Google"
+    ]
+  },
+  {
+    "id": "028",
+    "slug": "sort-products-by-price",
+    "title": "Sort Products by Price Descending",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "ORDER BY"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "029",
+    "slug": "paginate-products",
+    "title": "Paginate Products (Page 3, 5 per page)",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "ORDER BY",
+      "LIMIT"
+    ],
+    "companies": [
+      "Shopify",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "030",
+    "slug": "monthly-order-count",
+    "title": "Monthly Order Count",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "date functions",
+      "COUNT"
+    ],
+    "companies": [
+      "Stripe",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "031",
+    "slug": "salary-by-department",
+    "title": "Average Salary by Department",
+    "difficulty": "medium",
+    "tags": [
+      "GROUP BY",
+      "AVG",
+      "aggregate"
+    ],
+    "companies": [
+      "Uber",
+      "Airbnb"
+    ]
+  },
+  {
+    "id": "032",
+    "slug": "rank-employees",
+    "title": "Rank Employees by Salary",
+    "difficulty": "medium",
+    "tags": [
+      "window functions",
+      "RANK",
+      "ORDER BY"
+    ],
+    "companies": [
+      "Google",
+      "Netflix"
+    ]
+  },
+  {
+    "id": "033",
+    "slug": "daily-running-revenue",
+    "title": "Daily Running Revenue",
+    "difficulty": "medium",
+    "tags": [
+      "window functions",
+      "SUM",
+      "running total"
+    ],
+    "companies": [
+      "Stripe",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "034",
+    "slug": "departments-with-3-plus-employees",
+    "title": "Departments with 3 or More Employees",
+    "difficulty": "medium",
+    "tags": [
+      "GROUP BY",
+      "HAVING",
+      "COUNT"
+    ],
+    "companies": [
+      "Google",
+      "Meta"
+    ]
+  },
+  {
+    "id": "035",
+    "slug": "customers-with-orders",
+    "title": "Customers with At Least One Order",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "EXISTS",
+      "subquery"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "036",
+    "slug": "customers-with-no-orders",
+    "title": "Customers with No Orders",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "EXISTS",
+      "subquery"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "037",
+    "slug": "products-never-ordered",
+    "title": "Products Never Ordered",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "LEFT JOIN",
+      "IS NULL"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "038",
+    "slug": "employees-above-dept-average",
+    "title": "Employees Earning Above Their Department Average",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "correlated subquery",
+      "AVG",
+      "WHERE"
+    ],
+    "companies": [
+      "Google",
+      "Meta"
+    ]
+  },
+  {
+    "id": "039",
+    "slug": "manager-names-self-join",
+    "title": "Manager Names via Self Join",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "self join",
+      "INNER JOIN"
+    ],
+    "companies": [
+      "Microsoft",
+      "Meta"
+    ]
+  },
+  {
+    "id": "040",
+    "slug": "order-line-details",
+    "title": "Order Line Details",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "INNER JOIN"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "041",
+    "slug": "top-earning-departments-cte",
+    "title": "Top-Earning Departments (CTE)",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "GROUP BY",
+      "SUM"
+    ],
+    "companies": [
+      "Google",
+      "Netflix"
+    ]
+  },
+  {
+    "id": "042",
+    "slug": "union-employees-and-customers",
+    "title": "Combined List: Employees and Customers Named Alex",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "UNION",
+      "WHERE",
+      "LIKE"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "043",
+    "slug": "first-order-per-customer",
+    "title": "First Order per Customer",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "ROW_NUMBER",
+      "window functions",
+      "CTE"
+    ],
+    "companies": [
+      "Amazon",
+      "Uber"
+    ]
+  },
+  {
+    "id": "044",
+    "slug": "dense-rank-products-by-price",
+    "title": "Dense Rank Products by Price Within Category",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "DENSE_RANK",
+      "window functions"
+    ],
+    "companies": [
+      "Google",
+      "Netflix"
+    ]
+  },
+  {
+    "id": "045",
+    "slug": "salary-quartiles-ntile",
+    "title": "Salary Quartiles",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "NTILE",
+      "window functions"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Databricks"
+    ]
+  },
+  {
+    "id": "046",
+    "slug": "month-over-month-revenue",
+    "title": "Month-over-Month Revenue Change",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "LAG",
+      "window functions",
+      "date functions",
+      "CTE"
+    ],
+    "companies": [
+      "Stripe",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "047",
+    "slug": "lead-next-month-revenue",
+    "title": "Preview Next Month Revenue with LEAD",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "LEAD",
+      "window functions",
+      "CTE",
+      "date functions"
+    ],
+    "companies": [
+      "Stripe",
+      "Meta"
+    ]
+  },
+  {
+    "id": "048",
+    "slug": "full-outer-join-employees-departments",
+    "title": "All Employees and Departments (Full Outer Join)",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "FULL OUTER JOIN"
+    ],
+    "companies": [
+      "Microsoft",
+      "Google"
+    ]
+  },
+  {
+    "id": "049",
+    "slug": "cross-join-size-color-pairs",
+    "title": "All Size-Color Combinations (Cross Join)",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CROSS JOIN"
+    ],
+    "companies": [
+      "Shopify",
+      "Etsy"
+    ]
+  },
+  {
+    "id": "050",
+    "slug": "conditional-aggregation-order-status",
+    "title": "Order Count by Status (Conditional Aggregation)",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CASE",
+      "conditional aggregation",
+      "GROUP BY"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "051",
+    "slug": "top-3-products-per-category",
+    "title": "Top 3 Products per Category by Price",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "ROW_NUMBER",
+      "window functions",
+      "top N per group",
+      "CTE"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "052",
+    "slug": "duplicate-customer-emails",
+    "title": "Find Duplicate Customer Emails",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "HAVING",
+      "duplicate detection"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "053",
+    "slug": "revenue-share-per-category",
+    "title": "Revenue Share per Category",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "SUM",
+      "GROUP BY"
+    ],
+    "companies": [
+      "Shopify",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "054",
+    "slug": "year-over-year-order-growth",
+    "title": "Year-over-Year Order Revenue Growth",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "LAG",
+      "CTE",
+      "date functions",
+      "window functions"
+    ],
+    "companies": [
+      "Stripe",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "055",
+    "slug": "first-purchase-per-customer",
+    "title": "First Purchase Amount per Customer",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "FIRST_VALUE",
+      "window functions"
+    ],
+    "companies": [
+      "Amazon",
+      "Uber"
+    ]
+  },
+  {
+    "id": "056",
+    "slug": "last-order-per-customer",
+    "title": "Most Recent Order per Customer",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "LAST_VALUE",
+      "window functions",
+      "CTE"
+    ],
+    "companies": [
+      "Shopify",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "057",
+    "slug": "employee-tenure-years",
+    "title": "Employee Tenure in Full Years",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "date functions"
+    ],
+    "companies": [
+      "Microsoft",
+      "Google"
+    ]
+  },
+  {
+    "id": "058",
+    "slug": "monthly-new-customer-signups",
+    "title": "Monthly New Customer Signups",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "date functions",
+      "COUNT"
+    ],
+    "companies": [
+      "Stripe",
+      "HubSpot"
+    ]
+  },
+  {
+    "id": "059",
+    "slug": "second-highest-salary",
+    "title": "Second Highest Salary",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "DENSE_RANK",
+      "window functions",
+      "CTE",
+      "subquery"
+    ],
+    "companies": [
+      "Google",
+      "Meta",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "060",
+    "slug": "employees-sharing-salary",
+    "title": "Employees Sharing the Same Salary",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "self join",
+      "GROUP BY",
+      "HAVING"
+    ],
+    "companies": [
+      "Google",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "061",
+    "slug": "cumulative-revenue-percentage",
+    "title": "Cumulative Revenue Percentage by Department",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "SUM",
+      "CTE",
+      "GROUP BY"
+    ],
+    "companies": [
+      "Google",
+      "Databricks"
+    ]
+  },
+  {
+    "id": "062",
+    "slug": "products-above-average-rating",
+    "title": "Products with Above-Average Rating",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "subquery",
+      "AVG",
+      "INNER JOIN"
+    ],
+    "companies": [
+      "Amazon",
+      "Yelp"
+    ]
+  },
+  {
+    "id": "063",
+    "slug": "count-null-salaries",
+    "title": "Count Employees with Missing Salary",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "IS NULL",
+      "COUNT",
+      "CASE"
+    ],
+    "companies": [
+      "Databricks",
+      "Snowflake"
+    ]
+  },
+  {
+    "id": "064",
+    "slug": "nullif-safe-division",
+    "title": "Revenue per Unit Sold (Safe Division with NULLIF)",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "NULLIF",
+      "CASE"
+    ],
+    "companies": [
+      "Stripe",
+      "Meta"
+    ]
+  },
+  {
+    "id": "065",
+    "slug": "chained-ctes-category-summary",
+    "title": "Category Revenue Summary (Chained CTEs)",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "GROUP BY",
+      "SUM",
+      "window functions"
+    ],
+    "companies": [
+      "Google",
+      "Databricks"
+    ]
+  },
+  {
+    "id": "066",
+    "slug": "derived-table-top-spenders",
+    "title": "Top-Spending Customers (Derived Table)",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "subquery",
+      "GROUP BY",
+      "SUM"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "067",
+    "slug": "extract-email-domain",
+    "title": "Extract Email Domain",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "string functions",
+      "GROUP BY",
+      "COUNT"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "068",
+    "slug": "revenue-by-category-and-status",
+    "title": "Revenue by Category and Order Status",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "conditional aggregation",
+      "CASE",
+      "GROUP BY"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "069",
+    "slug": "rolling-7-day-active-users",
+    "title": "7-Day Rolling Active Users",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "date functions",
+      "COUNT"
+    ],
+    "companies": [
+      "Meta",
+      "Snap",
+      "TikTok"
+    ]
+  },
+  {
+    "id": "070",
+    "slug": "products-with-zero-sales",
+    "title": "Products with Zero Total Sales",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "LEFT JOIN",
+      "IS NULL",
+      "GROUP BY"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "071",
+    "slug": "rank-departments-by-payroll",
+    "title": "Rank Departments by Total Payroll",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "SUM",
+      "RANK",
+      "window functions",
+      "CTE"
+    ],
+    "companies": [
+      "Microsoft",
+      "LinkedIn"
+    ]
+  },
+  {
+    "id": "072",
+    "slug": "customer-lifetime-value",
+    "title": "Customer Lifetime Value",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "SUM",
+      "COUNT",
+      "INNER JOIN"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "073",
+    "slug": "orders-last-quarter",
+    "title": "Orders from Last Quarter",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "BETWEEN",
+      "date functions"
+    ],
+    "companies": [
+      "Shopify",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "074",
+    "slug": "string-agg-products-per-category",
+    "title": "Products per Category as Comma-Separated List",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "string functions",
+      "GROUP BY"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Meta"
+    ]
+  },
+  {
+    "id": "075",
+    "slug": "avg-days-between-orders",
+    "title": "Average Days Between Customer Orders",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "LAG",
+      "window functions",
+      "date functions",
+      "AVG",
+      "CTE"
+    ],
+    "companies": [
+      "Shopify",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "076",
+    "slug": "monthly-order-conversion-rate",
+    "title": "Monthly Order Completion Rate",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "conditional aggregation",
+      "date functions",
+      "GROUP BY"
+    ],
+    "companies": [
+      "Stripe",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "077",
+    "slug": "deduplicate-with-row-number",
+    "title": "Deduplicate Rows with ROW_NUMBER",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "ROW_NUMBER",
+      "window functions",
+      "CTE",
+      "duplicate detection"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "078",
+    "slug": "high-revenue-customers-in-subquery",
+    "title": "Customers with High-Value Orders",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "IN",
+      "subquery"
+    ],
+    "companies": [
+      "Stripe",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "079",
+    "slug": "cohort-first-order-month",
+    "title": "Customer Cohort by First Order Month",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "date functions",
+      "GROUP BY",
+      "COUNT"
+    ],
+    "companies": [
+      "Shopify",
+      "Meta"
+    ]
+  },
+  {
+    "id": "080",
+    "slug": "moving-3-month-average-revenue",
+    "title": "3-Month Moving Average Revenue",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "AVG",
+      "CTE",
+      "date functions"
+    ],
+    "companies": [
+      "Stripe",
+      "Databricks"
+    ]
+  },
+  {
+    "id": "081",
+    "slug": "account-running-balance",
+    "title": "Account Running Balance",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "SUM",
+      "running total",
+      "CASE"
+    ],
+    "companies": [
+      "Stripe",
+      "Revolut"
+    ]
+  },
+  {
+    "id": "082",
+    "slug": "retained-customers-month2",
+    "title": "Retained Customers: Ordered in Both Month 1 and Month 2",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "INTERSECT",
+      "date functions",
+      "IN"
+    ],
+    "companies": [
+      "Shopify",
+      "Meta"
+    ]
+  },
+  {
+    "id": "083",
+    "slug": "find-gaps-in-order-ids",
+    "title": "Find Gaps in Sequential Order IDs",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "gaps and islands",
+      "window functions",
+      "LAG",
+      "CTE"
+    ],
+    "companies": [
+      "Stripe",
+      "Databricks"
+    ]
+  },
+  {
+    "id": "084",
+    "slug": "case-in-order-by",
+    "title": "Custom Sort Priority with CASE in ORDER BY",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CASE",
+      "ORDER BY"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "085",
+    "slug": "employees-same-manager",
+    "title": "Employees Who Share the Same Manager",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "self join",
+      "GROUP BY",
+      "HAVING"
+    ],
+    "companies": [
+      "Google",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "086",
+    "slug": "right-join-all-departments",
+    "title": "All Departments Including Empty Ones",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "RIGHT JOIN",
+      "GROUP BY",
+      "COUNT"
+    ],
+    "companies": [
+      "Microsoft",
+      "Google"
+    ]
+  },
+  {
+    "id": "087",
+    "slug": "nth-highest-salary",
+    "title": "Third Highest Salary",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "DENSE_RANK",
+      "window functions",
+      "CTE"
+    ],
+    "companies": [
+      "Google",
+      "Amazon",
+      "Facebook"
+    ]
+  },
+  {
+    "id": "088",
+    "slug": "fulfilled-orders-percentage-per-month",
+    "title": "Fulfilled Orders Percentage per Month",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "conditional aggregation",
+      "date functions",
+      "GROUP BY"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "089",
+    "slug": "category-highest-average-price",
+    "title": "Category with the Highest Average Price",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "AVG",
+      "subquery"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "090",
+    "slug": "customers-ordered-every-month",
+    "title": "Customers Who Ordered Every Month of 2026",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "HAVING",
+      "date functions",
+      "COUNT"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "091",
+    "slug": "managers-above-team-average",
+    "title": "Managers Paid Above Team Average",
+    "difficulty": "hard",
+    "tags": [
+      "self join",
+      "CTE",
+      "subquery"
+    ],
+    "companies": [
+      "Meta",
+      "Jane Street"
+    ]
+  },
+  {
+    "id": "092",
+    "slug": "longest-consecutive-logins",
+    "title": "Longest Consecutive Login Streak",
+    "difficulty": "hard",
+    "tags": [
+      "gaps and islands",
+      "window functions",
+      "date functions"
+    ],
+    "companies": [
+      "Databricks",
+      "Snowflake"
+    ]
+  },
+  {
+    "id": "093",
+    "slug": "median-salary",
+    "title": "Median Salary Without PERCENTILE",
+    "difficulty": "hard",
+    "tags": [
+      "SELECT",
+      "correlated subquery",
+      "CASE",
+      "window functions",
+      "CTE"
+    ],
+    "companies": [
+      "Meta",
+      "Google",
+      "Databricks"
+    ]
+  },
+  {
+    "id": "094",
+    "slug": "org-chart-traversal",
+    "title": "Org Chart: All Direct and Indirect Reports",
+    "difficulty": "hard",
+    "tags": [
+      "SELECT",
+      "recursive CTE"
+    ],
+    "companies": [
+      "Meta",
+      "LinkedIn",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "095",
+    "slug": "session-identification",
+    "title": "Session Identification from Login Events",
+    "difficulty": "hard",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "LAG",
+      "date functions",
+      "CTE"
+    ],
+    "companies": [
+      "Meta",
+      "Snap",
+      "Netflix"
+    ]
+  },
+  {
+    "id": "096",
+    "slug": "churned-vs-retained-customers",
+    "title": "Churned vs Retained Customers",
+    "difficulty": "hard",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "date functions",
+      "EXCEPT",
+      "conditional aggregation"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe",
+      "HubSpot"
+    ]
+  },
+  {
+    "id": "097",
+    "slug": "cohort-retention-matrix",
+    "title": "Cohort Retention Matrix (Months 0–3)",
+    "difficulty": "hard",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "conditional aggregation",
+      "date functions",
+      "window functions"
+    ],
+    "companies": [
+      "Shopify",
+      "Meta",
+      "Amplitude"
+    ]
+  },
+  {
+    "id": "098",
+    "slug": "frequently-bought-together",
+    "title": "Frequently Bought Together (Market Basket)",
+    "difficulty": "hard",
+    "tags": [
+      "SELECT",
+      "self join",
+      "COUNT",
+      "GROUP BY",
+      "INNER JOIN"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify",
+      "Instacart"
+    ]
+  },
+  {
+    "id": "099",
+    "slug": "running-balance-overdraft-detection",
+    "title": "Running Balance with Overdraft Detection",
+    "difficulty": "hard",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "SUM",
+      "running total",
+      "CASE",
+      "CTE"
+    ],
+    "companies": [
+      "Stripe",
+      "Revolut",
+      "N26"
+    ]
+  },
+  {
+    "id": "100",
+    "slug": "employee-hierarchy-depth",
+    "title": "Employee Hierarchy Depth",
+    "difficulty": "hard",
+    "tags": [
+      "SELECT",
+      "recursive CTE",
+      "COUNT",
+      "window functions"
+    ],
+    "companies": [
+      "Meta",
+      "LinkedIn",
+      "Google"
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "id": "034",
+  "slug": "departments-with-3-plus-employees",
+  "title": "Departments with 3 or More Employees",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "HAVING", "COUNT"],
+  "description": "Return the name of each department that has **at least 3 employees**, along with the employee count.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| department_id | INT |\n\n**Table: departments**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n\nOutput columns: `department_name`, `employee_count`. Order by `employee_count` descending.",
+  "schema_sql": "CREATE TABLE departments (id INT, name VARCHAR); INSERT INTO departments VALUES (1, 'Engineering'), (2, 'Sales'), (3, 'HR'); CREATE TABLE employees (id INT, name VARCHAR, salary INT, department_id INT); INSERT INTO employees VALUES (1,'Alice',120000,1),(2,'Bob',80000,2),(3,'Carol',140000,1),(4,'Dan',70000,3),(5,'Eve',90000,2),(6,'Fay',100000,1),(7,'Gus',75000,1),(8,'Hana',65000,2);",
+  "solution_sql": "SELECT d.name AS department_name, COUNT(e.id) AS employee_count FROM employees e JOIN departments d ON e.department_id = d.id GROUP BY d.name HAVING COUNT(e.id) >= 3 ORDER BY employee_count DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Engineering (4) and Sales (3) qualify; HR (1) does not",
+      "expected_row_count": 2,
+      "expected_columns": ["department_name", "employee_count"],
+      "expected_rows": [
+        { "department_name": "Engineering", "employee_count": 4 },
+        { "department_name": "Sales",       "employee_count": 3 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use GROUP BY to count employees per department.",
+    "HAVING filters groups after aggregation — unlike WHERE which filters individual rows."
+  ],
+  "explanation": "`GROUP BY d.name` creates one row per department with `COUNT(e.id)` as the count. `HAVING COUNT(e.id) >= 3` then discards groups with fewer than 3 employees. HAVING is the post-aggregation equivalent of WHERE.",
+  "companies": ["Google", "Meta"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "054",
+  "slug": "year-over-year-order-growth",
+  "title": "Year-over-Year Order Revenue Growth",
+  "difficulty": "medium",
+  "tags": ["SELECT", "LAG", "CTE", "date functions", "window functions"],
+  "description": "Calculate the **year-over-year revenue growth** for orders. Return each year's total revenue and the growth compared to the prior year (absolute difference and percentage, rounded to 1 decimal). The earliest year should show NULL for growth columns.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `order_year`, `revenue`, `revenue_change`, `growth_pct`. Order by `order_year`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2024-03-10','completed',500.00),(2,2,DATE '2024-07-15','completed',300.00),(3,3,DATE '2025-01-20','completed',400.00),(4,4,DATE '2025-06-05','completed',600.00),(5,5,DATE '2025-11-30','completed',200.00),(6,1,DATE '2026-02-14','completed',700.00),(7,2,DATE '2026-08-22','completed',800.00);",
+  "solution_sql": "WITH yearly AS (SELECT EXTRACT(YEAR FROM order_date) AS order_year, SUM(total_amount) AS revenue FROM orders GROUP BY order_year) SELECT order_year, revenue, revenue - LAG(revenue) OVER (ORDER BY order_year) AS revenue_change, ROUND(100.0 * (revenue - LAG(revenue) OVER (ORDER BY order_year)) / LAG(revenue) OVER (ORDER BY order_year), 1) AS growth_pct FROM yearly ORDER BY order_year",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "2024=800, 2025=1200, 2026=1500",
+      "expected_row_count": 3,
+      "expected_columns": ["order_year", "revenue", "revenue_change", "growth_pct"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Group by EXTRACT(YEAR) first, then apply LAG over the aggregated result.",
+    "growth_pct = 100 * (current - previous) / previous"
+  ],
+  "explanation": "2024 total = 800, 2025 = 1200 (+400, +50%), 2026 = 1500 (+300, +25%). LAG fetches the prior year's revenue. Dividing the difference by the prior year gives the growth percentage.",
+  "companies": ["Stripe", "Shopify"],
+  "created_at": "2026-09-20"
+}

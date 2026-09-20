@@ -1,0 +1,31 @@
+{
+  "id": "091",
+  "slug": "managers-above-team-average",
+  "title": "Managers Paid Above Team Average",
+  "difficulty": "hard",
+  "tags": ["self join", "CTE", "subquery"],
+  "description": "An `employees` table stores each person's manager via `manager_id`. Find managers whose **own salary is strictly greater than the average salary of the people who report directly to them**.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| manager_id | INT |\n\nOutput columns: `manager_name`, `manager_salary`, `team_avg_salary` (rounded to nearest integer). Order by `manager_name`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, manager_id INT); INSERT INTO employees VALUES (1, 'Ada', 200000, NULL), (2, 'Ben', 150000, 1), (3, 'Cara', 90000, 2), (4, 'Drew', 80000, 2), (5, 'Eve', 120000, 1), (6, 'Fay', 70000, 5);",
+  "solution_sql": "WITH team AS (SELECT manager_id, AVG(salary) AS team_avg, COUNT(*) AS reports FROM employees WHERE manager_id IS NOT NULL GROUP BY manager_id) SELECT m.name AS manager_name, m.salary AS manager_salary, CAST(ROUND(t.team_avg) AS INTEGER) AS team_avg_salary FROM employees m JOIN team t ON m.id = t.manager_id WHERE m.salary > t.team_avg ORDER BY manager_name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Managers whose salary beats the average of their direct reports",
+      "expected_row_count": 3,
+      "expected_columns": ["manager_name", "manager_salary", "team_avg_salary"],
+      "expected_rows": [
+        { "manager_name": "Ada", "manager_salary": 200000, "team_avg_salary": 135000 },
+        { "manager_name": "Ben", "manager_salary": 150000, "team_avg_salary": 85000 },
+        { "manager_name": "Eve", "manager_salary": 120000, "team_avg_salary": 70000 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "First aggregate direct reports grouped by manager_id.",
+    "Join that aggregate back to employees to compare the manager's salary to the team average."
+  ],
+  "explanation": "A CTE (or subquery) computes `AVG(salary)` per `manager_id`. Joining that back to `employees` on `id = manager_id` lets you compare a manager to their team. Ada's reports average 135000 (Ben, Eve); Ben's reports average 85000; Eve's only report is Fay at 70000. All three managers out-earn their teams.",
+  "companies": ["Meta", "Jane Street"],
+  "created_at": "2026-09-20"
+}

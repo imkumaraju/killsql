@@ -1,0 +1,33 @@
+{
+  "id": "017",
+  "slug": "salary-tier-label",
+  "title": "Salary Tier Label",
+  "difficulty": "easy",
+  "tags": ["SELECT", "CASE"],
+  "description": "Label each employee with a salary tier:\n- `'High'` if salary ≥ 100 000\n- `'Mid'` if salary is between 60 000 and 99 999 (inclusive)\n- `'Low'` if salary < 60 000\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nOutput columns: `name`, `salary`, `tier`. Order by `salary` descending.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1, 'Alice', 120000), (2, 'Bob', 80000), (3, 'Carol', 140000), (4, 'Dan', 55000), (5, 'Eve', 90000);",
+  "solution_sql": "SELECT name, salary, CASE WHEN salary >= 100000 THEN 'High' WHEN salary >= 60000 THEN 'Mid' ELSE 'Low' END AS tier FROM employees ORDER BY salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Carol and Alice are High; Eve and Bob are Mid; Dan is Low",
+      "expected_row_count": 5,
+      "expected_columns": ["name", "salary", "tier"],
+      "expected_rows": [
+        { "name": "Carol", "salary": 140000, "tier": "High" },
+        { "name": "Alice", "salary": 120000, "tier": "High" },
+        { "name": "Eve",   "salary": 90000,  "tier": "Mid"  },
+        { "name": "Bob",   "salary": 80000,  "tier": "Mid"  },
+        { "name": "Dan",   "salary": 55000,  "tier": "Low"  }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "CASE WHEN ... THEN ... WHEN ... THEN ... ELSE ... END evaluates conditions top-to-bottom.",
+    "The first matching WHEN wins — so put the highest threshold first."
+  ],
+  "explanation": "CASE works like an if/else chain. Because `>= 100000` is checked first, salaries of 120000 and 140000 get 'High'. The next branch catches 60000–99999 ('Mid'). ELSE catches everything below 60000 ('Low').",
+  "companies": ["Meta", "LinkedIn"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "058",
+  "slug": "monthly-new-customer-signups",
+  "title": "Monthly New Customer Signups",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "date functions", "COUNT"],
+  "description": "Count how many new customers signed up in each **year-month**, based on `signup_date`. Return year, month, and count.\n\n**Table: customers**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |\n| city | VARCHAR |\n| country | VARCHAR |\n| signup_date | DATE |\n\nOutput columns: `signup_year`, `signup_month`, `new_customers`. Order by `signup_year`, `signup_month`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR, signup_date DATE); INSERT INTO customers VALUES (1,'Alice','alice@example.com','New York','USA',DATE '2026-01-10'),(2,'Bob','bob@example.com','London','UK',DATE '2026-01-22'),(3,'Carol','carol@example.com','Chicago','USA',DATE '2026-02-05'),(4,'Dan','dan@example.com','Mumbai','India',DATE '2026-02-18'),(5,'Eve','eve@example.com','Paris','France',DATE '2026-02-28'),(6,'Fay','fay@example.com','Berlin','Germany',DATE '2026-03-14');",
+  "solution_sql": "SELECT EXTRACT(YEAR FROM signup_date) AS signup_year, EXTRACT(MONTH FROM signup_date) AS signup_month, COUNT(*) AS new_customers FROM customers GROUP BY signup_year, signup_month ORDER BY signup_year, signup_month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan: 2, Feb: 3, Mar: 1",
+      "expected_row_count": 3,
+      "expected_columns": ["signup_year", "signup_month", "new_customers"],
+      "expected_rows": [
+        { "signup_year": 2026, "signup_month": 1, "new_customers": 2 },
+        { "signup_year": 2026, "signup_month": 2, "new_customers": 3 },
+        { "signup_year": 2026, "signup_month": 3, "new_customers": 1 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "EXTRACT(YEAR FROM date) and EXTRACT(MONTH FROM date) give the year and month numbers.",
+    "GROUP BY both to get one row per year-month bucket."
+  ],
+  "explanation": "Extracting year and month and counting per group gives a monthly growth view. January had 2 signups, February 3, March 1.",
+  "companies": ["Stripe", "HubSpot"],
+  "created_at": "2026-09-20"
+}

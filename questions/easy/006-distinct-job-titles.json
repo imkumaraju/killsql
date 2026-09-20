@@ -1,0 +1,31 @@
+{
+  "id": "006",
+  "slug": "distinct-job-titles",
+  "title": "Distinct Job Titles",
+  "difficulty": "easy",
+  "tags": ["SELECT", "DISTINCT"],
+  "description": "Return a list of all **unique** job titles in the company. No duplicates allowed.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| job_title | VARCHAR |\n\nOutput column: `job_title`. Order alphabetically.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, job_title VARCHAR); INSERT INTO employees VALUES (1, 'Alice', 120000, 'Engineer'), (2, 'Bob', 80000, 'Manager'), (3, 'Carol', 140000, 'Engineer'), (4, 'Dan', 70000, 'Analyst'), (5, 'Eve', 90000, 'Manager'), (6, 'Fay', 60000, 'Analyst');",
+  "solution_sql": "SELECT DISTINCT job_title FROM employees ORDER BY job_title",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Three unique job titles: Analyst, Engineer, Manager",
+      "expected_row_count": 3,
+      "expected_columns": ["job_title"],
+      "expected_rows": [
+        { "job_title": "Analyst" },
+        { "job_title": "Engineer" },
+        { "job_title": "Manager" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "The DISTINCT keyword removes duplicate values from the result.",
+    "Place DISTINCT immediately after SELECT."
+  ],
+  "explanation": "`SELECT DISTINCT job_title` collapses repeated titles into one row each. Without DISTINCT you would get 6 rows; with it you get 3 unique titles.",
+  "companies": ["Amazon", "Microsoft"],
+  "created_at": "2026-09-20"
+}

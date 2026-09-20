@@ -1,0 +1,29 @@
+{
+  "id": "059",
+  "slug": "second-highest-salary",
+  "title": "Second Highest Salary",
+  "difficulty": "medium",
+  "tags": ["SELECT", "DENSE_RANK", "window functions", "CTE", "subquery"],
+  "description": "Find the **second highest distinct salary** in the company. If fewer than 2 distinct salaries exist, return NULL.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nOutput column: `second_highest_salary`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice',120000),(2,'Bob',80000),(3,'Carol',120000),(4,'Dan',140000),(5,'Eve',90000);",
+  "solution_sql": "WITH ranked AS (SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk FROM employees) SELECT MAX(salary) AS second_highest_salary FROM ranked WHERE rnk = 2",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Second highest distinct salary is 120000 (Dan has 140000 at rank 1)",
+      "expected_row_count": 1,
+      "expected_columns": ["second_highest_salary"],
+      "expected_rows": [
+        { "second_highest_salary": 120000 }
+      ],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "DENSE_RANK() ranks salaries without gaps — ties get the same rank.",
+    "Filter WHERE rnk = 2 to get the second highest distinct value."
+  ],
+  "explanation": "DENSE_RANK on salaries: 140000→1, 120000→2 (Alice and Carol tie), 90000→3, 80000→4. Filtering rnk=2 and taking MAX gives 120000. Using DENSE_RANK instead of RANK ensures ties don't create gaps that skip rank 2.",
+  "companies": ["Google", "Meta", "Amazon"],
+  "created_at": "2026-09-20"
+}

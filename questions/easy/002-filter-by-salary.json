@@ -1,0 +1,26 @@
+{
+  "id": "002",
+  "slug": "filter-by-salary",
+  "title": "Filter Employees by Salary",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE"],
+  "description": "Return employees who earn **more than 60,000**.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nOutput columns: `id`, `name`, `salary`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1, 'Alice', 70000), (2, 'Bob', 55000), (3, 'Carol', 90000), (4, 'Dan', 60000);",
+  "solution_sql": "SELECT id, name, salary FROM employees WHERE salary > 60000",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice and Carol earn more than 60000; Dan at 60000 is excluded",
+      "expected_row_count": 2,
+      "expected_columns": ["id", "name", "salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use a WHERE clause to filter rows.",
+    "The comparison should be strictly greater than 60000."
+  ],
+  "explanation": "`WHERE salary > 60000` keeps only rows whose salary is strictly above the threshold. Equality is excluded, so Dan (60000) does not appear.",
+  "companies": ["Amazon"],
+  "created_at": "2026-09-20"
+}

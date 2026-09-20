@@ -1,0 +1,31 @@
+{
+  "id": "027",
+  "slug": "high-salary-employees",
+  "title": "Employees Earning Above 100k",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE"],
+  "description": "Return the name and salary of every employee whose salary is **strictly greater than 100,000**.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nOutput columns: `name`, `salary`. Order by `salary` descending.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1, 'Alice', 120000), (2, 'Bob', 80000), (3, 'Carol', 140000), (4, 'Dan', 100000), (5, 'Eve', 90000), (6, 'Fay', 115000);",
+  "solution_sql": "SELECT name, salary FROM employees WHERE salary > 100000 ORDER BY salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Carol (140k), Fay (115k), Alice (120k) qualify; Dan at exactly 100k does not",
+      "expected_row_count": 3,
+      "expected_columns": ["name", "salary"],
+      "expected_rows": [
+        { "name": "Carol", "salary": 140000 },
+        { "name": "Fay",   "salary": 115000 },
+        { "name": "Alice", "salary": 120000 }
+      ],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use > for strictly greater than; use >= for greater than or equal to.",
+    "Dan's salary is exactly 100000, so > 100000 excludes him."
+  ],
+  "explanation": "`WHERE salary > 100000` returns Alice (120k), Carol (140k), and Fay (115k). Dan's salary of exactly 100000 does not satisfy the strict `>` condition.",
+  "companies": ["Meta", "Google"],
+  "created_at": "2026-09-20"
+}

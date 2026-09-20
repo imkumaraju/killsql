@@ -1,0 +1,26 @@
+{
+  "id": "080",
+  "slug": "moving-3-month-average-revenue",
+  "title": "3-Month Moving Average Revenue",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "AVG", "CTE", "date functions"],
+  "description": "Compute the **3-month moving average** of total monthly order revenue (current month and the 2 preceding months). Round to 2 decimal places.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `order_year`, `order_month`, `revenue`, `moving_avg_3m`. The first two months will have NULL for months before the window is full. Order by `order_year`, `order_month`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',200.00),(2,2,DATE '2026-01-15','completed',100.00),(3,3,DATE '2026-02-10','completed',300.00),(4,4,DATE '2026-02-20','completed',100.00),(5,5,DATE '2026-03-08','completed',500.00),(6,1,DATE '2026-03-25','completed',100.00),(7,2,DATE '2026-04-12','completed',400.00);",
+  "solution_sql": "WITH monthly AS (SELECT EXTRACT(YEAR FROM order_date) AS order_year, EXTRACT(MONTH FROM order_date) AS order_month, SUM(total_amount) AS revenue FROM orders GROUP BY order_year, order_month) SELECT order_year, order_month, revenue, ROUND(AVG(revenue) OVER (ORDER BY order_year, order_month ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 2) AS moving_avg_3m FROM monthly ORDER BY order_year, order_month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan avg=300, Feb avg=350, Mar avg=450, Apr avg=466.67",
+      "expected_row_count": 4,
+      "expected_columns": ["order_year", "order_month", "revenue", "moving_avg_3m"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "ROWS BETWEEN 2 PRECEDING AND CURRENT ROW includes the current row plus the 2 before it.",
+    "When fewer than 3 rows exist in the window (at the start), AVG computes over the available rows."
+  ],
+  "explanation": "Monthly totals: Jan 300, Feb 400, Mar 600, Apr 400. Moving avg (3m): Jan = 300/1 = 300, Feb = (300+400)/2 = 350, Mar = (300+400+600)/3 = 433.33, Apr = (400+600+400)/3 = 466.67.",
+  "companies": ["Stripe", "Databricks"],
+  "created_at": "2026-09-20"
+}

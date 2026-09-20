@@ -1,0 +1,31 @@
+{
+  "id": "067",
+  "slug": "extract-email-domain",
+  "title": "Extract Email Domain",
+  "difficulty": "medium",
+  "tags": ["SELECT", "string functions", "GROUP BY", "COUNT"],
+  "description": "Extract the **domain** (the part after `@`) from each customer's email, then count how many customers use each domain.\n\n**Table: customers**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |\n| city | VARCHAR |\n| country | VARCHAR |\n\nOutput columns: `domain`, `customer_count`. Order by `customer_count` descending, then `domain`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR); INSERT INTO customers VALUES (1,'Alice','alice@gmail.com','New York','USA'),(2,'Bob','bob@yahoo.com','London','UK'),(3,'Carol','carol@gmail.com','Chicago','USA'),(4,'Dan','dan@outlook.com','Mumbai','India'),(5,'Eve','eve@gmail.com','Paris','France'),(6,'Fay','fay@yahoo.com','Berlin','Germany');",
+  "solution_sql": "SELECT SPLIT_PART(email, '@', 2) AS domain, COUNT(*) AS customer_count FROM customers GROUP BY domain ORDER BY customer_count DESC, domain",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "gmail.com: 3, yahoo.com: 2, outlook.com: 1",
+      "expected_row_count": 3,
+      "expected_columns": ["domain", "customer_count"],
+      "expected_rows": [
+        { "domain": "gmail.com",   "customer_count": 3 },
+        { "domain": "yahoo.com",   "customer_count": 2 },
+        { "domain": "outlook.com", "customer_count": 1 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "SPLIT_PART(string, delimiter, part_number) splits a string and returns the nth part.",
+    "SPLIT_PART(email, '@', 2) returns everything after the @ sign."
+  ],
+  "explanation": "`SPLIT_PART(email, '@', 2)` splits on `@` and returns the second segment — the domain. Grouping by domain and counting gives the distribution of email providers.",
+  "companies": ["LinkedIn", "Stripe"],
+  "created_at": "2026-09-20"
+}

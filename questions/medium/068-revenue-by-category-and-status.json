@@ -1,0 +1,26 @@
+{
+  "id": "068",
+  "slug": "revenue-by-category-and-status",
+  "title": "Revenue by Category and Order Status",
+  "difficulty": "medium",
+  "tags": ["SELECT", "conditional aggregation", "CASE", "GROUP BY"],
+  "description": "For each product category, show total revenue from **completed** orders and total revenue from **pending** orders side by side, in a single row.\n\n**Table: products** — `id`, `name`, `category`, `price`, `stock_quantity`\n\n**Table: order_items** — `id`, `order_id`, `product_id`, `quantity`, `unit_price`\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `category`, `completed_revenue`, `pending_revenue`. Order by `category`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL, stock_quantity INT); INSERT INTO products VALUES (1,'Laptop','Electronics',999.99,10),(2,'Desk','Furniture',299.99,5); CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-10','completed',999.99),(2,2,DATE '2026-01-12','pending',999.99),(3,3,DATE '2026-01-15','completed',299.99),(4,4,DATE '2026-01-18','pending',299.99); CREATE TABLE order_items (id INT, order_id INT, product_id INT, quantity INT, unit_price DECIMAL); INSERT INTO order_items VALUES (1,1,1,1,999.99),(2,2,1,1,999.99),(3,3,2,1,299.99),(4,4,2,1,299.99);",
+  "solution_sql": "SELECT p.category, SUM(CASE WHEN o.status = 'completed' THEN oi.quantity * oi.unit_price ELSE 0 END) AS completed_revenue, SUM(CASE WHEN o.status = 'pending' THEN oi.quantity * oi.unit_price ELSE 0 END) AS pending_revenue FROM order_items oi JOIN orders o ON oi.order_id = o.id JOIN products p ON oi.product_id = p.id GROUP BY p.category ORDER BY p.category",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Each category has 999.99 or 299.99 split between completed and pending",
+      "expected_row_count": 2,
+      "expected_columns": ["category", "completed_revenue", "pending_revenue"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "SUM(CASE WHEN status = 'completed' THEN amount ELSE 0 END) sums only completed revenue.",
+    "Use 0 in the ELSE so non-matching rows contribute 0 instead of being excluded."
+  ],
+  "explanation": "Conditional aggregation with SUM+CASE pivots status into columns. Using ELSE 0 means every row contributes (either the amount or 0), keeping the row in the sum. Using ELSE NULL would also work since SUM ignores NULLs.",
+  "companies": ["Shopify", "Stripe"],
+  "created_at": "2026-09-20"
+}

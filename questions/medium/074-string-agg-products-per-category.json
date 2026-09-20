@@ -1,0 +1,30 @@
+{
+  "id": "074",
+  "slug": "string-agg-products-per-category",
+  "title": "Products per Category as Comma-Separated List",
+  "difficulty": "medium",
+  "tags": ["SELECT", "string functions", "GROUP BY"],
+  "description": "For each product category, list all product names as a single **comma-separated string**, aliased as `product_list`.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| category | VARCHAR |\n| price | DECIMAL |\n| stock_quantity | INT |\n\nOutput columns: `category`, `product_list`. Order by `category`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL, stock_quantity INT); INSERT INTO products VALUES (1,'Laptop','Electronics',999.99,10),(2,'Phone','Electronics',699.99,25),(3,'Monitor','Electronics',349.99,15),(4,'Desk','Furniture',299.99,5),(5,'Chair','Furniture',149.99,8);",
+  "solution_sql": "SELECT category, STRING_AGG(name, ', ' ORDER BY name) AS product_list FROM products GROUP BY category ORDER BY category",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Electronics: Laptop, Monitor, Phone; Furniture: Chair, Desk",
+      "expected_row_count": 2,
+      "expected_columns": ["category", "product_list"],
+      "expected_rows": [
+        { "category": "Electronics", "product_list": "Laptop, Monitor, Phone" },
+        { "category": "Furniture",   "product_list": "Chair, Desk" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "STRING_AGG(column, separator) concatenates values within a group.",
+    "Add ORDER BY inside STRING_AGG to get a deterministic order."
+  ],
+  "explanation": "STRING_AGG concatenates column values within each GROUP BY group. The `ORDER BY name` inside STRING_AGG sorts the names alphabetically within each category before joining them.",
+  "companies": ["LinkedIn", "Meta"],
+  "created_at": "2026-09-20"
+}

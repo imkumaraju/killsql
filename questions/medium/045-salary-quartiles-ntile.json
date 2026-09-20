@@ -1,0 +1,26 @@
+{
+  "id": "045",
+  "slug": "salary-quartiles-ntile",
+  "title": "Salary Quartiles",
+  "difficulty": "medium",
+  "tags": ["SELECT", "NTILE", "window functions"],
+  "description": "Divide all employees into **4 salary quartiles** (1 = lowest, 4 = highest) using NTILE. Return each employee's name, salary, and quartile.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nOutput columns: `name`, `salary`, `quartile`. Order by `salary`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice',120000),(2,'Bob',55000),(3,'Carol',140000),(4,'Dan',70000),(5,'Eve',90000),(6,'Fay',60000),(7,'Gus',110000),(8,'Hana',80000);",
+  "solution_sql": "SELECT name, salary, NTILE(4) OVER (ORDER BY salary) AS quartile FROM employees ORDER BY salary",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 employees split into 4 quartiles of 2 each",
+      "expected_row_count": 8,
+      "expected_columns": ["name", "salary", "quartile"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "NTILE(4) OVER (ORDER BY salary) splits the ordered rows into 4 roughly equal buckets.",
+    "With 8 rows and 4 buckets, each bucket has exactly 2 rows."
+  ],
+  "explanation": "NTILE(4) numbers rows after ordering, assigning each to one of 4 equally sized groups. With 8 employees: Bob (55k) and Fay (60k) → quartile 1; Dan (70k) and Hana (80k) → quartile 2; Eve (90k) and Gus (110k) → quartile 3; Alice (120k) and Carol (140k) → quartile 4.",
+  "companies": ["LinkedIn", "Databricks"],
+  "created_at": "2026-09-20"
+}

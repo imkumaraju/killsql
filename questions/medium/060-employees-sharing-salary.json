@@ -1,0 +1,26 @@
+{
+  "id": "060",
+  "slug": "employees-sharing-salary",
+  "title": "Employees Sharing the Same Salary",
+  "difficulty": "medium",
+  "tags": ["SELECT", "self join", "GROUP BY", "HAVING"],
+  "description": "Find all pairs of employees who earn **exactly the same salary** (each distinct pair listed once, with the lower id first).\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nOutput columns: `employee_1`, `employee_2`, `salary`. Order by `salary`, `employee_1`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice',120000),(2,'Bob',80000),(3,'Carol',120000),(4,'Dan',80000),(5,'Eve',90000),(6,'Fay',120000);",
+  "solution_sql": "SELECT a.name AS employee_1, b.name AS employee_2, a.salary FROM employees a JOIN employees b ON a.salary = b.salary AND a.id < b.id ORDER BY a.salary, a.name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice-Carol, Alice-Fay, Carol-Fay at 120k; Bob-Dan at 80k",
+      "expected_row_count": 4,
+      "expected_columns": ["employee_1", "employee_2", "salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Self join with a.salary = b.salary and a.id < b.id avoids duplicates and self-pairing.",
+    "a.id < b.id ensures each pair appears only once."
+  ],
+  "explanation": "Joining employees to themselves on equal salary produces all combinations. The condition `a.id < b.id` prevents (Alice, Alice) and duplicate pairs like (Carol, Alice) and (Alice, Carol). At 120k: (Alice, Carol), (Alice, Fay), (Carol, Fay). At 80k: (Bob, Dan).",
+  "companies": ["Google", "Microsoft"],
+  "created_at": "2026-09-20"
+}

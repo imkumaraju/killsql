@@ -1,0 +1,29 @@
+{
+  "id": "013",
+  "slug": "cheapest-product",
+  "title": "Cheapest Product",
+  "difficulty": "easy",
+  "tags": ["SELECT", "MIN", "aggregate"],
+  "description": "Find the **cheapest product** and return its name and price.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| category | VARCHAR |\n| price | DECIMAL |\n| stock_quantity | INT |\n\nOutput columns: `name`, `price`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL, stock_quantity INT); INSERT INTO products VALUES (1, 'Laptop', 'Electronics', 999.99, 10), (2, 'Phone', 'Electronics', 699.99, 25), (3, 'Desk', 'Furniture', 299.99, 5), (4, 'Chair', 'Furniture', 149.99, 8), (5, 'Monitor', 'Electronics', 349.99, 15);",
+  "solution_sql": "SELECT name, price FROM products WHERE price = (SELECT MIN(price) FROM products)",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Chair is the cheapest at 149.99",
+      "expected_row_count": 1,
+      "expected_columns": ["name", "price"],
+      "expected_rows": [
+        { "name": "Chair", "price": 149.99 }
+      ],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "MIN() returns the smallest value in a column.",
+    "Use a subquery: WHERE price = (SELECT MIN(price) FROM products)."
+  ],
+  "explanation": "`MIN(price)` returns 149.99. The subquery in WHERE finds the row(s) matching that minimum price — the Chair.",
+  "companies": ["Amazon", "Stripe"],
+  "created_at": "2026-09-20"
+}

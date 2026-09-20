@@ -1,0 +1,31 @@
+{
+  "id": "098",
+  "slug": "frequently-bought-together",
+  "title": "Frequently Bought Together (Market Basket)",
+  "difficulty": "hard",
+  "tags": ["SELECT", "self join", "COUNT", "GROUP BY", "INNER JOIN"],
+  "description": "Find all **pairs of products** that were ordered together in the same order at least 2 times. Show the two product names and their co-occurrence count, with the lower product id first.\n\n**Table: order_items** — `id`, `order_id`, `product_id`, `quantity`, `unit_price`\n\n**Table: products** — `id`, `name`, `category`, `price`, `stock_quantity`\n\nOutput columns: `product_1`, `product_2`, `times_bought_together`. Order by `times_bought_together` descending.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL, stock_quantity INT); INSERT INTO products VALUES (1,'Laptop','Electronics',999.99,10),(2,'Mouse','Electronics',39.99,80),(3,'Keyboard','Electronics',79.99,50),(4,'Desk','Furniture',299.99,5),(5,'Monitor','Electronics',349.99,15); CREATE TABLE order_items (id INT, order_id INT, product_id INT, quantity INT, unit_price DECIMAL); INSERT INTO order_items VALUES (1,1,1,1,999.99),(2,1,2,1,39.99),(3,1,3,1,79.99),(4,2,1,1,999.99),(5,2,2,1,39.99),(6,3,1,1,999.99),(7,3,3,1,79.99),(8,4,2,1,39.99),(9,4,3,1,79.99),(10,5,4,1,299.99),(11,5,5,1,349.99);",
+  "solution_sql": "SELECT p1.name AS product_1, p2.name AS product_2, COUNT(*) AS times_bought_together FROM order_items a JOIN order_items b ON a.order_id = b.order_id AND a.product_id < b.product_id JOIN products p1 ON a.product_id = p1.id JOIN products p2 ON b.product_id = p2.id GROUP BY p1.name, p2.name HAVING COUNT(*) >= 2 ORDER BY times_bought_together DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Laptop+Mouse: 2 times, Laptop+Keyboard: 2 times, Mouse+Keyboard: 2 times",
+      "expected_row_count": 3,
+      "expected_columns": ["product_1", "product_2", "times_bought_together"],
+      "expected_rows": [
+        { "product_1": "Laptop", "product_2": "Mouse", "times_bought_together": 2 },
+        { "product_1": "Laptop", "product_2": "Keyboard", "times_bought_together": 2 },
+        { "product_1": "Mouse", "product_2": "Keyboard", "times_bought_together": 2 }
+      ],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Self join order_items on same order_id with a.product_id < b.product_id to get unique pairs.",
+    "COUNT per pair and HAVING >= 2 filters to frequently co-purchased pairs."
+  ],
+  "explanation": "The self join on same order_id creates all pairs in each order. product_id < product_id ensures each pair appears once. Laptop+Mouse co-occur in orders 1 and 2 (count 2). Laptop+Keyboard in orders 1 and 3. Mouse+Keyboard in orders 1 and 4. Desk+Monitor only in order 5 (count 1), excluded by HAVING.",
+  "companies": ["Amazon", "Shopify", "Instacart"],
+  "created_at": "2026-09-20"
+}

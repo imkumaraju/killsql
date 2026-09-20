@@ -1,0 +1,31 @@
+{
+  "id": "046",
+  "slug": "month-over-month-revenue",
+  "title": "Month-over-Month Revenue Change",
+  "difficulty": "medium",
+  "tags": ["SELECT", "LAG", "window functions", "date functions", "CTE"],
+  "description": "Compute the **month-over-month revenue change** for a sales table. For each month return the total revenue and the difference from the previous month (`revenue_change`). The first month should show NULL for `revenue_change`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| status | VARCHAR |\n| total_amount | DECIMAL |\n\nOutput columns: `order_year`, `order_month`, `revenue`, `revenue_change`. Order by `order_year`, `order_month`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,2,DATE '2026-01-15','completed',200.00),(3,3,DATE '2026-02-07','completed',150.00),(4,4,DATE '2026-02-20','completed',250.00),(5,5,DATE '2026-03-10','completed',500.00),(6,1,DATE '2026-03-25','completed',100.00);",
+  "solution_sql": "WITH monthly AS (SELECT EXTRACT(YEAR FROM order_date) AS order_year, EXTRACT(MONTH FROM order_date) AS order_month, SUM(total_amount) AS revenue FROM orders GROUP BY order_year, order_month) SELECT order_year, order_month, revenue, revenue - LAG(revenue) OVER (ORDER BY order_year, order_month) AS revenue_change FROM monthly ORDER BY order_year, order_month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan 300, Feb 400 (+100), Mar 600 (+200)",
+      "expected_row_count": 3,
+      "expected_columns": ["order_year", "order_month", "revenue", "revenue_change"],
+      "expected_rows": [
+        { "order_year": 2026, "order_month": 1, "revenue": 300.00, "revenue_change": null },
+        { "order_year": 2026, "order_month": 2, "revenue": 400.00, "revenue_change": 100.00 },
+        { "order_year": 2026, "order_month": 3, "revenue": 600.00, "revenue_change": 200.00 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "First GROUP BY year+month to get monthly totals.",
+    "LAG(revenue) OVER (ORDER BY year, month) returns the previous month's revenue."
+  ],
+  "explanation": "The CTE aggregates monthly revenue. `LAG(revenue)` in the outer query pulls the prior row's revenue. Subtracting gives the absolute change. January has no prior month so LAG returns NULL.",
+  "companies": ["Stripe", "Shopify"],
+  "created_at": "2026-09-20"
+}

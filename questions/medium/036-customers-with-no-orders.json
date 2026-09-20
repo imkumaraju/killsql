@@ -1,0 +1,30 @@
+{
+  "id": "036",
+  "slug": "customers-with-no-orders",
+  "title": "Customers with No Orders",
+  "difficulty": "medium",
+  "tags": ["SELECT", "EXISTS", "subquery"],
+  "description": "Return customers who have **never placed an order**, using NOT EXISTS.\n\n**Table: customers**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |\n| city | VARCHAR |\n| country | VARCHAR |\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| status | VARCHAR |\n| total_amount | DECIMAL |\n\nOutput columns: `id`, `name`. Order by `name`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR); INSERT INTO customers VALUES (1,'Alice','alice@example.com','New York','USA'),(2,'Bob','bob@example.com','London','UK'),(3,'Carol','carol@example.com','Chicago','USA'),(4,'Dan','dan@example.com','Mumbai','India'); CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,3,DATE '2026-03-15','pending',50.00);",
+  "solution_sql": "SELECT id, name FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id) ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Bob and Dan have no orders",
+      "expected_row_count": 2,
+      "expected_columns": ["id", "name"],
+      "expected_rows": [
+        { "id": 2, "name": "Bob" },
+        { "id": 4, "name": "Dan" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "NOT EXISTS is the logical inverse of EXISTS — it is TRUE when the subquery returns no rows.",
+    "This is often more readable than a LEFT JOIN ... IS NULL approach."
+  ],
+  "explanation": "`NOT EXISTS (...)` is TRUE when no matching orders row exists for that customer. Bob and Dan have no orders rows, so they are returned.",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-20"
+}

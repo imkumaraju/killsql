@@ -1,0 +1,26 @@
+{
+  "id": "048",
+  "slug": "full-outer-join-employees-departments",
+  "title": "All Employees and Departments (Full Outer Join)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "FULL OUTER JOIN"],
+  "description": "Use a FULL OUTER JOIN to show **every employee and every department**, even those without a match on the other side. Display NULL where there is no match.\n\n**Table: employees** — `id`, `name`, `salary`, `department_id`\n\n**Table: departments** — `id`, `name`\n\nOutput columns: `employee_name`, `department_name`. Order by `employee_name` NULLS LAST, then `department_name` NULLS LAST.",
+  "schema_sql": "CREATE TABLE departments (id INT, name VARCHAR); INSERT INTO departments VALUES (1,'Engineering'),(2,'Sales'),(3,'HR'); CREATE TABLE employees (id INT, name VARCHAR, salary INT, department_id INT); INSERT INTO employees VALUES (1,'Alice',120000,1),(2,'Bob',80000,2),(3,'Carol',140000,NULL);",
+  "solution_sql": "SELECT e.name AS employee_name, d.name AS department_name FROM employees e FULL OUTER JOIN departments d ON e.department_id = d.id ORDER BY employee_name NULLS LAST, department_name NULLS LAST",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice+Engineering, Bob+Sales, Carol+NULL, NULL+HR",
+      "expected_row_count": 4,
+      "expected_columns": ["employee_name", "department_name"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "FULL OUTER JOIN returns all rows from both tables.",
+    "Where there is no match, the columns from the non-matching table are NULL."
+  ],
+  "explanation": "Alice matches Engineering, Bob matches Sales. Carol has no department_id → department_name is NULL. HR (id 3) has no employees → employee_name is NULL. FULL OUTER JOIN returns all 4 combinations.",
+  "companies": ["Microsoft", "Google"],
+  "created_at": "2026-09-20"
+}

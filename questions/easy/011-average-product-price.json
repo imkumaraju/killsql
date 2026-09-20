@@ -1,0 +1,29 @@
+{
+  "id": "011",
+  "slug": "average-product-price",
+  "title": "Average Product Price",
+  "difficulty": "easy",
+  "tags": ["SELECT", "AVG", "aggregate"],
+  "description": "Calculate the **average price** of all products in the catalog. Return the result rounded to 2 decimal places, aliased as `avg_price`.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| category | VARCHAR |\n| price | DECIMAL |\n| stock_quantity | INT |\n\nOutput column: `avg_price`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL, stock_quantity INT); INSERT INTO products VALUES (1, 'Laptop', 'Electronics', 999.99, 10), (2, 'Phone', 'Electronics', 699.99, 25), (3, 'Desk', 'Furniture', 299.99, 5), (4, 'Chair', 'Furniture', 149.99, 8), (5, 'Monitor', 'Electronics', 349.99, 15);",
+  "solution_sql": "SELECT ROUND(AVG(price), 2) AS avg_price FROM products",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Average of 5 prices = 499.99",
+      "expected_row_count": 1,
+      "expected_columns": ["avg_price"],
+      "expected_rows": [
+        { "avg_price": 499.99 }
+      ],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "AVG() computes the arithmetic mean of a numeric column.",
+    "ROUND(value, 2) rounds to 2 decimal places."
+  ],
+  "explanation": "(999.99 + 699.99 + 299.99 + 149.99 + 349.99) / 5 = 2499.95 / 5 = 499.99. `AVG(price)` computes this automatically.",
+  "companies": ["Shopify", "Amazon"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,33 @@
+{
+  "id": "007",
+  "slug": "top-5-earners",
+  "title": "Top 5 Highest-Paid Employees",
+  "difficulty": "easy",
+  "tags": ["SELECT", "ORDER BY", "LIMIT"],
+  "description": "Return the names and salaries of the **5 highest-paid employees**, ordered from highest to lowest salary.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nOutput columns: `name`, `salary`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1, 'Alice', 120000), (2, 'Bob', 80000), (3, 'Carol', 140000), (4, 'Dan', 70000), (5, 'Eve', 90000), (6, 'Fay', 60000), (7, 'Gus', 110000), (8, 'Hana', 95000);",
+  "solution_sql": "SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 5",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Top 5 salaries in descending order",
+      "expected_row_count": 5,
+      "expected_columns": ["name", "salary"],
+      "expected_rows": [
+        { "name": "Carol", "salary": 140000 },
+        { "name": "Alice", "salary": 120000 },
+        { "name": "Gus", "salary": 110000 },
+        { "name": "Hana", "salary": 95000 },
+        { "name": "Eve", "salary": 90000 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Sort by salary in descending order first.",
+    "LIMIT restricts the number of rows returned."
+  ],
+  "explanation": "`ORDER BY salary DESC` puts the highest earner first. `LIMIT 5` then keeps only the first 5 rows, giving the top earners.",
+  "companies": ["Google", "Meta"],
+  "created_at": "2026-09-20"
+}

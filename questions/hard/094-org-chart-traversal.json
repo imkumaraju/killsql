@@ -1,0 +1,35 @@
+{
+  "id": "094",
+  "slug": "org-chart-traversal",
+  "title": "Org Chart: All Direct and Indirect Reports",
+  "difficulty": "hard",
+  "tags": ["SELECT", "recursive CTE"],
+  "description": "Given a management hierarchy stored in `employees`, find **all employees who directly or indirectly report to employee id 1 (Ada)** — i.e., the full subtree under Ada. Include Ada herself.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| manager_id | INT |\n\nOutput columns: `id`, `name`, `level` (0 = Ada herself, 1 = direct reports, 2 = their reports, …). Order by `level`, `name`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, manager_id INT); INSERT INTO employees VALUES (1,'Ada',200000,NULL),(2,'Ben',150000,1),(3,'Cara',90000,2),(4,'Drew',80000,2),(5,'Eve',120000,1),(6,'Fay',70000,5),(7,'Gil',65000,3);",
+  "solution_sql": "WITH RECURSIVE org AS (SELECT id, name, 0 AS level FROM employees WHERE id = 1 UNION ALL SELECT e.id, e.name, o.level + 1 FROM employees e JOIN org o ON e.manager_id = o.id) SELECT id, name, level FROM org ORDER BY level, name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Ada (level 0), Ben+Eve (level 1), Cara+Drew+Fay (level 2), Gil (level 3)",
+      "expected_row_count": 7,
+      "expected_columns": ["id", "name", "level"],
+      "expected_rows": [
+        { "id": 1, "name": "Ada", "level": 0 },
+        { "id": 2, "name": "Ben", "level": 1 },
+        { "id": 5, "name": "Eve", "level": 1 },
+        { "id": 3, "name": "Cara", "level": 2 },
+        { "id": 4, "name": "Drew", "level": 2 },
+        { "id": 6, "name": "Fay", "level": 2 },
+        { "id": 7, "name": "Gil", "level": 3 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "A recursive CTE has an anchor (base case) and a recursive part joined by UNION ALL.",
+    "Anchor: SELECT the root node. Recursive part: JOIN employees to the CTE on manager_id = cte.id."
+  ],
+  "explanation": "The anchor selects Ada (level 0). Each recursive iteration joins employees whose manager_id matches a node already in the result, adding level+1. Ada→Ben,Eve (level 1)→Cara,Drew,Fay (level 2)→Gil (level 3). Recursion stops when no new rows are added.",
+  "companies": ["Meta", "LinkedIn", "Microsoft"],
+  "created_at": "2026-09-20"
+}

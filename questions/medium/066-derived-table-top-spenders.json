@@ -1,0 +1,30 @@
+{
+  "id": "066",
+  "slug": "derived-table-top-spenders",
+  "title": "Top-Spending Customers (Derived Table)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "subquery", "GROUP BY", "SUM"],
+  "description": "Use a **subquery in the FROM clause** (derived table) to first calculate each customer's total spend, then return customers who have spent more than 200.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\n**Table: customers** — `id`, `name`, `email`, `city`, `country`\n\nOutput columns: `name`, `total_spend`. Order by `total_spend` descending.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR); INSERT INTO customers VALUES (1,'Alice','alice@example.com','New York','USA'),(2,'Bob','bob@example.com','London','UK'),(3,'Carol','carol@example.com','Chicago','USA'),(4,'Dan','dan@example.com','Mumbai','India'); CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,1,DATE '2026-02-10','completed',150.00),(3,2,DATE '2026-01-06','completed',80.00),(4,3,DATE '2026-01-07','completed',300.00),(5,4,DATE '2026-01-08','completed',50.00);",
+  "solution_sql": "SELECT c.name, t.total_spend FROM (SELECT customer_id, SUM(total_amount) AS total_spend FROM orders GROUP BY customer_id) t JOIN customers c ON t.customer_id = c.id WHERE t.total_spend > 200 ORDER BY total_spend DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice (250) and Carol (300) exceeded 200",
+      "expected_row_count": 2,
+      "expected_columns": ["name", "total_spend"],
+      "expected_rows": [
+        { "name": "Carol", "total_spend": 300.00 },
+        { "name": "Alice", "total_spend": 250.00 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "A subquery in FROM acts like a temporary table: FROM (SELECT ...) alias.",
+    "You can then JOIN and WHERE filter against it like any regular table."
+  ],
+  "explanation": "The inner query sums orders per customer. The outer query joins this derived table to customers and filters by total_spend > 200. Alice spent 100+150=250; Carol spent 300. Bob (80) and Dan (50) are excluded.",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-20"
+}

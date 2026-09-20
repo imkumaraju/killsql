@@ -1,0 +1,31 @@
+{
+  "id": "020",
+  "slug": "customers-from-specific-cities",
+  "title": "Customers from Specific Cities",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "IN"],
+  "description": "Return customers who live in **New York, London, or Mumbai**.\n\n**Table: customers**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |\n| city | VARCHAR |\n| country | VARCHAR |\n\nOutput columns: `name`, `city`. Order by `name`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR); INSERT INTO customers VALUES (1, 'Alice', 'alice@example.com', 'New York', 'USA'), (2, 'Bob', 'bob@example.com', 'London', 'UK'), (3, 'Carol', 'carol@example.com', 'Chicago', 'USA'), (4, 'Dan', 'dan@example.com', 'Mumbai', 'India'), (5, 'Eve', 'eve@example.com', 'Paris', 'France');",
+  "solution_sql": "SELECT name, city FROM customers WHERE city IN ('New York', 'London', 'Mumbai') ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice, Bob, and Dan match",
+      "expected_row_count": 3,
+      "expected_columns": ["name", "city"],
+      "expected_rows": [
+        { "name": "Alice", "city": "New York" },
+        { "name": "Bob",   "city": "London"   },
+        { "name": "Dan",   "city": "Mumbai"   }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "IN (...) checks whether a value matches any item in the list.",
+    "It is shorthand for: city = 'New York' OR city = 'London' OR city = 'Mumbai'."
+  ],
+  "explanation": "`WHERE city IN ('New York', 'London', 'Mumbai')` is cleaner than three OR conditions. Carol (Chicago) and Eve (Paris) are excluded.",
+  "companies": ["Airbnb", "Booking.com"],
+  "created_at": "2026-09-20"
+}

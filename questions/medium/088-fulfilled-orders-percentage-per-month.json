@@ -1,0 +1,31 @@
+{
+  "id": "088",
+  "slug": "fulfilled-orders-percentage-per-month",
+  "title": "Fulfilled Orders Percentage per Month",
+  "difficulty": "medium",
+  "tags": ["SELECT", "conditional aggregation", "date functions", "GROUP BY"],
+  "description": "For each month, return the **percentage of orders that were fulfilled** (status = 'completed'). If total orders is 0, return 0. Round to 1 decimal.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `order_month`, `fulfilled_pct`. Order by `order_month`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-10','completed',100.00),(2,2,DATE '2026-01-20','pending',80.00),(3,3,DATE '2026-01-25','cancelled',50.00),(4,4,DATE '2026-02-05','completed',200.00),(5,5,DATE '2026-02-15','completed',150.00),(6,1,DATE '2026-03-10','pending',90.00);",
+  "solution_sql": "SELECT EXTRACT(MONTH FROM order_date) AS order_month, ROUND(100.0 * COUNT(CASE WHEN status = 'completed' THEN 1 END) / NULLIF(COUNT(*), 0), 1) AS fulfilled_pct FROM orders GROUP BY order_month ORDER BY order_month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan 33.3%, Feb 100%, Mar 0%",
+      "expected_row_count": 3,
+      "expected_columns": ["order_month", "fulfilled_pct"],
+      "expected_rows": [
+        { "order_month": 1, "fulfilled_pct": 33.3  },
+        { "order_month": 2, "fulfilled_pct": 100.0 },
+        { "order_month": 3, "fulfilled_pct": 0.0   }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "COUNT(CASE WHEN status='completed' THEN 1 END) / COUNT(*) gives the fraction.",
+    "Wrap the denominator in NULLIF(..., 0) for safety against zero-row groups."
+  ],
+  "explanation": "January: 1 of 3 completed = 33.3%. February: 2 of 2 = 100%. March: 0 of 1 completed = 0%. NULLIF protects against potential division by zero.",
+  "companies": ["Shopify", "Stripe"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "055",
+  "slug": "first-purchase-per-customer",
+  "title": "First Purchase Amount per Customer",
+  "difficulty": "medium",
+  "tags": ["SELECT", "FIRST_VALUE", "window functions"],
+  "description": "For each order, show the customer id, order date, order total, and the **amount of that customer's very first order** (earliest order_date) using FIRST_VALUE.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `customer_id`, `order_date`, `total_amount`, `first_order_amount`. Order by `customer_id`, `order_date`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,1,DATE '2026-02-10','completed',200.00),(3,1,DATE '2026-03-15','completed',150.00),(4,2,DATE '2026-01-20','completed',300.00),(5,2,DATE '2026-04-05','completed',250.00);",
+  "solution_sql": "SELECT customer_id, order_date, total_amount, FIRST_VALUE(total_amount) OVER (PARTITION BY customer_id ORDER BY order_date ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS first_order_amount FROM orders ORDER BY customer_id, order_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Customer 1 always shows 100 as first_order_amount; customer 2 always shows 300",
+      "expected_row_count": 5,
+      "expected_columns": ["customer_id", "order_date", "total_amount", "first_order_amount"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "FIRST_VALUE(col) OVER (PARTITION BY customer ORDER BY date) returns the value from the first row in each partition.",
+    "It repeats on every row within that partition."
+  ],
+  "explanation": "FIRST_VALUE returns the first value in the window frame. Partitioned by customer and ordered by date, it picks the earliest order's amount and repeats it on every row for that customer. Customer 1's first order was 100; customer 2's was 300.",
+  "companies": ["Amazon", "Uber"],
+  "created_at": "2026-09-20"
+}

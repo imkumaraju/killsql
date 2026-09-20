@@ -1,0 +1,25 @@
+# Local Postgres with KillSQL tables. auth.uid() is stubbed in docker/init.sql —
+# GitHub OAuth and RLS need a real Supabase project (or `npx supabase start`).
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: killsql-db
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - killsql-pg:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/000_auth_stub.sql:ro
+      - ./supabase/migrations/001_initial.sql:/docker-entrypoint-initdb.d/001_initial.sql:ro
+      - ./supabase/migrations/002_streaks.sql:/docker-entrypoint-initdb.d/002_streaks.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  killsql-pg:

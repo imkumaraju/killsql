@@ -1,0 +1,32 @@
+{
+  "id": "081",
+  "slug": "account-running-balance",
+  "title": "Account Running Balance",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "SUM", "running total", "CASE"],
+  "description": "Compute the **running balance** of an account by summing credits and debits in transaction order. Credits add to the balance; debits subtract.\n\n**Table: transactions**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| account_id | INT |\n| amount | DECIMAL |\n| type | VARCHAR |\n| txn_date | DATE |\n\nOutput columns: `txn_date`, `type`, `amount`, `running_balance`. Filter to `account_id = 1`. Order by `txn_date`, `id`.",
+  "schema_sql": "CREATE TABLE transactions (id INT, account_id INT, amount DECIMAL, type VARCHAR, txn_date DATE); INSERT INTO transactions VALUES (1,1,1000.00,'credit',DATE '2026-01-01'),(2,1,200.00,'debit',DATE '2026-01-05'),(3,1,500.00,'credit',DATE '2026-01-10'),(4,1,150.00,'debit',DATE '2026-01-15'),(5,2,300.00,'credit',DATE '2026-01-03');",
+  "solution_sql": "SELECT txn_date, type, amount, SUM(CASE WHEN type = 'credit' THEN amount ELSE -amount END) OVER (ORDER BY txn_date, id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_balance FROM transactions WHERE account_id = 1 ORDER BY txn_date, id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Balance: 1000, 800, 1300, 1150",
+      "expected_row_count": 4,
+      "expected_columns": ["txn_date", "type", "amount", "running_balance"],
+      "expected_rows": [
+        { "txn_date": "2026-01-01", "type": "credit", "amount": 1000.00, "running_balance": 1000.00 },
+        { "txn_date": "2026-01-05", "type": "debit",  "amount": 200.00,  "running_balance": 800.00  },
+        { "txn_date": "2026-01-10", "type": "credit", "amount": 500.00,  "running_balance": 1300.00 },
+        { "txn_date": "2026-01-15", "type": "debit",  "amount": 150.00,  "running_balance": 1150.00 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use CASE inside SUM to add credits and subtract debits: SUM(CASE WHEN type='credit' THEN amount ELSE -amount END).",
+    "OVER (ORDER BY date, id ROWS UNBOUNDED PRECEDING TO CURRENT ROW) gives the running sum."
+  ],
+  "explanation": "CASE converts debit amounts to negative before SUM. The window function accumulates this signed amount in transaction order. Balance after each: +1000 = 1000, -200 = 800, +500 = 1300, -150 = 1150.",
+  "companies": ["Stripe", "Revolut"],
+  "created_at": "2026-09-20"
+}

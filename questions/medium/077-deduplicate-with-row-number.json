@@ -1,0 +1,31 @@
+{
+  "id": "077",
+  "slug": "deduplicate-with-row-number",
+  "title": "Deduplicate Rows with ROW_NUMBER",
+  "difficulty": "medium",
+  "tags": ["SELECT", "ROW_NUMBER", "window functions", "CTE", "duplicate detection"],
+  "description": "The `customers` table has duplicate rows for some customers (same `email`, different `id`). Keep only the **row with the lowest id** per email, removing all duplicates.\n\n**Table: customers** — `id`, `name`, `email`, `city`, `country`\n\nOutput columns: `id`, `name`, `email`. Order by `id`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR); INSERT INTO customers VALUES (1,'Alice','alice@example.com','New York','USA'),(2,'Bob','bob@example.com','London','UK'),(3,'Alice Dup','alice@example.com','Chicago','USA'),(4,'Carol','carol@example.com','Paris','France'),(5,'Bob Dup','bob@example.com','Berlin','Germany');",
+  "solution_sql": "WITH ranked AS (SELECT id, name, email, ROW_NUMBER() OVER (PARTITION BY email ORDER BY id) AS rn FROM customers) SELECT id, name, email FROM ranked WHERE rn = 1 ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Keep ids 1 (Alice), 2 (Bob), 4 (Carol); discard ids 3 and 5",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "name", "email"],
+      "expected_rows": [
+        { "id": 1, "name": "Alice", "email": "alice@example.com" },
+        { "id": 2, "name": "Bob",   "email": "bob@example.com"   },
+        { "id": 4, "name": "Carol", "email": "carol@example.com" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "PARTITION BY email groups duplicates; ORDER BY id ASC gives the earliest row rn=1.",
+    "Filter WHERE rn = 1 to keep only the first occurrence."
+  ],
+  "explanation": "ROW_NUMBER() partitioned by email and ordered by id assigns 1 to the row with the smallest id in each email group. Filtering rn=1 keeps only that row, effectively deduplicating.",
+  "companies": ["LinkedIn", "Stripe"],
+  "created_at": "2026-09-20"
+}

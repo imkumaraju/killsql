@@ -1,0 +1,30 @@
+{
+  "id": "016",
+  "slug": "employees-no-department",
+  "title": "Employees With No Department",
+  "difficulty": "easy",
+  "tags": ["SELECT", "LEFT JOIN", "IS NULL"],
+  "description": "Find employees who have **not been assigned** to any department. Use a LEFT JOIN between `employees` and `departments` to detect unmatched rows.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| department_id | INT |\n\n**Table: departments**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n\nOutput column: `name`. Order by `name`.",
+  "schema_sql": "CREATE TABLE departments (id INT, name VARCHAR); INSERT INTO departments VALUES (1, 'Engineering'), (2, 'Sales'); CREATE TABLE employees (id INT, name VARCHAR, salary INT, department_id INT); INSERT INTO employees VALUES (1, 'Alice', 120000, 1), (2, 'Bob', 80000, 2), (3, 'Carol', 140000, NULL), (4, 'Dan', 70000, NULL), (5, 'Eve', 90000, 1);",
+  "solution_sql": "SELECT e.name FROM employees e LEFT JOIN departments d ON e.department_id = d.id WHERE d.id IS NULL ORDER BY e.name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Carol and Dan have no department",
+      "expected_row_count": 2,
+      "expected_columns": ["name"],
+      "expected_rows": [
+        { "name": "Carol" },
+        { "name": "Dan" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LEFT JOIN keeps all rows from the left table even when there is no match on the right.",
+    "When there is no match, right-table columns are NULL — filter on that."
+  ],
+  "explanation": "A LEFT JOIN returns all employees. Where no department row matches, `d.id` is NULL. Filtering `WHERE d.id IS NULL` isolates employees not in any department.",
+  "companies": ["Microsoft", "Google"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "052",
+  "slug": "duplicate-customer-emails",
+  "title": "Find Duplicate Customer Emails",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "HAVING", "duplicate detection"],
+  "description": "Find email addresses that belong to **more than one customer** (duplicates). Return the email and how many times it appears.\n\n**Table: customers**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |\n| city | VARCHAR |\n| country | VARCHAR |\n\nOutput columns: `email`, `count`. Order by `count` descending, then `email`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR); INSERT INTO customers VALUES (1,'Alice','alice@example.com','New York','USA'),(2,'Bob','bob@example.com','London','UK'),(3,'Carol','alice@example.com','Chicago','USA'),(4,'Dan','dan@example.com','Mumbai','India'),(5,'Eve','bob@example.com','Paris','France'),(6,'Fay','bob@example.com','Berlin','Germany');",
+  "solution_sql": "SELECT email, COUNT(*) AS count FROM customers GROUP BY email HAVING COUNT(*) > 1 ORDER BY count DESC, email",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "bob@example.com appears 3 times; alice@example.com appears 2 times",
+      "expected_row_count": 2,
+      "expected_columns": ["email", "count"],
+      "expected_rows": [
+        { "email": "bob@example.com",   "count": 3 },
+        { "email": "alice@example.com", "count": 2 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "GROUP BY email, then HAVING COUNT(*) > 1 filters to only duplicated emails.",
+    "This is the standard duplicate detection pattern."
+  ],
+  "explanation": "`GROUP BY email` collapses all rows with the same email. `HAVING COUNT(*) > 1` keeps only those with 2+ rows. bob@example.com (count 3) and alice@example.com (count 2) are duplicates.",
+  "companies": ["LinkedIn", "Stripe"],
+  "created_at": "2026-09-20"
+}

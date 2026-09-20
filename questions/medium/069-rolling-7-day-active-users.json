@@ -1,0 +1,26 @@
+{
+  "id": "069",
+  "slug": "rolling-7-day-active-users",
+  "title": "7-Day Rolling Active Users",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "date functions", "COUNT"],
+  "description": "For each day in the `logins` table, count the number of **distinct users who logged in at least once in the 7 days ending on that day** (inclusive).\n\n**Table: logins**\n\n| Column | Type |\n|--------|------|\n| user_id | INT |\n| login_date | DATE |\n\nOutput columns: `login_date`, `rolling_7d_users`. Order by `login_date`.",
+  "schema_sql": "CREATE TABLE logins (user_id INT, login_date DATE); INSERT INTO logins VALUES (1,DATE '2026-01-01'),(2,DATE '2026-01-01'),(1,DATE '2026-01-02'),(3,DATE '2026-01-03'),(2,DATE '2026-01-05'),(4,DATE '2026-01-07'),(1,DATE '2026-01-07'),(5,DATE '2026-01-08');",
+  "solution_sql": "WITH daily AS (SELECT DISTINCT login_date FROM logins) SELECT d.login_date, (SELECT COUNT(DISTINCT l.user_id) FROM logins l WHERE l.login_date BETWEEN d.login_date - INTERVAL '6 days' AND d.login_date) AS rolling_7d_users FROM daily d ORDER BY d.login_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Each day shows unique users in the 7-day window ending that day",
+      "expected_row_count": 6,
+      "expected_columns": ["login_date", "rolling_7d_users"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "For each date, count distinct users whose login_date is within [date - 6 days, date].",
+    "A correlated subquery per date works; a window function approach with RANGE BETWEEN also works."
+  ],
+  "explanation": "For each distinct date, a correlated subquery counts distinct users who logged in within the preceding 7 calendar days. This is the standard DAU/WAU metric calculation.",
+  "companies": ["Meta", "Snap", "TikTok"],
+  "created_at": "2026-09-20"
+}

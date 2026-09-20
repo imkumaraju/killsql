@@ -1,0 +1,31 @@
+{
+  "id": "043",
+  "slug": "first-order-per-customer",
+  "title": "First Order per Customer",
+  "difficulty": "medium",
+  "tags": ["SELECT", "ROW_NUMBER", "window functions", "CTE"],
+  "description": "For each customer, return only their **first order** (earliest order_date). If a customer has multiple orders on the same earliest date, return only one (any).\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| status | VARCHAR |\n| total_amount | DECIMAL |\n\nOutput columns: `customer_id`, `order_id`, `order_date`, `total_amount`. Order by `customer_id`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,1,DATE '2026-02-10','completed',200.00),(3,2,DATE '2026-01-03','completed',75.50),(4,2,DATE '2026-03-15','pending',50.00),(5,3,DATE '2026-01-20','completed',300.00);",
+  "solution_sql": "WITH ranked AS (SELECT id AS order_id, customer_id, order_date, total_amount, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) AS rn FROM orders) SELECT customer_id, order_id, order_date, total_amount FROM ranked WHERE rn = 1 ORDER BY customer_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "One first order per customer",
+      "expected_row_count": 3,
+      "expected_columns": ["customer_id", "order_id", "order_date", "total_amount"],
+      "expected_rows": [
+        { "customer_id": 1, "order_id": 1, "order_date": "2026-01-05", "total_amount": 100.00 },
+        { "customer_id": 2, "order_id": 3, "order_date": "2026-01-03", "total_amount": 75.50 },
+        { "customer_id": 3, "order_id": 5, "order_date": "2026-01-20", "total_amount": 300.00 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) assigns 1 to the earliest order per customer.",
+    "Wrap in a CTE or subquery and filter WHERE rn = 1."
+  ],
+  "explanation": "`ROW_NUMBER()` numbers orders per customer in ascending date order. Filtering `rn = 1` keeps only the first. This is the standard 'deduplication' or 'first row per group' pattern.",
+  "companies": ["Amazon", "Uber"],
+  "created_at": "2026-09-20"
+}

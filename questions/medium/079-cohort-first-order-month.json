@@ -1,0 +1,31 @@
+{
+  "id": "079",
+  "slug": "cohort-first-order-month",
+  "title": "Customer Cohort by First Order Month",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CTE", "date functions", "GROUP BY", "COUNT"],
+  "description": "Group customers into monthly **cohorts** based on the month of their first ever order. Return cohort month and customer count.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `cohort_year`, `cohort_month`, `customer_count`. Order by `cohort_year`, `cohort_month`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-10','completed',100.00),(2,2,DATE '2026-01-20','completed',200.00),(3,1,DATE '2026-02-05','completed',150.00),(4,3,DATE '2026-02-15','completed',300.00),(5,4,DATE '2026-02-25','completed',250.00),(6,5,DATE '2026-03-05','completed',180.00);",
+  "solution_sql": "WITH first_orders AS (SELECT customer_id, MIN(order_date) AS first_order_date FROM orders GROUP BY customer_id) SELECT EXTRACT(YEAR FROM first_order_date) AS cohort_year, EXTRACT(MONTH FROM first_order_date) AS cohort_month, COUNT(*) AS customer_count FROM first_orders GROUP BY cohort_year, cohort_month ORDER BY cohort_year, cohort_month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan cohort: 2 customers; Feb cohort: 2; Mar cohort: 1",
+      "expected_row_count": 3,
+      "expected_columns": ["cohort_year", "cohort_month", "customer_count"],
+      "expected_rows": [
+        { "cohort_year": 2026, "cohort_month": 1, "customer_count": 2 },
+        { "cohort_year": 2026, "cohort_month": 2, "customer_count": 2 },
+        { "cohort_year": 2026, "cohort_month": 3, "customer_count": 1 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "MIN(order_date) per customer gives their first order date.",
+    "Group by cohort year+month to count customers per cohort."
+  ],
+  "explanation": "The CTE finds each customer's first order via MIN(). Grouping by year+month of that first date creates cohorts. Customer 1 first ordered in January (so did customer 2). Customers 3 and 4 first ordered in February. Customer 5 first ordered in March.",
+  "companies": ["Shopify", "Meta"],
+  "created_at": "2026-09-20"
+}

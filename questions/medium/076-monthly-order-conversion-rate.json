@@ -1,0 +1,31 @@
+{
+  "id": "076",
+  "slug": "monthly-order-conversion-rate",
+  "title": "Monthly Order Completion Rate",
+  "difficulty": "medium",
+  "tags": ["SELECT", "conditional aggregation", "date functions", "GROUP BY"],
+  "description": "For each month, compute the **completion rate** — the percentage of orders with status `'completed'` out of all orders that month. Round to 1 decimal.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `status`, `total_amount`\n\nOutput columns: `order_month`, `total_orders`, `completed_orders`, `completion_rate`. Order by `order_month`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR, total_amount DECIMAL); INSERT INTO orders VALUES (1,1,DATE '2026-01-05','completed',100.00),(2,2,DATE '2026-01-15','pending',75.50),(3,3,DATE '2026-02-07','completed',150.00),(4,4,DATE '2026-02-20','completed',250.00),(5,5,DATE '2026-02-28','pending',90.00),(6,1,DATE '2026-03-10','completed',60.00);",
+  "solution_sql": "SELECT EXTRACT(MONTH FROM order_date) AS order_month, COUNT(*) AS total_orders, COUNT(CASE WHEN status = 'completed' THEN 1 END) AS completed_orders, ROUND(100.0 * COUNT(CASE WHEN status = 'completed' THEN 1 END) / COUNT(*), 1) AS completion_rate FROM orders GROUP BY order_month ORDER BY order_month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan 50%, Feb 66.7%, Mar 100%",
+      "expected_row_count": 3,
+      "expected_columns": ["order_month", "total_orders", "completed_orders", "completion_rate"],
+      "expected_rows": [
+        { "order_month": 1, "total_orders": 2, "completed_orders": 1, "completion_rate": 50.0 },
+        { "order_month": 2, "total_orders": 3, "completed_orders": 2, "completion_rate": 66.7 },
+        { "order_month": 3, "total_orders": 1, "completed_orders": 1, "completion_rate": 100.0 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "COUNT(CASE WHEN status='completed' THEN 1 END) counts only completed orders.",
+    "Divide by COUNT(*) and multiply by 100 for the percentage."
+  ],
+  "explanation": "Conditional COUNT isolates completed orders. Dividing by total orders per month and multiplying by 100 gives the rate. Using 100.0 (not 100) forces decimal division.",
+  "companies": ["Stripe", "Shopify"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "061",
+  "slug": "cumulative-revenue-percentage",
+  "title": "Cumulative Revenue Percentage by Department",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "SUM", "CTE", "GROUP BY"],
+  "description": "For each department, compute the total payroll and its **cumulative percentage** of all departments when sorted by total payroll descending. Round to 1 decimal.\n\n**Table: departments** — `id`, `name`\n\n**Table: employees** — `id`, `name`, `salary`, `department_id`\n\nOutput columns: `department_name`, `total_salary`, `cumulative_pct`. Order by `total_salary` descending.",
+  "schema_sql": "CREATE TABLE departments (id INT, name VARCHAR); INSERT INTO departments VALUES (1,'Engineering'),(2,'Sales'),(3,'HR'); CREATE TABLE employees (id INT, name VARCHAR, salary INT, department_id INT); INSERT INTO employees VALUES (1,'Alice',120000,1),(2,'Bob',80000,2),(3,'Carol',140000,1),(4,'Dan',70000,3),(5,'Eve',90000,2),(6,'Fay',100000,1);",
+  "solution_sql": "WITH dept_totals AS (SELECT d.name AS department_name, SUM(e.salary) AS total_salary FROM employees e JOIN departments d ON e.department_id = d.id GROUP BY d.name) SELECT department_name, total_salary, ROUND(100.0 * SUM(total_salary) OVER (ORDER BY total_salary DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) / SUM(total_salary) OVER (), 1) AS cumulative_pct FROM dept_totals ORDER BY total_salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Engineering 360k (cumulative ~60%), Sales 170k (~88.3%), HR 70k (100%)",
+      "expected_row_count": 3,
+      "expected_columns": ["department_name", "total_salary", "cumulative_pct"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "SUM(total_salary) OVER (ORDER BY ... ROWS UNBOUNDED PRECEDING TO CURRENT ROW) gives a running total.",
+    "Divide the running total by the grand total SUM() OVER () for the cumulative percentage."
+  ],
+  "explanation": "Grand total = 600000. Engineering (360000) cumulative = 360000/600000 = 60%. Sales (170000) cumulative = 530000/600000 ≈ 88.3%. HR (70000) cumulative = 600000/600000 = 100%.",
+  "companies": ["Google", "Databricks"],
+  "created_at": "2026-09-20"
+}

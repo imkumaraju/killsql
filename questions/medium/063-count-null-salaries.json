@@ -1,0 +1,29 @@
+{
+  "id": "063",
+  "slug": "count-null-salaries",
+  "title": "Count Employees with Missing Salary",
+  "difficulty": "medium",
+  "tags": ["SELECT", "IS NULL", "COUNT", "CASE"],
+  "description": "Return a summary row showing how many employees have a salary recorded (`salary_filled`) and how many have a NULL salary (`salary_missing`), all in a **single row**.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nOutput columns: `salary_filled`, `salary_missing`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice',120000),(2,'Bob',NULL),(3,'Carol',140000),(4,'Dan',NULL),(5,'Eve',90000);",
+  "solution_sql": "SELECT COUNT(salary) AS salary_filled, COUNT(*) - COUNT(salary) AS salary_missing FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 have salary, 2 are NULL",
+      "expected_row_count": 1,
+      "expected_columns": ["salary_filled", "salary_missing"],
+      "expected_rows": [
+        { "salary_filled": 3, "salary_missing": 2 }
+      ],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "COUNT(column) counts only non-NULL values; COUNT(*) counts all rows.",
+    "salary_missing = COUNT(*) - COUNT(salary)"
+  ],
+  "explanation": "`COUNT(salary)` ignores NULL values and returns 3. `COUNT(*)` counts all 5 rows. The difference (5-3=2) gives the count of NULL salaries. This is a clean way to audit data completeness.",
+  "companies": ["Databricks", "Snowflake"],
+  "created_at": "2026-09-20"
+}

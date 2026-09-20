@@ -1,0 +1,29 @@
+{
+  "id": "010",
+  "slug": "total-salary-budget",
+  "title": "Total Salary Budget",
+  "difficulty": "easy",
+  "tags": ["SELECT", "SUM", "aggregate"],
+  "description": "Calculate the **total salary** paid across all employees. Return a single number aliased as `total_budget`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n\nOutput column: `total_budget`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1, 'Alice', 120000), (2, 'Bob', 80000), (3, 'Carol', 140000), (4, 'Dan', 70000), (5, 'Eve', 90000);",
+  "solution_sql": "SELECT SUM(salary) AS total_budget FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Sum of all five salaries equals 500000",
+      "expected_row_count": 1,
+      "expected_columns": ["total_budget"],
+      "expected_rows": [
+        { "total_budget": 500000 }
+      ],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "SUM() is an aggregate function that adds all values in a column.",
+    "Without GROUP BY, SUM collapses the entire table into one row."
+  ],
+  "explanation": "`SUM(salary)` adds 120000 + 80000 + 140000 + 70000 + 90000 = 500000. The alias `total_budget` renames the output column.",
+  "companies": ["Stripe", "Airbnb"],
+  "created_at": "2026-09-20"
+}

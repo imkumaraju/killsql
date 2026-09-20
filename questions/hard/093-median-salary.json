@@ -1,0 +1,29 @@
+{
+  "id": "093",
+  "slug": "median-salary",
+  "title": "Median Salary Without PERCENTILE",
+  "difficulty": "hard",
+  "tags": ["SELECT", "correlated subquery", "CASE", "window functions", "CTE"],
+  "description": "Compute the **median salary** without using PERCENTILE_CONT or MEDIAN functions. The median is the middle value (or average of two middle values for an even count) when all salaries are sorted.\n\n**Table: employees** — `id`, `name`, `salary`\n\nOutput column: `median_salary`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice',120000),(2,'Bob',80000),(3,'Carol',140000),(4,'Dan',70000),(5,'Eve',90000),(6,'Fay',100000);",
+  "solution_sql": "WITH ordered AS (SELECT salary, ROW_NUMBER() OVER (ORDER BY salary) AS rn, COUNT(*) OVER () AS total FROM employees) SELECT ROUND(AVG(salary), 0) AS median_salary FROM ordered WHERE rn IN (FLOOR((total + 1.0) / 2), CEIL((total + 1.0) / 2))",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Sorted: 70k,80k,90k,100k,120k,140k → median = (90k+100k)/2 = 95000",
+      "expected_row_count": 1,
+      "expected_columns": ["median_salary"],
+      "expected_rows": [
+        { "median_salary": 95000 }
+      ],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Sort rows and assign row numbers. For n rows: if n is odd the median is at position (n+1)/2; if even it's the average of positions n/2 and n/2+1.",
+    "FLOOR and CEIL of (n+1)/2 give the correct middle positions for both odd and even n."
+  ],
+  "explanation": "6 employees sorted: 70k(1), 80k(2), 90k(3), 100k(4), 120k(5), 140k(6). n=6, even. Middle positions: FLOOR(7/2)=3 and CEIL(7/2)=4. Salaries at those positions: 90k and 100k. Average = 95000. For odd n the two FLOOR/CEIL values are equal, selecting one row.",
+  "companies": ["Meta", "Google", "Databricks"],
+  "created_at": "2026-09-20"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "033",
+  "slug": "daily-running-revenue",
+  "title": "Daily Running Revenue",
+  "difficulty": "medium",
+  "tags": ["window functions", "SUM", "running total"],
+  "description": "Compute a running total of `amount` ordered by `sale_date`, named `running_revenue`.\n\n**Table: sales**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| sale_date | DATE |\n| amount | INT |\n\nOutput columns: `sale_date`, `amount`, `running_revenue`. Order by `sale_date`.",
+  "schema_sql": "CREATE TABLE sales (id INT, sale_date DATE, amount INT); INSERT INTO sales VALUES (1, DATE '2026-01-01', 100), (2, DATE '2026-01-02', 40), (3, DATE '2026-01-03', 70), (4, DATE '2026-01-04', 20);",
+  "solution_sql": "SELECT sale_date, amount, SUM(amount) OVER (ORDER BY sale_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_revenue FROM sales ORDER BY sale_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Running totals 100, 140, 210, 230",
+      "expected_row_count": 4,
+      "expected_columns": ["sale_date", "amount", "running_revenue"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "A windowed SUM ordered by date is a running total.",
+    "ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW includes the current day."
+  ],
+  "explanation": "A cumulative SUM window adds each day's amount to the sum of all previous days. Frame `UNBOUNDED PRECEDING` through `CURRENT ROW` makes the running total well-defined even if dates repeat.",
+  "companies": ["Stripe", "Shopify"],
+  "created_at": "2026-09-20"
+}

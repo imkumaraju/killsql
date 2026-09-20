@@ -1,0 +1,26 @@
+{
+  "id": "065",
+  "slug": "chained-ctes-category-summary",
+  "title": "Category Revenue Summary (Chained CTEs)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CTE", "GROUP BY", "SUM", "window functions"],
+  "description": "Use **two chained CTEs**: the first computes total revenue per category; the second adds the category's rank by revenue. Return category, total_revenue, and revenue_rank.\n\n**Table: products** — `id`, `name`, `category`, `price`, `stock_quantity`\n\n**Table: order_items** — `id`, `order_id`, `product_id`, `quantity`, `unit_price`\n\nOutput columns: `category`, `total_revenue`, `revenue_rank`. Order by `revenue_rank`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL, stock_quantity INT); INSERT INTO products VALUES (1,'Laptop','Electronics',999.99,10),(2,'Phone','Electronics',699.99,25),(3,'Desk','Furniture',299.99,5),(4,'Chair','Furniture',149.99,8),(5,'Notebook','Stationery',4.99,200); CREATE TABLE order_items (id INT, order_id INT, product_id INT, quantity INT, unit_price DECIMAL); INSERT INTO order_items VALUES (1,1,1,2,999.99),(2,1,2,1,699.99),(3,2,3,3,299.99),(4,2,4,2,149.99),(5,3,5,10,4.99);",
+  "solution_sql": "WITH cat_rev AS (SELECT p.category, SUM(oi.quantity * oi.unit_price) AS total_revenue FROM order_items oi JOIN products p ON oi.product_id = p.id GROUP BY p.category), ranked AS (SELECT category, total_revenue, RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank FROM cat_rev) SELECT category, total_revenue, revenue_rank FROM ranked ORDER BY revenue_rank",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Electronics ranked 1, Furniture ranked 2, Stationery ranked 3",
+      "expected_row_count": 3,
+      "expected_columns": ["category", "total_revenue", "revenue_rank"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Chain CTEs with commas: WITH cte1 AS (...), cte2 AS (...) SELECT ... FROM cte2",
+    "The second CTE can reference the first."
+  ],
+  "explanation": "CTE 1 computes Electronics = 2699.97, Furniture = 1199.95, Stationery = 49.90. CTE 2 adds RANK() over revenue descending. Chained CTEs improve readability by breaking the logic into named steps.",
+  "companies": ["Google", "Databricks"],
+  "created_at": "2026-09-20"
+}

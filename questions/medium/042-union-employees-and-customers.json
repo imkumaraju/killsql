@@ -1,0 +1,26 @@
+{
+  "id": "042",
+  "slug": "union-employees-and-customers",
+  "title": "Combined List: Employees and Customers Named Alex",
+  "difficulty": "medium",
+  "tags": ["SELECT", "UNION", "WHERE", "LIKE"],
+  "description": "Produce a single list of **all people named Alex** from two separate tables: `employees` and `customers`. Each row should show `source` ('employee' or 'customer'), `name`, and `contact` (email for customers, job_title for employees).\n\n**Table: employees** — `id`, `name`, `salary`, `job_title`\n\n**Table: customers** — `id`, `name`, `email`, `city`, `country`\n\nOutput columns: `source`, `name`, `contact`. Order by `source`, `name`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, job_title VARCHAR); INSERT INTO employees VALUES (1,'Alice',120000,'Engineer'),(2,'Alex Smith',90000,'Analyst'),(3,'Carol',140000,'Manager'),(4,'Alex Brown',80000,'Engineer'); CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR, country VARCHAR); INSERT INTO customers VALUES (1,'Alex Jones','alex.j@example.com','Chicago','USA'),(2,'Bob','bob@example.com','London','UK'),(3,'Alex Wang','alex.w@example.com','Singapore','SG');",
+  "solution_sql": "SELECT 'employee' AS source, name, job_title AS contact FROM employees WHERE name LIKE 'Alex%' UNION SELECT 'customer' AS source, name, email AS contact FROM customers WHERE name LIKE 'Alex%' ORDER BY source, name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "2 employees and 2 customers named Alex",
+      "expected_row_count": 4,
+      "expected_columns": ["source", "name", "contact"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "UNION combines rows from two SELECT statements; it deduplicates by default.",
+    "Both SELECT lists must have the same number of columns and compatible types."
+  ],
+  "explanation": "UNION stacks two result sets vertically. A literal string ('employee', 'customer') is added as the `source` column to identify which table each row came from. UNION removes exact duplicates (use UNION ALL to keep them).",
+  "companies": ["LinkedIn", "Microsoft"],
+  "created_at": "2026-09-20"
+}
