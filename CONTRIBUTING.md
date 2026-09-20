@@ -45,6 +45,8 @@ Open http://localhost:3000.
 
 Auth, submissions, profiles, goal streaks, and the leaderboard need a Supabase project. Apply `supabase/migrations/001_initial.sql` then `002_streaks.sql` in the SQL editor, enable GitHub OAuth, and set `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
+Donations: the post-solve prompt works without Stripe. Set `STRIPE_SECRET_KEY` in `apps/web/.env.local` to enable Checkout. `NEXT_PUBLIC_SITE_URL` is used for Stripe success/cancel URLs.
+
 ## Code contributions
 
 - Keep query execution in the browser. Do not add a server that runs user SQL.

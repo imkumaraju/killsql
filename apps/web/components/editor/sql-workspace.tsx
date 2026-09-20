@@ -4,7 +4,9 @@ import type { Question, ValidationResult } from "@killsql/question-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Lightbulb, Play, RotateCcw } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDonatePrompt } from "@/components/donate/donate-prompt";
+import { isDonateHiddenToday } from "@/lib/donate";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { MarkdownBody } from "@/components/markdown";
 import { ResultsPanel } from "@/components/editor/results-panel";
@@ -40,6 +42,8 @@ export function SqlWorkspace({ question }: { question: Question }) {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validation, setValidation] = useState<ValidationResult | null>(null);
+  const passedThisSession = useRef(false);
+  const openDonatePrompt = useDonatePrompt((state) => state.openPrompt);
 
   const saveSubmission = useMutation({
     mutationFn: async (payload: { status: "pass" | "fail"; sql_written: string }) => {
@@ -65,6 +69,10 @@ export function SqlWorkspace({ question }: { question: Question }) {
     void getSqlEngine().init();
   }, []);
 
+  useEffect(() => {
+    passedThisSession.current = false;
+  }, [question.slug]);
+
   const run = useCallback(async () => {
     setRunning(true);
     setError(null);
@@ -76,6 +84,12 @@ export function SqlWorkspace({ question }: { question: Question }) {
         test_cases: question.test_cases,
       });
       setValidation(result);
+      if (result.passed && !passedThisSession.current) {
+        passedThisSession.current = true;
+        if (!isDonateHiddenToday()) {
+          openDonatePrompt();
+        }
+      }
       if (user) {
         saveSubmission.mutate({
           status: result.passed ? "pass" : "fail",
@@ -88,7 +102,7 @@ export function SqlWorkspace({ question }: { question: Question }) {
     } finally {
       setRunning(false);
     }
-  }, [question, sql, user, saveSubmission]);
+  }, [question, sql, user, saveSubmission, openDonatePrompt]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">

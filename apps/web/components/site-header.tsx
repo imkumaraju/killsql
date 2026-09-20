@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, TerminalSquare } from "lucide-react";
+import { Heart, LogOut, TerminalSquare } from "lucide-react";
+import { DonatePrompt, useDonatePrompt } from "@/components/donate/donate-prompt";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -29,6 +30,7 @@ export function SiteHeader() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: user } = useCurrentUser();
+  const openDonatePrompt = useDonatePrompt((state) => state.openPrompt);
 
   async function signOut() {
     const supabase = createClient();
@@ -67,6 +69,10 @@ export function SiteHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" onClick={openDonatePrompt}>
+            <Heart className="h-4 w-4 text-lime-400" />
+            <span className="hidden sm:inline">Donate</span>
+          </Button>
           <StreakChip />
           {user ? (
             <DropdownMenu>
@@ -99,6 +105,7 @@ export function SiteHeader() {
           )}
         </div>
       </div>
+      <DonatePrompt />
     </header>
   );
 }

@@ -7,4 +7,4 @@ npm install
 npm run dev
 ```
 
-See the root [README.md](../../README.md) and [ARCHITECTURE.md](../../ARCHITECTURE.md).
+See the root [README.md](../../README.md) (including optional Stripe donations) and [ARCHITECTURE.md](../../ARCHITECTURE.md).
