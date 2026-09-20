@@ -1,4 +1,7 @@
 {
+  "installCommand": "cd ../.. && npm install",
+  "buildCommand": "cd ../.. && npm run build",
+  "outputDirectory": ".next",
   "crons": [
     {
       "path": "/api/cron/streaks",
