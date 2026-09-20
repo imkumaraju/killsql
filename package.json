@@ -21,6 +21,9 @@
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   },
+  "optionalDependencies": {
+    "@duckdb/node-bindings-linux-x64": "1.5.5-r.5"
+  },
   "engines": {
     "node": ">=20"
   }
