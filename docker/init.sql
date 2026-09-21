@@ -1,5 +1,5 @@
 -- Minimal local Postgres for inspecting KillSQL tables.
--- Full auth (GitHub OAuth, RLS with auth.uid()) needs a real Supabase project
+-- Full auth (Google OAuth, RLS with auth.uid()) needs a real Supabase project
 -- or `npx supabase start`. This stub lets docker-compose boot a compatible schema.
 
 create schema if not exists auth;

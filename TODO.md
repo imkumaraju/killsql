@@ -1,6 +1,6 @@
 # KillSQL TODO
 
-Snapshot: **2026-09-21**. v1 product code is largely built. The 100-problem bank, browser SQL engine, workspace, streaks, donate prompt, and practice UX all exist. Remaining: auth URLs / OAuth, Vercel env, Dodo live payments, and leaderboard polish.
+Snapshot: **2026-09-21**. v1 product code is largely built. The 100-problem bank, browser SQL engine, workspace, streaks, donate prompt, practice UX, Google sign-in, and first-login onboarding all exist. Remaining: enable Google in the Supabase dashboard, Vercel env, Dodo live payments, and leaderboard polish.
 
 ## Status at a glance
 
@@ -9,7 +9,7 @@ Snapshot: **2026-09-21**. v1 product code is largely built. The 100-problem bank
 | Question bank | Done | Static in repo | 100 problems: 30 easy, 60 medium, 10 hard |
 | Practice engine | Done | Works without an account | DuckDB-WASM, Monaco, validator, CI |
 | Practice UX (items 2–11) | Done | **On main** | Schema preview, fail diffs, guest progress, tracks, daily, autocomplete |
-| Auth, submissions, profiles, streaks | Done | **Secrets in Actions; schema not applied yet** | KillSQL @ `pbsrivwuhq2thtgut`; `.env.local` filled locally |
+| Auth, submissions, profiles, streaks | Done | **Secrets in Actions; apply 001–003, then enable Google** | KillSQL @ `pbsrivwuhq2thtgut`; `.env.local` filled locally |
 | Leaderboard | Basic page | **Not configured** | Polish (hide 0-solved, ties, highlight you) still open |
 | Donations | Dodo draft | **Not live** | Stripe removed locally; merchant verification still pending |
 
@@ -17,7 +17,7 @@ Snapshot: **2026-09-21**. v1 product code is largely built. The 100-problem bank
 
 ## Next unblocked actions
 
-1. **Finish auth URLs / GitHub OAuth**, then confirm sign-in locally.
+1. **Enable Google OAuth in the Supabase dashboard** (Google Cloud client + provider keys), then confirm sign-in and `/welcome` locally. Migrations 001–003 ship with this push.
 2. **Commit the Dodo Payments swap** when you are ready for it to land on `main`. SQL practice does not need Dodo to ship.
 3. **After Dodo merchant approval:** live Pay What You Want product, env keys, test checkout, one small live payment.
 
@@ -26,6 +26,7 @@ Snapshot: **2026-09-21**. v1 product code is largely built. The 100-problem bank
 Do not commit API keys, product secrets, bank details, or identity documents.
 
 - [x] Commit the practice UX (learn tracks, daily problem, schema preview, fail diffs, guest progress, autocomplete).
+- [x] Commit Google auth + first-login onboarding (`003_auth_onboarding.sql`, `/welcome`, 32 avatars).
 - [ ] Commit the Dodo Payments swap when you are ready for it to land on `main` (checkout still returns 503 until keys exist).
 - [ ] Run typecheck, lint, and production build before pushing.
 
@@ -51,10 +52,10 @@ The anon key will still appear in the browser after deploy — that is how Supab
 
 ### Git pipeline (schema)
 
-- [x] Keep all schema in `supabase/migrations/` (001 initial, 002 streaks).
+- [x] Keep all schema in `supabase/migrations/` (001 initial, 002 streaks, 003 auth onboarding).
 - [x] Add `.github/workflows/supabase-migrate.yml` — `supabase link` + `supabase db push` on `main` and via **Run workflow**.
 - [x] Pipeline is on `main` (`e9029f3`). **Deploy Supabase migrations** should start from that push.
-- [ ] Confirm `profiles`, `submissions`, `user_stats`, `streak_challenges`, `streak_days`, RLS, and the new-user trigger exist in Table Editor.
+- [ ] Confirm `profiles`, `profile_private`, `submissions`, `user_stats`, `streak_challenges`, `streak_days`, the `avatars` storage bucket, RLS, and the new-user trigger exist in Table Editor.
 - [ ] Later schema changes: `npx supabase migration new descriptive_name`, PR, merge to `main`. Never edit production tables by hand.
 
 ### Free-tier keep-alive
@@ -75,12 +76,27 @@ Supabase pauses Free projects with too little **database** activity over ~7 days
 
 ### Authentication
 
+Sign-in is **Google-first** (GitHub and email still work). The first session always lands on `/welcome` until the user saves or skips a username and avatar.
+
 - [ ] Authentication → URL configuration: Site URL. Local: `http://localhost:3000`. Production: the Vercel domain when you have one.
-- [ ] Redirect allow-list: `http://localhost:3000/auth/callback` and `https://<production-domain>/auth/callback`.
+- [ ] Redirect allow-list: `http://localhost:3000/auth/callback`, `http://localhost:3000/welcome`, and the same paths on the production domain.
+- [ ] Google Cloud Console → APIs & Services → Credentials → Create **OAuth client ID** (Web application).
+  - Authorized JavaScript origins: `http://localhost:3000` and the production origin.
+  - Authorized redirect URI: `https://pbsrivwuhq2thtgut.supabase.co/auth/v1/callback`.
+- [ ] Paste the Google client ID and secret into Authentication → Providers → Google.
 - [ ] Email provider: leave enabled if you want email/password (already on by default).
-- [ ] Create a GitHub OAuth App (callback `https://pbsrivwuhq2thtgut.supabase.co/auth/v1/callback`).
-- [ ] Paste the GitHub client ID and secret into Authentication → Providers → GitHub.
-- [ ] Test email and GitHub sign-in, sign-out, callback redirects, and profile creation.
+- [ ] Optional: GitHub OAuth App (callback `https://pbsrivwuhq2thtgut.supabase.co/auth/v1/callback`) and paste into Providers → GitHub.
+- [ ] Test Google sign-in, `/welcome` (username + 32 avatars + upload + skip defaults), sign-out, and profile creation.
+
+On first login the app:
+
+1. Stores the Google **display name** on `profiles.display_name`.
+2. Stores the Google **email** on `profile_private.email` (not public; `auth.users` also has it).
+3. Assigns a unique `username` (`email` local-part, or `user_<id>` on collision / skip).
+4. Assigns `/avatars/default.svg` unless they pick a preset, their Google photo, or an upload.
+5. Sets `onboarding_completed` when they continue or skip.
+
+- [ ] After migrations are applied, confirm `complete_onboarding` RPC and the `avatars` bucket (public, 2 MB, image types) exist.
 
 ### After auth is live
 
@@ -136,7 +152,7 @@ User-facing practice features. Items that need a live Supabase project wait unti
 
 ### Blocked on Supabase
 
-- [ ] **1. Turn auth on** — Progress, streaks, and the leaderboard stay dead until the project, OAuth, and env vars are live.
+- [ ] **1. Turn auth on** — Enable Google in the dashboard, apply 001–003, set Vercel env. First login asks for a username and avatar (`/welcome`); skip assigns defaults.
 - [ ] **12. Leaderboard polish** — Hide 0-solved accounts, break ties, highlight the signed-in user. Needs a live `user_stats` feed.
 
 ## Later / out of scope

@@ -29,7 +29,7 @@
 
 - **SQL runs in the browser.** Every query a user writes is executed locally using DuckDB compiled to WebAssembly. There is no backend query execution server.
 - **Questions are static files.** v1 ships 100 problems as plain `.json` files in the repository, versioned via Git and served from a CDN. No database write is needed when a new question is added. The format is designed to scale toward 1000+ questions.
-- **Backend is thin.** The server only stores user identity, progress, goal streaks, and submission history. It never touches SQL. Optional donations go through Stripe Checkout.
+- **Backend is thin.** The server only stores user identity, progress, goal streaks, and submission history. It never touches SQL. Optional donations go through Dodo Payments (merchant of record).
 - **Open and contributable.** Anyone can add a question by opening a Pull Request with a single JSON file.
 
 ---
@@ -53,9 +53,9 @@
 | Concern | Choice | Why |
 |---|---|---|
 | API Layer | **Next.js API Routes (Serverless)** | No dedicated server; co-located with the frontend on Vercel |
-| Auth | **Supabase Auth** | Built-in email + GitHub OAuth; integrates with RLS |
+| Auth | **Supabase Auth** | Google OAuth (primary), optional GitHub + email; RLS on profiles |
 | Database | **Supabase Postgres** | Managed Postgres with Row Level Security; free tier covers ~50K MAU |
-| Payments | **Stripe Checkout** | Optional donations; no donor table in v1 |
+| Payments | **Dodo Payments** | Optional donations; merchant of record; no donor table in v1 |
 
 ### Infrastructure
 
@@ -63,7 +63,7 @@
 |---|---|---|
 | Hosting | **Vercel** | Free (100 GB bandwidth); Pro at $20/mo when needed |
 | Database + Auth | **Supabase** | Free (500 MB DB, 50K MAU); Pro at $25/mo when needed |
-| Payments | **Stripe** | No monthly fee; per-donation processing only |
+| Payments | **Dodo Payments** | No monthly fee; per-donation processing (~4%+) |
 | Question CDN | **Vercel Edge Network** | Questions are static assets — zero additional cost |
 | CI | **GitHub Actions** | Free for public repos |
 
@@ -88,7 +88,7 @@
 │                                                         │
 │  ┌──────────────────────────────────────────────────┐  │
 │  │               Next.js App                        │  │
-│  │  /problems  /problems/[slug]  /profile  /leader  │  │
+│  │  /problems  /login  /welcome  /profile  /leader  │  │
 │  │  /streak    /donate/success                      │  │
 │  └──────────────────────────────────────────────────┘  │
 └────────────────┬──────────────────┬─────────────────────┘
@@ -103,8 +103,8 @@
                           ┌─────────────┴─────────────┐
                           ▼                           ▼
                  ┌─────────────────┐         ┌─────────────────┐
-                 │   Supabase      │         │   Stripe        │
-                 │  Auth + Postgres│         │   Checkout      │
+                 │   Supabase      │         │   Dodo          │
+                 │  Auth + Postgres│         │   Payments      │
                  └─────────────────┘         └─────────────────┘
 ```
 
@@ -319,8 +319,10 @@ Monaco → postMessage({ type:'RUN', schema_sql, user_sql, test_cases }) → Web
 | `/streak` | SSR | Start or manage a goal streak — duration, daily quota, calendar, today progress |
 | `/profile/[username]` | SSR | User profile — solved count, streak calendar, recent activity |
 | `/leaderboard` | SSR | Top users by solve count |
-| `/login` | Static | GitHub OAuth / email login via Supabase |
-| `/donate/success` | Static | Thank-you page after Stripe Checkout |
+| `/login` | Static | Google OAuth (primary); GitHub and email still available |
+| `/auth/callback` | Route | Exchanges the OAuth code, then sends first-time users to `/welcome` |
+| `/welcome` | SSR | First-login username + avatar (32 presets, upload, or skip defaults) |
+| `/donate/success` | Static | Thank-you page after Dodo Checkout |
 
 ### Problem Workspace Layout (`/problems/[slug]`)
 
@@ -347,7 +349,7 @@ Monaco → postMessage({ type:'RUN', schema_sql, user_sql, test_cases }) → Web
 
 ## 8. Donations
 
-KillSQL stays free by asking for optional support after a successful solve. Payments go through **Stripe Checkout**. There is no donations table in v1 — Stripe is the source of truth.
+KillSQL stays free by asking for optional support after a successful solve. Payments go through **Dodo Payments** (merchant of record), which works for Indian individuals collecting from global donors. There is no donations table in v1 — Dodo is the source of truth.
 
 ### When the prompt appears
 
@@ -368,11 +370,11 @@ A later problem the same day can still show the prompt unless the user checked *
 `POST /api/donate/checkout` with `{ amountCents, returnPath }`:
 
 - Validate amount (integer cents, $1–$500) and `returnPath` (must start with `/`, no open redirect).
-- Create a Checkout Session: `mode: "payment"`, `submit_type: "donate"`, one USD `price_data` line item.
-- `success_url` → `/donate/success?next=...`, `cancel_url` → original problem.
-- Client redirects to `session.url`.
+- Create a Dodo Checkout Session for a Pay What You Want product, passing `amount` in cents.
+- `return_url` → `/donate/success?next=...`, `cancel_url` → original problem.
+- Client redirects to `session.checkout_url`.
 
-Env: `STRIPE_SECRET_KEY` (server-only) and `NEXT_PUBLIC_SITE_URL` (success/cancel URLs). If Stripe is not configured, Donate shows an inline error instead of a broken redirect.
+Env: `DODO_PAYMENTS_API_KEY`, `DODO_PAYMENTS_PRODUCT_ID`, optional `DODO_PAYMENTS_ENVIRONMENT` (`test_mode` or `live_mode`), and `NEXT_PUBLIC_SITE_URL`. If Dodo is not configured, Donate shows an inline error instead of a broken redirect.
 
 Dismiss is stored on skip-with-checkbox, Donate click, and the thank-you page. No webhook in v1.
 
@@ -494,12 +496,21 @@ Day 5–7 confirmed → freeze_balance = 1 again
 ```sql
 -- User profiles (auto-created on signup via trigger)
 CREATE TABLE profiles (
-  id          UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  username    TEXT UNIQUE NOT NULL,
-  avatar_url  TEXT,
-  bio         TEXT,
-  timezone    TEXT NOT NULL DEFAULT 'UTC',  -- IANA, e.g. Asia/Kolkata
-  created_at  TIMESTAMPTZ DEFAULT NOW()
+  id                    UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  username              TEXT UNIQUE NOT NULL CHECK (username ~ '^[a-z0-9_]{3,24}$'),
+  display_name          TEXT,              -- Google / OAuth full name
+  avatar_url            TEXT,              -- /avatars/*.svg, upload, or provider photo
+  bio                   TEXT,
+  timezone              TEXT NOT NULL DEFAULT 'UTC',  -- IANA, e.g. Asia/Kolkata
+  onboarding_completed  BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at            TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Email is private (own-row RLS). Public profile pages never select this table.
+CREATE TABLE profile_private (
+  user_id     UUID PRIMARY KEY REFERENCES profiles(id) ON DELETE CASCADE,
+  email       TEXT,
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Every submission attempt (pass or fail)
@@ -565,12 +576,17 @@ ALTER TABLE submissions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "own submissions" ON submissions
   USING (auth.uid() = user_id);
 
--- Profiles are publicly readable
+-- Profiles are publicly readable (no email column)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public profiles" ON profiles
   FOR SELECT USING (true);
 CREATE POLICY "own profile" ON profiles
   FOR ALL USING (auth.uid() = id);
+
+-- Emails are owner-only
+ALTER TABLE profile_private ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "own private profile" ON profile_private
+  FOR ALL USING (auth.uid() = user_id);
 
 -- Streaks: own rows only (freeze consume is server-side / service role)
 ALTER TABLE streak_challenges ENABLE ROW LEVEL SECURITY;
@@ -586,6 +602,22 @@ CREATE POLICY "own streak days" ON streak_days
     )
   );
 ```
+
+### Auth and first-login onboarding
+
+Google is the primary sign-in (`signInWithOAuth({ provider: "google" })`). GitHub and email/password remain on `/login`. The Google client ID/secret live in the Supabase dashboard, not in Next.js env.
+
+On `auth.users` insert, `handle_new_user`:
+
+1. Copies `full_name` / `name` → `profiles.display_name`.
+2. Copies `email` → `profile_private.email` (owner-only RLS).
+3. Allocates a unique `username` from the email local-part, or `user_<id>`.
+4. Sets `avatar_url` to `/avatars/default.svg`.
+5. Leaves `onboarding_completed = false`.
+
+`/auth/callback` then sends the session to `/welcome`. The user can set a handle (3–24 `a-z0-9_`), upload a picture to the public `avatars` bucket (`{user_id}/…`, 2 MB), pick one of 32 SVG presets under `/avatars/`, or use their Google photo. **Skip** keeps the assigned handle and the default avatar, then sets `onboarding_completed`. `complete_onboarding(p_username, p_avatar_url)` is the RPC.
+
+Preset art lives in `apps/web/public/avatars/` (`default.svg` plus `01.svg`–`32.svg`). Regenerate with `node scripts/generate-avatars.mjs`.
 
 ---
 
@@ -608,9 +640,16 @@ killsql/
 │       │   │       └── page.tsx      # User profile
 │       │   ├── leaderboard/
 │       │   │   └── page.tsx          # Leaderboard
+│       │   ├── login/
+│       │   │   └── page.tsx          # Google / GitHub / email
+│       │   ├── welcome/
+│       │   │   └── page.tsx          # First-login username + avatar
+│       │   ├── auth/
+│       │   │   └── callback/
+│       │   │       └── route.ts      # OAuth code exchange
 │       │   ├── donate/
 │       │   │   └── success/
-│       │   │       └── page.tsx      # Thank-you after Stripe Checkout
+│       │   │       └── page.tsx      # Thank-you after Dodo Checkout
 │       │   └── api/
 │       │       ├── submissions/
 │       │       │   └── route.ts      # POST /api/submissions
@@ -623,8 +662,13 @@ killsql/
 │       │       │   └── streaks/
 │       │       │       └── route.ts  # Hourly: freeze consume or break
 │       │       └── user/
-│       │           └── route.ts      # GET /api/user
+│       │           ├── route.ts      # GET /api/user
+│       │           └── onboarding/
+│       │               └── route.ts  # POST first-login profile
 │       ├── components/
+│       │   ├── auth/
+│       │   │   ├── onboarding-form.tsx
+│       │   │   └── onboarding-gate.tsx
 │       │   ├── donate/
 │       │   │   └── donate-prompt.tsx # Post-solve / header donate modal
 │       │   ├── editor/
@@ -635,11 +679,15 @@ killsql/
 │       │   │   └── ProblemCard.tsx
 │       │   └── ui/                   # shadcn/ui components (incl. dialog)
 │       ├── lib/
+│       │   ├── avatars.ts            # 32 presets + default + URL allow-list
+│       │   ├── username.ts           # Handle format + reserved names
 │       │   ├── donate.ts             # Amounts, daily dismiss, return-path safety
 │       │   ├── duckdb.ts             # DuckDB-WASM initializer + wrapper
 │       │   ├── validator.ts          # Result set comparison logic
 │       │   ├── supabase.ts           # Supabase browser client
 │       │   └── questions.ts          # Question loader (static JSON)
+│       ├── public/
+│       │   └── avatars/              # default.svg + 01.svg–32.svg
 │       ├── worker/
 │       │   └── sql.worker.ts         # Web Worker: DuckDB execution
 │       └── types/
@@ -658,6 +706,7 @@ killsql/
 │   └── hard/                         # 091–100
 │
 ├── scripts/
+│   ├── generate-avatars.mjs          # Writes apps/web/public/avatars/*.svg
 │   ├── validate-questions.ts         # JSON schema + DuckDB solution runner
 │   ├── duckdb-exec.ts                # In-memory DuckDB for scripts
 │   ├── build-index.ts                # Generates questions/index.json
@@ -665,18 +714,22 @@ killsql/
 │
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                    # Lint, validate questions (DuckDB), production build
+│       ├── ci.yml                    # Lint, validate questions (DuckDB), production build
+│       ├── supabase-migrate.yml      # supabase db push on main (schema via git only)
+│       └── supabase-keepalive.yml    # Mon/Thu PostgREST ping (Free-plan pause guard)
 │
 ├── supabase/
+│   ├── config.toml                   # CLI project config
 │   └── migrations/
 │       ├── 001_initial.sql           # profiles, submissions, user_stats
-│       └── 002_streaks.sql           # streak challenges + freeze
+│       ├── 002_streaks.sql           # streak challenges + freeze
+│       └── 003_auth_onboarding.sql   # display_name, profile_private, avatars bucket
 │
 ├── docker/
 │   └── init.sql                      # auth.uid() stub for local Postgres
 ├── docker-compose.yml                # Local Postgres with KillSQL migrations
 ├── package.json                      # npm workspaces (apps/web, packages/question-types)
-├── .env.example                      # Supabase + optional Stripe keys
+├── .env.example                      # Supabase + optional Dodo Payments keys
 ├── LICENSE                           # MIT
 ├── CONTRIBUTING.md                   # How to add questions / run locally
 └── ARCHITECTURE.md                   # This document
@@ -701,7 +754,7 @@ killsql/
 - **Questions are static files.** Serving JSON from a CDN is essentially free at any scale.
 - **Serverless API routes.** Vercel serverless functions only run when someone logs in, saves a submission, or starts a donation — not for every problem view.
 - **Supabase free tier is generous.** 500 MB of Postgres + 50K MAU covers early growth entirely.
-- **Stripe has no monthly fee.** Checkout is pay-per-donation (~2.9% + $0.30). The donate prompt works without a key; checkout is disabled until `STRIPE_SECRET_KEY` is set.
+- **Dodo Payments has no monthly fee.** Checkout is pay-per-donation. The donate prompt works without keys; checkout is disabled until `DODO_PAYMENTS_API_KEY` and `DODO_PAYMENTS_PRODUCT_ID` are set.
 
 ---
 
@@ -724,16 +777,24 @@ No backend changes, no migrations — just one JSON file.
 ### GitHub Actions CI Pipeline
 
 ```yaml
-# .github/workflows/ci.yml
+# .github/workflows/ci.yml — questions + app
 jobs:
+  secrets:
+    - Reject tracked .env files and live-looking keys
   validate:
     - Lint all question JSON files against the Question schema
     - Run every question's solution_sql through DuckDB-Node and assert test_cases pass
     - TypeScript typecheck
     - ESLint
+
+# .github/workflows/supabase-migrate.yml — production schema
+# Pushes supabase/migrations to the linked project. Never use the SQL editor.
+
+# .github/workflows/supabase-keepalive.yml — Free-plan pause guard
+# SELECT 1 row from profiles via PostgREST on Monday and Thursday.
 ```
 
-This ensures every merged question is guaranteed to be valid and solvable.
+This ensures every merged question is guaranteed to be valid and solvable, and that schema changes only land through git.
 
 ### Local Development
 
@@ -746,7 +807,7 @@ npm run validate:questions   # JSON schema + run every official solution in Duck
 npm run dev                  # Next.js on :3000
 ```
 
-SQL practice works with no database. Auth, submissions, streaks, and the leaderboard need a [Supabase](https://supabase.com) project (or `npx supabase start`) and `apps/web/.env.local`. The donate prompt appears without Stripe; set `STRIPE_SECRET_KEY` to enable Checkout. `NEXT_PUBLIC_SITE_URL` is used for OAuth and Stripe return URLs.
+SQL practice works with no database. Auth, submissions, streaks, and the leaderboard need a [Supabase](https://supabase.com) project (or `npx supabase start`) and `apps/web/.env.local`. Production migrations are applied by GitHub Actions (`supabase db push`); add new files with `npx supabase migration new <name>`. Enable Google under Authentication → Providers. The donate prompt appears without Dodo; set `DODO_PAYMENTS_API_KEY` and `DODO_PAYMENTS_PRODUCT_ID` to enable Checkout. `NEXT_PUBLIC_SITE_URL` is used for OAuth and Dodo return URLs.
 
 ---
 
@@ -758,27 +819,27 @@ Build in this order to get to a usable product as fast as possible:
 2. **Static question loader** — Load a question JSON file and display it. Prove the full run → validate → pass/fail loop works.
 3. **Problem workspace page** — The `/problems/[slug]` split-pane view.
 4. **Problem list page** — `/problems` with filtering by difficulty and tag.
-5. **Supabase auth** — GitHub OAuth login. Users can now be identified.
+5. **Supabase auth** — Google OAuth login, first-login username/avatar onboarding, profile row.
 6. **Submission saving** — POST to `/api/submissions` on pass. Mark problems as solved in the UI.
 7. **Profile page** — Show solved count, streak calendar, recent submissions.
 8. **Goal streaks** — Start N-day / M-problems-per-day challenge; daily confirmation; **streak freeze every 3 confirmed days** (cap 2, auto-use on miss).
 9. **Landing page + leaderboard** — Polish and growth features.
-10. **Donations** — Post-solve prompt, header Donate, Stripe Checkout, daily localStorage dismiss.
+10. **Donations** — Post-solve prompt, header Donate, Dodo Payments Checkout, daily localStorage dismiss.
 
 ---
 
 ## 15. Future Considerations
 
-These are explicitly **out of scope for MVP** but worth designing for later:
+Practice UX items 1–12 (readable schema, fail diffs, guest progress, dialect note, navigation, company filter, topic tracks, daily problem, autocomplete, local attempts, plus Supabase-blocked auth and leaderboard polish) live in [TODO.md](./TODO.md#practice-ux).
+
+These are still **out of scope for later**:
 
 | Feature | Notes |
 |---|---|
 | **SQL dialects** | DuckDB-WASM is DuckDB dialect. Future: toggle between DuckDB / PostgreSQL / MySQL syntax modes |
 | **Timed challenges** | Could be client-side only (countdown timer, no server needed) |
 | **Streak freeze shop / gems** | Freezes are earned only (every 3 confirmed days). Paid freeze packs are a later monetization option |
-| **Donor list / webhooks** | v1 donations are Stripe-only. A webhook + `donations` table can power a public supporters list later |
-| **Collections / Learning Paths** | Group questions into curated tracks (e.g., "Window Functions 101") |
-| **Company-tagged problems** | Already in the question JSON schema via `companies[]` |
+| **Donor list / webhooks** | v1 donations are Dodo-only. A webhook + `donations` table can power a public supporters list later |
 | **Discussion threads** | Could use GitHub Discussions or a Supabase `comments` table |
 | **Sandboxed server-side execution** | If dialect fidelity matters at scale, consider Fly.io ephemeral containers — but only as an optional "verify on real Postgres" feature |
 | **AI hints** | Stream hints from an LLM API (OpenAI / Anthropic) only when user requests — pay-per-use, not per query |

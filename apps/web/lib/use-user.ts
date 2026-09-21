@@ -7,7 +7,9 @@ export type CurrentUser = {
   id: string;
   email?: string;
   username: string;
+  display_name: string | null;
   avatar_url: string | null;
+  onboarding_completed: boolean;
   stats: {
     total_solved: number;
     easy_solved: number;

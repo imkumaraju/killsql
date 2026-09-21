@@ -43,9 +43,9 @@ npm run dev
 
 Open http://localhost:3000.
 
-Auth, submissions, profiles, goal streaks, and the leaderboard need a Supabase project. Apply `supabase/migrations/001_initial.sql` then `002_streaks.sql` in the SQL editor, enable GitHub OAuth, and set `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+Auth, submissions, profiles, goal streaks, and the leaderboard need a Supabase project. Enable **Google** OAuth (GitHub and email optional), set `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `apps/web/.env.local` (never commit that file), and add `http://localhost:3000/auth/callback` plus `http://localhost:3000/welcome` to the redirect allow-list. First sign-in goes to `/welcome` for a username and avatar (skip assigns defaults). Production schema is applied from `supabase/migrations/` by GitHub Actions using **repository secrets** — do not put keys in git or the dashboard SQL editor. To change tables, add a new file with `npx supabase migration new descriptive_name` and merge to `main`.
 
-Donations: the post-solve prompt works without Stripe. Set `STRIPE_SECRET_KEY` in `apps/web/.env.local` to enable Checkout. `NEXT_PUBLIC_SITE_URL` is used for Stripe success/cancel URLs.
+Donations: the post-solve prompt works without Dodo. Set `DODO_PAYMENTS_API_KEY` and `DODO_PAYMENTS_PRODUCT_ID` in `apps/web/.env.local` to enable Checkout. `NEXT_PUBLIC_SITE_URL` is used for Dodo success/cancel URLs.
 
 ## Code contributions
 

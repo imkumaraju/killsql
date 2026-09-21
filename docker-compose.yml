@@ -1,5 +1,5 @@
 # Local Postgres with KillSQL tables. auth.uid() is stubbed in docker/init.sql —
-# GitHub OAuth and RLS need a real Supabase project (or `npx supabase start`).
+# Google OAuth and RLS need a real Supabase project (or `npx supabase start`).
 # Production migrations are applied by GitHub Actions, not this compose file.
 services:
   db:
@@ -16,6 +16,7 @@ services:
       - ./docker/init.sql:/docker-entrypoint-initdb.d/000_auth_stub.sql:ro
       - ./supabase/migrations/001_initial.sql:/docker-entrypoint-initdb.d/001_initial.sql:ro
       - ./supabase/migrations/002_streaks.sql:/docker-entrypoint-initdb.d/002_streaks.sql:ro
+      - ./supabase/migrations/003_auth_onboarding.sql:/docker-entrypoint-initdb.d/003_auth_onboarding.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

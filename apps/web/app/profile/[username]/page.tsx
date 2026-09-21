@@ -94,8 +94,13 @@ export default async function ProfilePage({
           <AvatarFallback>{profile.username.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-2xl font-semibold">@{profile.username}</h1>
+          {profile.display_name ? (
+            <h1 className="text-2xl font-semibold">{profile.display_name}</h1>
+          ) : (
+            <h1 className="text-2xl font-semibold">@{profile.username}</h1>
+          )}
           <p className="text-sm text-zinc-400">
+            {profile.display_name ? <span className="mr-2">@{profile.username}</span> : null}
             Joined {new Date(profile.created_at).toLocaleDateString()}
           </p>
         </div>

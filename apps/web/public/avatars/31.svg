@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" rx="28" fill="#9a3412"/>
+  <circle cx="64" cy="64" r="52" fill="#431407" opacity=".35"/>
+  
+    <ellipse cx="64" cy="78" rx="34" ry="32" fill="#fdba74"/>
+    <circle cx="50" cy="58" r="16" fill="#ffedd5"/>
+    <circle cx="78" cy="58" r="16" fill="#ffedd5"/>
+    <circle cx="50" cy="58" r="9" fill="#431407"/>
+    <circle cx="78" cy="58" r="9" fill="#431407"/>
+    <circle cx="53" cy="55" r="3" fill="#fff"/>
+    <circle cx="81" cy="55" r="3" fill="#fff"/>
+    <path d="M64 68 L74 78 L54 78 Z" fill="#f59e0b"/>
+    <path d="M40 38 L50 48 L34 50 Z" fill="#fdba74"/>
+    <path d="M88 38 L78 48 L94 50 Z" fill="#fdba74"/>
+    <path d="M42 96 Q64 108 86 96" stroke="#431407" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <path d="M24 56 Q20 40 36 38 Q64 28 92 38 Q108 40 104 56" fill="none" stroke="#ffedd5" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="24" cy="62" r="8" fill="#ffedd5"/>
+      <circle cx="104" cy="62" r="8" fill="#ffedd5"/>
+</svg>

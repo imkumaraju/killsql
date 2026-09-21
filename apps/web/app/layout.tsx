@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { OnboardingGate } from "@/components/auth/onboarding-gate";
 import { Providers } from "@/components/providers";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-zinc-950 text-zinc-100">
         <Providers>
+          <OnboardingGate />
           <SiteHeader />
           <main className="flex min-h-0 flex-1 flex-col">{children}</main>
         </Providers>
