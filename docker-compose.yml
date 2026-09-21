@@ -1,5 +1,6 @@
 # Local Postgres with KillSQL tables. auth.uid() is stubbed in docker/init.sql —
 # GitHub OAuth and RLS need a real Supabase project (or `npx supabase start`).
+# Production migrations are applied by GitHub Actions, not this compose file.
 services:
   db:
     image: postgres:16-alpine

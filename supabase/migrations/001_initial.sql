@@ -1,5 +1,7 @@
 -- KillSQL initial schema
--- Apply in the Supabase SQL editor, or via `supabase db push` / docker-compose.
+-- Applied to production only by `.github/workflows/supabase-migrate.yml`
+-- (`supabase db push`). Do not paste this into the dashboard SQL editor.
+-- Local: `docker compose up -d` or `npx supabase db push` against a linked project.
 
 create extension if not exists "pgcrypto";
 

@@ -14,7 +14,8 @@
     "lint": "npm run lint --workspace=web",
     "build:index": "tsx scripts/build-index.ts",
     "copy:questions": "tsx scripts/copy-questions.ts",
-    "validate:questions": "tsx scripts/validate-questions.ts"
+    "validate:questions": "tsx scripts/validate-questions.ts",
+    "check:secrets": "node scripts/check-secrets.mjs"
   },
   "dependencies": {
     "tsx": "^4.19.3"

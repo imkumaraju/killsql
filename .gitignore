@@ -13,6 +13,8 @@ Thumbs.db
 apps/web/public/questions
 .vercel
 .supabase
+supabase/.temp
+supabase/.branches
 *.tsbuildinfo
 .idea
 .vscode/*

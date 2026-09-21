@@ -1,5 +1,6 @@
 -- Goal streaks + Duolingo-style freezes
--- Apply after 001_initial.sql in the Supabase SQL editor.
+-- Applied after 001_initial.sql by `.github/workflows/supabase-migrate.yml`.
+-- Do not paste this into the dashboard SQL editor.
 
 -- ---------------------------------------------------------------------------
 -- Schema
