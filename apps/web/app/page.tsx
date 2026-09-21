@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, Cpu, Globe, Shield } from "lucide-react";
+import { ArrowRight, Code2, Flame, Zap } from "lucide-react";
+import { PracticeShortcuts } from "@/components/home/practice-shortcuts";
 import { Button } from "@/components/ui/button";
+import { pickDaily } from "@/lib/daily";
 import { loadQuestionSummaries } from "@/lib/questions";
 
 export default function HomePage() {
   const questions = loadQuestionSummaries();
   const sample = questions[0];
+  const daily = pickDaily(questions);
 
   return (
     <div className="relative overflow-hidden">
@@ -15,7 +18,7 @@ export default function HomePage() {
       <section className="relative mx-auto flex max-w-6xl flex-col gap-16 px-4 pb-24 pt-20">
         <div className="max-w-3xl space-y-6">
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-lime-400">
-            Open source · runs locally
+            Free SQL practice
           </p>
           <h1 className="text-5xl font-semibold tracking-tight text-zinc-50 sm:text-6xl">
             Practice SQL.
@@ -24,9 +27,8 @@ export default function HomePage() {
             <span className="text-lime-400"> For free.</span>
           </h1>
           <p className="max-w-xl text-lg text-zinc-400">
-            KillSQL is a LeetCode-style problem set where every query executes in DuckDB-WASM.
-            There is no query server. Questions are static JSON. The backend only stores your
-            progress.
+            A free site for practicing SQL. Pick a problem, write a query against real tables, and
+            check it against the expected result — no setup, no paywall.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">
@@ -39,27 +41,29 @@ export default function HomePage() {
               <Link href="/problems">Browse {questions.length} problems</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="/streak">Start a streak</Link>
+              <Link href="/learn">Learn by topic</Link>
             </Button>
           </div>
         </div>
 
+        <PracticeShortcuts questions={questions} daily={daily} />
+
         <div className="grid gap-4 sm:grid-cols-3">
           {[
             {
-              icon: Cpu,
-              title: "DuckDB in a worker",
-              body: "Window functions, CTEs, and UNNEST run on your machine. The UI stays responsive.",
+              icon: Code2,
+              title: "Interview-style problems",
+              body: "Easy to hard questions covering joins, CTEs, window functions, and aggregations.",
             },
             {
-              icon: Globe,
-              title: "Questions as files",
-              body: "Add a JSON file, open a PR. No migration, no admin panel, no database write.",
+              icon: Zap,
+              title: "Instant feedback",
+              body: "Run your query and see if it matches. Hints are there when you get stuck.",
             },
             {
-              icon: Shield,
-              title: "Thin backend",
-              body: "Supabase stores accounts and submissions. SQL never leaves the browser.",
+              icon: Flame,
+              title: "Daily streaks",
+              body: "Solve a few problems a day, keep a freeze for missed days, and climb the leaderboard.",
             },
           ].map((feature) => (
             <div
@@ -81,7 +85,7 @@ export default function HomePage() {
             <span className="ml-2">select-all-employees.sql</span>
           </div>
           <pre className="overflow-x-auto p-5 font-mono text-sm leading-6 text-zinc-300">
-            <span className="text-zinc-500">-- runs in DuckDB-WASM, not on our servers</span>
+            <span className="text-zinc-500">-- pick a problem and start writing</span>
             {"\n"}
             <span className="text-lime-300">SELECT</span>
             {" *\n"}

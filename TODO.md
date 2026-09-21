@@ -1,6 +1,6 @@
 # KillSQL TODO
 
-Snapshot: **2026-09-21**. v1 product code is largely built. The 100-problem bank, browser SQL engine, workspace, streaks, and donate prompt all exist. Supabase project **KillSQL** is created but empty. Remaining: wire secrets + auth, apply migrations via GitHub Actions, Dodo live payments, leaderboard polish, and committing local practice-UX / Dodo work.
+Snapshot: **2026-09-21**. v1 product code is largely built. The 100-problem bank, browser SQL engine, workspace, streaks, donate prompt, and practice UX all exist. Remaining: auth URLs / OAuth, Vercel env, Dodo live payments, and leaderboard polish.
 
 ## Status at a glance
 
@@ -8,24 +8,24 @@ Snapshot: **2026-09-21**. v1 product code is largely built. The 100-problem bank
 |---|---|---|---|
 | Question bank | Done | Static in repo | 100 problems: 30 easy, 60 medium, 10 hard |
 | Practice engine | Done | Works without an account | DuckDB-WASM, Monaco, validator, CI |
-| Practice UX (items 2–11) | Done | **Uncommitted** | Schema preview, fail diffs, guest progress, tracks, daily, autocomplete |
+| Practice UX (items 2–11) | Done | **On main** | Schema preview, fail diffs, guest progress, tracks, daily, autocomplete |
 | Auth, submissions, profiles, streaks | Done | **Secrets in Actions; schema not applied yet** | KillSQL @ `pbsrivwuhq2thtgut`; `.env.local` filled locally |
 | Leaderboard | Basic page | **Not configured** | Polish (hide 0-solved, ties, highlight you) still open |
 | Donations | Dodo draft | **Not live** | Stripe removed locally; merchant verification still pending |
 
-`main` at `origin` is the original MVP plus Stripe donate and Vercel/CI fixes. Working tree on this machine also has the practice UX and the Dodo Payments swap.
+`main` has the MVP, Stripe donate, Vercel/CI fixes, the git migration pipeline, and practice UX. The Dodo Payments swap is still only in the working tree.
 
 ## Next unblocked actions
 
-1. **Push the migration workflows** and run **Deploy Supabase migrations**, then finish auth URLs / GitHub OAuth.
-2. **Commit and push the practice UX** (and optionally the Dodo code swap). SQL practice does not need Dodo to ship.
+1. **Finish auth URLs / GitHub OAuth**, then confirm sign-in locally.
+2. **Commit the Dodo Payments swap** when you are ready for it to land on `main`. SQL practice does not need Dodo to ship.
 3. **After Dodo merchant approval:** live Pay What You Want product, env keys, test checkout, one small live payment.
 
 ## Uncommitted local work
 
 Do not commit API keys, product secrets, bank details, or identity documents.
 
-- [ ] Commit the practice UX (learn tracks, daily problem, schema preview, fail diffs, guest progress, autocomplete, docs).
+- [x] Commit the practice UX (learn tracks, daily problem, schema preview, fail diffs, guest progress, autocomplete).
 - [ ] Commit the Dodo Payments swap when you are ready for it to land on `main` (checkout still returns 503 until keys exist).
 - [ ] Run typecheck, lint, and production build before pushing.
 
@@ -53,7 +53,7 @@ The anon key will still appear in the browser after deploy — that is how Supab
 
 - [x] Keep all schema in `supabase/migrations/` (001 initial, 002 streaks).
 - [x] Add `.github/workflows/supabase-migrate.yml` — `supabase link` + `supabase db push` on `main` and via **Run workflow**.
-- [ ] After this pipeline is on `main`, run **Deploy Supabase migrations** if it did not start automatically, so 001 + 002 land on the empty project.
+- [x] Pipeline is on `main` (`e9029f3`). **Deploy Supabase migrations** should start from that push.
 - [ ] Confirm `profiles`, `submissions`, `user_stats`, `streak_challenges`, `streak_days`, RLS, and the new-user trigger exist in Table Editor.
 - [ ] Later schema changes: `npx supabase migration new descriptive_name`, PR, merge to `main`. Never edit production tables by hand.
 

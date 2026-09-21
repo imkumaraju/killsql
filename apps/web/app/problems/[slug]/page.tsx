@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { SqlWorkspace } from "@/components/editor/sql-workspace";
-import { loadAllQuestions, loadQuestionBySlug } from "@/lib/questions";
+import { loadAllQuestions, loadQuestionBySlug, loadQuestionSummaries } from "@/lib/questions";
 
 export function generateStaticParams() {
   return loadAllQuestions().map((question) => ({ slug: question.slug }));
@@ -22,10 +22,11 @@ export default async function ProblemPage({
   const { slug } = await params;
   const question = loadQuestionBySlug(slug);
   if (!question) notFound();
+  const questions = loadQuestionSummaries();
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col">
-      <SqlWorkspace question={question} />
+      <SqlWorkspace key={question.slug} question={question} questions={questions} />
     </div>
   );
 }

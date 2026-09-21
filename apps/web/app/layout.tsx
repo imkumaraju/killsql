@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s · KillSQL",
   },
   description:
-    "LeetCode-style SQL problems that run entirely in the browser with DuckDB-WASM. Free and open source.",
+    "Free SQL practice in your browser. Interview-style problems, instant feedback, and daily streaks.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
