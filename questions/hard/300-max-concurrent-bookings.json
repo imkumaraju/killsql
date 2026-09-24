@@ -1,0 +1,30 @@
+{
+  "id": "300",
+  "slug": "max-concurrent-bookings",
+  "title": "Maximum Concurrent Bookings per Room",
+  "difficulty": "hard",
+  "tags": ["CTE", "UNION ALL", "window functions", "SUM OVER", "event sweep", "interval algebra", "calendar"],
+  "description": "A `bookings` table records room reservations with start and end timestamps. Using an **event sweep (sweep line) approach**, determine the **maximum number of overlapping (concurrent) bookings** at any point in time for each room.\n\n**Table: bookings**\n\n| Column | Type |\n|--------|------|\n| booking_id | INT |\n| room_id | INT |\n| customer_name | VARCHAR |\n| start_time | TIMESTAMP |\n| end_time | TIMESTAMP |\n\nOutput columns: `room_id`, `max_concurrent_bookings`. Order by `room_id`.",
+  "schema_sql": "CREATE TABLE bookings (booking_id INT, room_id INT, customer_name VARCHAR, start_time TIMESTAMP, end_time TIMESTAMP); INSERT INTO bookings VALUES (1,1,'Alice','2024-01-15 09:00','2024-01-15 11:00'),(2,1,'Bob','2024-01-15 10:00','2024-01-15 12:00'),(3,1,'Carol','2024-01-15 10:30','2024-01-15 13:00'),(4,1,'Dave','2024-01-15 11:30','2024-01-15 14:00'),(5,1,'Eve','2024-01-15 13:30','2024-01-15 15:00'),(6,2,'Frank','2024-01-15 09:00','2024-01-15 10:00'),(7,2,'Grace','2024-01-15 09:30','2024-01-15 11:00'),(8,2,'Hank','2024-01-15 10:30','2024-01-15 12:00'),(9,2,'Iris','2024-01-15 14:00','2024-01-15 15:00'),(10,1,'Jack','2024-01-15 08:00','2024-01-15 10:30');",
+  "solution_sql": "WITH events AS (SELECT room_id, start_time AS event_time, 1 AS delta FROM bookings UNION ALL SELECT room_id, end_time, -1 FROM bookings), running AS (SELECT room_id, event_time, SUM(delta) OVER (PARTITION BY room_id ORDER BY event_time, delta DESC) AS concurrent_count FROM events) SELECT room_id, MAX(concurrent_count) AS max_concurrent_bookings FROM running GROUP BY room_id ORDER BY room_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Maximum concurrent bookings per room via event sweep",
+      "expected_row_count": 2,
+      "expected_columns": ["room_id", "max_concurrent_bookings"],
+      "expected_rows": [
+        { "room_id": 1, "max_concurrent_bookings": 4 },
+        { "room_id": 2, "max_concurrent_bookings": 2 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Convert each booking into two events: a +1 event at start_time (booking begins) and a -1 event at end_time (booking ends). UNION ALL these two sets to build a single events timeline. When a start_time and end_time coincide, ORDER BY event_time, delta DESC ensures +1 events are processed before -1 events (a new booking starting exactly when one ends still overlaps).",
+    "Apply SUM(delta) OVER (PARTITION BY room_id ORDER BY event_time, delta DESC) as a running total. The running sum at each event represents the number of concurrently active bookings at that moment. MAX of this running sum gives the peak concurrency."
+  ],
+  "explanation": "The sweep-line algorithm converts interval overlap detection into a sequential problem. Each booking contributes a +1 event at its start and a -1 event at its end. When these events are sorted chronologically per room, a running sum of the deltas tracks how many bookings are active at each moment. For room 1: Jack starts at 08:00 (running=1), Alice at 09:00 (2), Bob at 10:00 (3), Carol at 10:30 before Jack ends at 10:30 (4 → 3). The peak is 4. For room 2: Frank+Grace overlap at 09:30 (2), then Frank ends before Hank starts — so the peak is only 2. The ORDER BY delta DESC at ties ensures a start event (delta=+1) is counted before the simultaneous end event (delta=-1), correctly capturing the momentary peak. This algorithm is used in hotel room availability engines, cloud resource scheduling, and operating system process management.",
+  "companies": ["Airbnb", "Booking.com", "Google"],
+  "created_at": "2026-09-24"
+}

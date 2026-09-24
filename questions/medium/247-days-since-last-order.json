@@ -1,0 +1,26 @@
+{
+  "id": "247",
+  "slug": "days-since-last-order",
+  "title": "Days Since Last Order per Customer",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "MAX", "date arithmetic", "CURRENT_DATE", "recency"],
+  "description": "For each customer, calculate the **date of their most recent order** and the **number of days elapsed since that order** (as of a reference date '2026-03-31'). Order results from least recently active to most recently active.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2026-01-05',100.00),(2,1,'2026-02-15',150.00),(3,1,'2026-03-20',200.00),(4,2,'2026-01-10',300.00),(5,2,'2026-02-08',250.00),(6,3,'2026-01-08',180.00),(7,4,'2026-01-20',90.00),(8,4,'2026-03-01',110.00),(9,4,'2026-03-28',130.00),(10,5,'2026-01-15',160.00),(11,5,'2026-02-22',140.00);",
+  "solution_sql": "SELECT customer_id, MAX(order_date) AS last_order_date, '2026-03-31'::DATE - MAX(order_date) AS days_since_last_order FROM orders GROUP BY customer_id ORDER BY days_since_last_order DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 customers each with last order date and days since. C3 most dormant (last ordered Jan 8 = 82 days), C4 most recent (Mar 28 = 3 days).",
+      "expected_row_count": 5,
+      "expected_columns": ["customer_id", "last_order_date", "days_since_last_order"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use MAX(order_date) per customer to find their most recent order, then subtract from a fixed reference date to get days elapsed.",
+    "Subtracting a DATE from another DATE in PostgreSQL returns an integer number of days — no need for DATEDIFF."
+  ],
+  "explanation": "MAX(order_date) within GROUP BY customer_id gives each customer's latest purchase. Subtracting from '2026-03-31' (reference date) gives the recency in days. C3: last=Jan 8, 82 days (most dormant). C2: last=Feb 8, 51 days. C5: last=Feb 22, 37 days. C1: last=Mar 20, 11 days. C4: last=Mar 28, 3 days (most recent). This recency metric is the 'R' in RFM analysis.",
+  "companies": ["Klaviyo", "Braze"],
+  "created_at": "2026-09-24"
+}

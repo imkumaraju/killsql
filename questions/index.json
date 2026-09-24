@@ -3778,6 +3778,176 @@
     ]
   },
   {
+    "id": "236",
+    "slug": "category-ratio-to-total",
+    "title": "Ratio of Each Category to Total Revenue",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "SUM",
+      "scalar subquery",
+      "percentage",
+      "ratio"
+    ],
+    "companies": [
+      "Walmart",
+      "Target"
+    ]
+  },
+  {
+    "id": "237",
+    "slug": "rank-products-within-brand",
+    "title": "Rank Products Within Each Brand by Price",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "RANK",
+      "DENSE_RANK",
+      "PARTITION BY",
+      "ORDER BY",
+      "ties"
+    ],
+    "companies": [
+      "Apple",
+      "Nike"
+    ]
+  },
+  {
+    "id": "238",
+    "slug": "first-last-purchase-per-customer",
+    "title": "First and Last Purchase Date per Customer",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "MIN",
+      "MAX",
+      "SUM",
+      "COUNT",
+      "date arithmetic"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "239",
+    "slug": "customers-never-returned",
+    "title": "Customers Who Never Made a Second Purchase",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "HAVING",
+      "COUNT",
+      "one-time buyers",
+      "retention"
+    ],
+    "companies": [
+      "Shopify",
+      "WooCommerce"
+    ]
+  },
+  {
+    "id": "240",
+    "slug": "weekend-orders",
+    "title": "Aggregate Orders by Weekday vs Weekend",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "EXTRACT",
+      "ISODOW",
+      "CASE",
+      "GROUP BY",
+      "COUNT",
+      "SUM",
+      "date functions"
+    ],
+    "companies": [
+      "Shopify",
+      "Uber Eats"
+    ]
+  },
+  {
+    "id": "241",
+    "slug": "orders-by-hour",
+    "title": "Count Orders by Hour of Day",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "EXTRACT",
+      "HOUR",
+      "GROUP BY",
+      "COUNT",
+      "timestamp functions",
+      "time analysis"
+    ],
+    "companies": [
+      "DoorDash",
+      "Uber Eats"
+    ]
+  },
+  {
+    "id": "242",
+    "slug": "products-reviews-above-threshold",
+    "title": "Products with High Average Review Rating",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "JOIN",
+      "GROUP BY",
+      "HAVING",
+      "AVG",
+      "COUNT",
+      "reviews",
+      "threshold filter"
+    ],
+    "companies": [
+      "Amazon",
+      "Google"
+    ]
+  },
+  {
+    "id": "243",
+    "slug": "customers-all-categories",
+    "title": "Customers Who Purchased from Every Category",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "JOIN",
+      "GROUP BY",
+      "HAVING",
+      "COUNT DISTINCT",
+      "relational division",
+      "subquery"
+    ],
+    "companies": [
+      "Amazon",
+      "Instacart"
+    ]
+  },
+  {
+    "id": "244",
+    "slug": "email-domain-frequency",
+    "title": "Email Domain Frequency Analysis",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "COUNT",
+      "SPLIT_PART",
+      "string functions",
+      "SUBSTRING"
+    ],
+    "companies": [
+      "HubSpot",
+      "Mailchimp"
+    ]
+  },
+  {
     "id": "281",
     "slug": "recursive-bom-explosion",
     "title": "Recursive Bill of Materials Explosion",
@@ -4083,6 +4253,65 @@
       "Google",
       "Palantir",
       "Two Sigma"
+    ]
+  },
+  {
+    "id": "298",
+    "slug": "string-parsing-contacts",
+    "title": "String Parsing: Extract Structured Data from Concatenated Field",
+    "difficulty": "hard",
+    "tags": [
+      "SPLIT_PART",
+      "string functions",
+      "data cleaning",
+      "CTE",
+      "LOWER",
+      "SUBSTRING"
+    ],
+    "companies": [
+      "Palantir",
+      "Databricks",
+      "Twilio"
+    ]
+  },
+  {
+    "id": "299",
+    "slug": "weighted-composite-ranking",
+    "title": "Weighted Composite Product Ranking",
+    "difficulty": "hard",
+    "tags": [
+      "window functions",
+      "CTE",
+      "normalization",
+      "RANK",
+      "MIN OVER",
+      "MAX OVER",
+      "arithmetic"
+    ],
+    "companies": [
+      "Amazon",
+      "Google",
+      "Alibaba"
+    ]
+  },
+  {
+    "id": "300",
+    "slug": "max-concurrent-bookings",
+    "title": "Maximum Concurrent Bookings per Room",
+    "difficulty": "hard",
+    "tags": [
+      "CTE",
+      "UNION ALL",
+      "window functions",
+      "SUM OVER",
+      "event sweep",
+      "interval algebra",
+      "calendar"
+    ],
+    "companies": [
+      "Airbnb",
+      "Booking.com",
+      "Google"
     ]
   }
 ]

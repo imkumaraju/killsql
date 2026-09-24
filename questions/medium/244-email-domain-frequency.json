@@ -1,0 +1,26 @@
+{
+  "id": "244",
+  "slug": "email-domain-frequency",
+  "title": "Email Domain Frequency Analysis",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "COUNT", "SPLIT_PART", "string functions", "SUBSTRING"],
+  "description": "Analyze the distribution of users by their **email domain** (the part after '@'). Show each domain, the number of users with that domain, and its percentage of total users. Order by user count descending.",
+  "schema_sql": "CREATE TABLE users (user_id INT, name VARCHAR(100), email VARCHAR(200), created_at DATE); INSERT INTO users VALUES (1,'Alice','alice@gmail.com','2026-01-05'),(2,'Bob','bob@gmail.com','2026-01-08'),(3,'Carol','carol@company.com','2026-01-10'),(4,'Dave','dave@gmail.com','2026-01-12'),(5,'Eve','eve@yahoo.com','2026-01-15'),(6,'Frank','frank@company.com','2026-01-18'),(7,'Grace','grace@hotmail.com','2026-01-20'),(8,'Hank','hank@yahoo.com','2026-01-22'),(9,'Ivy','ivy@gmail.com','2026-01-25'),(10,'Jack','jack@company.com','2026-01-28');",
+  "solution_sql": "SELECT SPLIT_PART(email, '@', 2) AS domain, COUNT(*) AS user_count, ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM users), 2) AS pct_of_total FROM users GROUP BY SPLIT_PART(email, '@', 2) ORDER BY user_count DESC, domain",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 domains: gmail.com=4, company.com=3, yahoo.com=2, hotmail.com=1",
+      "expected_row_count": 4,
+      "expected_columns": ["domain", "user_count", "pct_of_total"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use SPLIT_PART(email, '@', 2) in PostgreSQL to extract the part of the email string after the '@' symbol — this gives you the domain.",
+    "Group by the extracted domain and COUNT(*) per group; divide by a scalar subquery for the percentage."
+  ],
+  "explanation": "SPLIT_PART(email, '@', 2) splits the email string on '@' and returns the second part — the domain. Grouping by domain and counting gives: gmail.com=4 (40%), company.com=3 (30%), yahoo.com=2 (20%), hotmail.com=1 (10%). This pattern is common in marketing analytics for segmenting B2B vs B2C users (corporate vs personal email domains).",
+  "companies": ["HubSpot", "Mailchimp"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "246",
+  "slug": "longest-gap-between-orders",
+  "title": "Longest Gap Between Consecutive Orders per Customer",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "LAG", "PARTITION BY", "MAX", "date arithmetic", "CTE"],
+  "description": "For each customer, find the **maximum number of days between any two consecutive orders** (the longest gap in their purchase history). Customers with only one order should not appear.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2026-01-01',100.00),(2,1,'2026-01-15',150.00),(3,1,'2026-02-10',200.00),(4,2,'2026-01-05',300.00),(5,2,'2026-01-20',250.00),(6,3,'2026-01-10',180.00),(7,3,'2026-03-05',220.00),(8,4,'2026-01-08',90.00),(9,4,'2026-02-01',110.00),(10,4,'2026-02-20',130.00),(11,4,'2026-03-15',160.00),(12,5,'2026-01-25',200.00);",
+  "solution_sql": "WITH gaps AS (SELECT customer_id, order_date - LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date) AS gap_days FROM orders) SELECT customer_id, MAX(gap_days) AS max_gap_days FROM gaps WHERE gap_days IS NOT NULL GROUP BY customer_id ORDER BY customer_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 customers with multiple orders: C1 max gap=26d (Jan15-Feb10), C2 max gap=15d, C3 max gap=54d, C4 max gap=24d. C5 has only one order and is excluded.",
+      "expected_row_count": 4,
+      "expected_columns": ["customer_id", "max_gap_days"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date) to get the previous order date, then subtract to compute the gap in days.",
+    "The first order per customer produces NULL from LAG (no previous order) — filter these out with WHERE gap_days IS NOT NULL before taking MAX."
+  ],
+  "explanation": "LAG fetches the preceding order date within the same customer partition. Subtracting dates gives day gaps. C1: gaps of 14 and 26 days → max=26. C2: gap of 15 days → max=15. C3: gap of 54 days (Jan 10 to Mar 5) → max=54. C4: gaps of 24, 19, 23 → max=24. C5 has one order (NULL from LAG only) → excluded by WHERE. The CTE cleanly separates gap computation from aggregation.",
+  "companies": ["Shopify", "Stripe"],
+  "created_at": "2026-09-24"
+}

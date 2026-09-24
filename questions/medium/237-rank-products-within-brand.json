@@ -1,0 +1,26 @@
+{
+  "id": "237",
+  "slug": "rank-products-within-brand",
+  "title": "Rank Products Within Each Brand by Price",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "RANK", "DENSE_RANK", "PARTITION BY", "ORDER BY", "ties"],
+  "description": "Rank each product within its brand by price descending. Show both **RANK** and **DENSE_RANK** to illustrate the difference when two products share the same price. Include product name, brand, price, price_rank, and dense_rank.",
+  "schema_sql": "CREATE TABLE products (product_id INT, name VARCHAR(100), brand VARCHAR(50), price DECIMAL(10,2), stock_qty INT); INSERT INTO products VALUES (1,'Pro X','TechBrand',999.99,50),(2,'Pro Y','TechBrand',799.99,30),(3,'Lite X','TechBrand',499.99,100),(4,'Lite Y','TechBrand',499.99,80),(5,'Alpha','SportBrand',149.99,200),(6,'Beta','SportBrand',149.99,150),(7,'Gamma','SportBrand',99.99,300),(8,'Delta','SportBrand',79.99,250),(9,'Classic','HomeBrand',59.99,400),(10,'Premium','HomeBrand',89.99,180);",
+  "solution_sql": "SELECT name, brand, price, RANK() OVER (PARTITION BY brand ORDER BY price DESC) AS price_rank, DENSE_RANK() OVER (PARTITION BY brand ORDER BY price DESC) AS dense_rank FROM products ORDER BY brand, price DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 products with both ranking functions. TechBrand: Lite X and Lite Y tied at 499.99 show rank=3/3 vs dense_rank=3/3, next would be 5 vs 4.",
+      "expected_row_count": 10,
+      "expected_columns": ["name", "brand", "price", "price_rank", "dense_rank"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use PARTITION BY brand so rankings restart at 1 for each brand, then ORDER BY price DESC so the most expensive product gets rank 1.",
+    "When two products share the same price: RANK() assigns both rank 3 and skips to rank 5, while DENSE_RANK() assigns both rank 3 and continues to rank 4."
+  ],
+  "explanation": "Both functions partition by brand and order by price DESC. TechBrand: Pro X=rank1, Pro Y=rank2, Lite X and Lite Y both 499.99 → RANK gives both rank=3 and skips 4 (next unassigned rank would be 5 if there were more products), DENSE_RANK gives both rank=3 and would give rank=4 next. SportBrand: Alpha and Beta both 149.99 show the same tie behavior. The key distinction is gap-skipping (RANK) vs no-gap (DENSE_RANK).",
+  "companies": ["Apple", "Nike"],
+  "created_at": "2026-09-24"
+}

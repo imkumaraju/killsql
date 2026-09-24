@@ -1,0 +1,26 @@
+{
+  "id": "256",
+  "slug": "avg-order-value-by-channel",
+  "title": "Average Order Value by Acquisition Channel",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "AVG", "COUNT", "SUM", "ROUND", "channel analysis", "marketing"],
+  "description": "For each customer acquisition channel, calculate the **number of orders**, **average order value** (AOV), and **total revenue**. Order by AOV descending to see which channel drives the highest-value purchases.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, channel VARCHAR(50), amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'Organic Search',150.00),(2,2,'Organic Search',200.00),(3,3,'Organic Search',175.00),(4,4,'Paid Ads',300.00),(5,5,'Paid Ads',250.00),(6,6,'Paid Ads',400.00),(7,7,'Paid Ads',350.00),(8,8,'Email',120.00),(9,9,'Email',180.00),(10,10,'Email',160.00),(11,11,'Social Media',80.00),(12,12,'Social Media',95.00);",
+  "solution_sql": "SELECT channel, COUNT(*) AS order_count, ROUND(AVG(amount), 2) AS avg_order_value, SUM(amount) AS total_revenue FROM orders GROUP BY channel ORDER BY avg_order_value DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 channels: Paid Ads AOV=325.00, Organic Search AOV=175.00, Email AOV=153.33, Social Media AOV=87.50",
+      "expected_row_count": 4,
+      "expected_columns": ["channel", "order_count", "avg_order_value", "total_revenue"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "GROUP BY channel and apply COUNT(*), AVG(amount), and SUM(amount) to get the three metrics in a single query.",
+    "ROUND(AVG(amount), 2) rounds the average to 2 decimal places — without rounding you may get many decimal digits."
+  ],
+  "explanation": "Grouping by channel produces metrics per acquisition source. Paid Ads: 4 orders (300+250+400+350)/4=325.00 AOV, $1300 total. Organic Search: 3 orders, AOV=175.00, $525 total. Email: 3 orders, AOV=153.33, $460 total. Social Media: 2 orders, AOV=87.50, $175 total. Despite Social Media having the lowest AOV, Paid Ads drives the most revenue per customer — key insight for budget allocation.",
+  "companies": ["Google Ads", "HubSpot"],
+  "created_at": "2026-09-24"
+}

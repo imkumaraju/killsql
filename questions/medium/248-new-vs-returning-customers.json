@@ -1,0 +1,26 @@
+{
+  "id": "248",
+  "slug": "new-vs-returning-customers",
+  "title": "New vs Returning Customers per Month",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CTE", "GROUP BY", "COUNT DISTINCT", "DATE_TRUNC", "CASE", "cohort", "MIN"],
+  "description": "For each month, count **new customers** (placing their first ever order in that month) vs **returning customers** (who ordered before). Show order_month, customer_type ('New' or 'Returning'), and customer_count.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE); INSERT INTO orders VALUES (1,1,'2026-01-05'),(2,2,'2026-01-15'),(3,1,'2026-02-10'),(4,3,'2026-02-12'),(5,4,'2026-02-20'),(6,1,'2026-03-05'),(7,2,'2026-03-08'),(8,4,'2026-03-15'),(9,5,'2026-03-22');",
+  "solution_sql": "WITH first_orders AS (SELECT customer_id, DATE_TRUNC('month', MIN(order_date)) AS first_month FROM orders GROUP BY customer_id), classified AS (SELECT o.customer_id, DATE_TRUNC('month', o.order_date) AS order_month, CASE WHEN DATE_TRUNC('month', o.order_date) = fo.first_month THEN 'New' ELSE 'Returning' END AS customer_type FROM orders o JOIN first_orders fo ON o.customer_id = fo.customer_id) SELECT order_month, customer_type, COUNT(DISTINCT customer_id) AS customer_count FROM classified GROUP BY order_month, customer_type ORDER BY order_month, customer_type",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan: New=2(C1,C2). Feb: New=2(C3,C4), Returning=1(C1). Mar: New=1(C5), Returning=3(C1,C2,C4). Total 5 rows.",
+      "expected_row_count": 5,
+      "expected_columns": ["order_month", "customer_type", "customer_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "First compute each customer's first_month using MIN(order_date) in a CTE, then join back to all orders and use CASE to classify each order-month as New or Returning.",
+    "Use COUNT(DISTINCT customer_id) in the outer GROUP BY — a customer ordering twice in the same month should still be counted once."
+  ],
+  "explanation": "The first_orders CTE identifies each customer's debut month. The classified CTE labels each order as New (if the order month matches their debut) or Returning. January: C1 and C2 debut → New=2. February: C3 and C4 debut (New=2); C1 returns (Returning=1). March: C5 debuts (New=1); C1, C2, C4 return (Returning=3). This pattern powers monthly acquisition vs retention dashboards.",
+  "companies": ["Amplitude", "Mixpanel"],
+  "created_at": "2026-09-24"
+}

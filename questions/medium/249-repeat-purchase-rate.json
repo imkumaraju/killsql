@@ -1,0 +1,26 @@
+{
+  "id": "249",
+  "slug": "repeat-purchase-rate",
+  "title": "Repeat Purchase Rate Calculation",
+  "difficulty": "medium",
+  "tags": ["SELECT", "subquery", "COUNT", "CASE", "percentage", "retention", "repeat buyers"],
+  "description": "Calculate the **repeat purchase rate**: the percentage of customers who have placed **more than one order**. Return a single row with the rate rounded to 2 decimal places.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2026-01-05',100.00),(2,1,'2026-02-10',150.00),(3,2,'2026-01-08',200.00),(4,2,'2026-01-20',300.00),(5,2,'2026-02-15',250.00),(6,3,'2026-01-10',180.00),(7,3,'2026-03-05',220.00),(8,4,'2026-01-15',90.00),(9,4,'2026-02-20',110.00),(10,5,'2026-01-12',130.00),(11,6,'2026-01-18',160.00),(12,7,'2026-01-25',140.00),(13,8,'2026-02-01',170.00);",
+  "solution_sql": "SELECT ROUND(100.0 * COUNT(CASE WHEN order_count > 1 THEN 1 END) / COUNT(*), 2) AS repeat_rate_pct FROM (SELECT customer_id, COUNT(*) AS order_count FROM orders GROUP BY customer_id) customer_counts",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 customers total. Repeat buyers (>1 order): C1(2), C2(3), C3(2), C4(2) = 4. One-time buyers: C5,C6,C7,C8. Rate = 4/8 = 50.00%",
+      "expected_row_count": 1,
+      "expected_columns": ["repeat_rate_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use a subquery to count orders per customer, then in the outer query use CASE WHEN order_count > 1 THEN 1 END inside COUNT() to count only repeat buyers.",
+    "Divide the repeat buyer count by the total customer count and multiply by 100 — both can come from the same outer query against the subquery."
+  ],
+  "explanation": "The subquery computes per-customer order counts. The outer query evaluates these counts: COUNT(CASE WHEN order_count > 1 THEN 1 END) returns 4 (customers 1, 2, 3, 4 have 2+, 3, 2, 2 orders respectively); COUNT(*) = 8 (all customers). Repeat rate = 4/8 × 100 = 50.00%. This metric is fundamental for e-commerce retention analysis.",
+  "companies": ["Shopify", "Klaviyo"],
+  "created_at": "2026-09-24"
+}

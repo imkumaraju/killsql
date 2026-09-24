@@ -1,0 +1,26 @@
+{
+  "id": "254",
+  "slug": "inventory-days-remaining",
+  "title": "Inventory Days Remaining Calculation",
+  "difficulty": "medium",
+  "tags": ["SELECT", "JOIN", "ROUND", "NULLIF", "division", "inventory management"],
+  "description": "For each product, calculate how many **days of inventory remain** given current stock levels and average daily sales. Show product name, stock quantity, avg daily units, and days_remaining (rounded to 1 decimal). Order from lowest to highest days remaining.",
+  "schema_sql": "CREATE TABLE inventory (product_id INT, product_name VARCHAR(100), stock_qty INT); CREATE TABLE daily_sales (product_id INT, avg_daily_units DECIMAL(5,2)); INSERT INTO inventory VALUES (1,'Laptop',50),(2,'Phone',120),(3,'Tablet',30),(4,'Headphones',200),(5,'Keyboard',75); INSERT INTO daily_sales VALUES (1,1.50),(2,4.00),(3,0.80),(4,2.50),(5,1.20);",
+  "solution_sql": "SELECT i.product_name, i.stock_qty, d.avg_daily_units, ROUND(i.stock_qty::NUMERIC / NULLIF(d.avg_daily_units, 0), 1) AS days_remaining FROM inventory i JOIN daily_sales d ON i.product_id = d.product_id ORDER BY days_remaining ASC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 products ordered by days remaining: Phone=30.0, Laptop=33.3, Tablet=37.5, Keyboard=62.5, Headphones=80.0",
+      "expected_row_count": 5,
+      "expected_columns": ["product_name", "stock_qty", "avg_daily_units", "days_remaining"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "JOIN the inventory and daily_sales tables on product_id, then divide stock_qty by avg_daily_units to get days remaining.",
+    "Use NULLIF(avg_daily_units, 0) to safely handle zero-sales products — it converts 0 to NULL, causing the division to return NULL instead of an error."
+  ],
+  "explanation": "Days remaining = stock ÷ daily sales rate. Phone: 120/4.00=30.0 days (most urgent reorder). Laptop: 50/1.50=33.3. Tablet: 30/0.80=37.5. Keyboard: 75/1.20=62.5. Headphones: 200/2.50=80.0. Products with fewer days remaining need restocking first. NULLIF prevents division-by-zero errors for discontinued or slow-moving products with zero average daily sales.",
+  "companies": ["Amazon", "Target"],
+  "created_at": "2026-09-24"
+}

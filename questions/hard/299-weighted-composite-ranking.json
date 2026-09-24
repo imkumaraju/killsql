@@ -1,0 +1,38 @@
+{
+  "id": "299",
+  "slug": "weighted-composite-ranking",
+  "title": "Weighted Composite Product Ranking",
+  "difficulty": "hard",
+  "tags": ["window functions", "CTE", "normalization", "RANK", "MIN OVER", "MAX OVER", "arithmetic"],
+  "description": "A `products` table stores price, rating, monthly sales, and return rate. Compute a **weighted composite score** for each product by normalizing each metric to [0,1] and applying weights: price (lower=better, weight 0.25), rating (higher=better, weight 0.35), monthly_sales (higher=better, weight 0.25), return_rate (lower=better, weight 0.15). Rank products by their composite score.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| product_id | INT |\n| product_name | VARCHAR |\n| price | NUMERIC(10,2) |\n| rating | NUMERIC(3,1) |\n| monthly_sales | INT |\n| return_rate | NUMERIC(5,2) |\n\nOutput columns: `product_id`, `product_name`, `price`, `rating`, `monthly_sales`, `composite_score` (rounded to 4 dp), `composite_rank`. Order by `composite_rank`, `product_id`.",
+  "schema_sql": "CREATE TABLE products (product_id INT, product_name VARCHAR, price NUMERIC(10,2), rating NUMERIC(3,1), monthly_sales INT, return_rate NUMERIC(5,2)); INSERT INTO products VALUES (1,'Alpha Pro',99.99,4.8,5000,2.1),(2,'Beta Plus',49.99,4.5,8000,3.5),(3,'Gamma X',199.99,4.9,2000,1.0),(4,'Delta Basic',19.99,3.8,15000,8.0),(5,'Epsilon Elite',299.99,4.7,1500,1.5),(6,'Zeta Value',29.99,4.2,12000,5.0),(7,'Eta Standard',79.99,4.6,6000,2.8),(8,'Theta Prime',149.99,4.4,3500,4.0),(9,'Iota Smart',59.99,4.3,7000,6.5),(10,'Kappa Ultra',249.99,5.0,800,0.5);",
+  "solution_sql": "WITH normalized AS (SELECT product_id, product_name, price, rating, monthly_sales, return_rate, 1.0 - (price - MIN(price) OVER()) / (MAX(price) OVER() - MIN(price) OVER()) AS price_score, (rating - MIN(rating) OVER()) / (MAX(rating) OVER() - MIN(rating) OVER()) AS rating_score, (monthly_sales::NUMERIC - MIN(monthly_sales) OVER()) / (MAX(monthly_sales) OVER() - MIN(monthly_sales) OVER()) AS sales_score, 1.0 - (return_rate - MIN(return_rate) OVER()) / (MAX(return_rate) OVER() - MIN(return_rate) OVER()) AS quality_score FROM products), scored AS (SELECT *, ROUND((0.25 * price_score + 0.35 * rating_score + 0.25 * sales_score + 0.15 * quality_score)::NUMERIC, 4) AS composite_score FROM normalized) SELECT product_id, product_name, price, rating, monthly_sales, composite_score, RANK() OVER (ORDER BY composite_score DESC) AS composite_rank FROM scored ORDER BY composite_rank, product_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Products ranked by weighted composite score",
+      "expected_row_count": 10,
+      "expected_columns": ["product_id", "product_name", "composite_rank"],
+      "expected_rows": [
+        { "product_id": 1, "product_name": "Alpha Pro", "composite_rank": 1 },
+        { "product_id": 2, "product_name": "Beta Plus", "composite_rank": 2 },
+        { "product_id": 7, "product_name": "Eta Standard", "composite_rank": 3 },
+        { "product_id": 6, "product_name": "Zeta Value", "composite_rank": 4 },
+        { "product_id": 3, "product_name": "Gamma X", "composite_rank": 5 },
+        { "product_id": 10, "product_name": "Kappa Ultra", "composite_rank": 6 },
+        { "product_id": 4, "product_name": "Delta Basic", "composite_rank": 7 },
+        { "product_id": 9, "product_name": "Iota Smart", "composite_rank": 8 },
+        { "product_id": 8, "product_name": "Theta Prime", "composite_rank": 9 },
+        { "product_id": 5, "product_name": "Epsilon Elite", "composite_rank": 10 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Normalize each metric using window functions: MIN() OVER() and MAX() OVER() compute global min/max without GROUP BY. For metrics where lower is better (price, return_rate), invert the normalized score: 1.0 - (value - min) / (max - min).",
+    "Chain two CTEs: the first CTE computes the four normalized scores using window functions; the second applies the weighted formula (0.25 × price_score + 0.35 × rating_score + 0.25 × sales_score + 0.15 × quality_score) and rounds to 4 decimal places. Apply RANK() OVER (ORDER BY composite_score DESC) in the final SELECT."
+  ],
+  "explanation": "Min-max normalization maps each metric to [0,1] so they're comparable despite different scales. For 'lower is better' metrics (price, return_rate), the formula is inverted: 1 - (val - min) / (max - min), so the cheapest product gets score 1.0. The weighted sum (weights summing to 1.0) produces a composite score. Alpha Pro (rank 1) wins because it has a strong rating (4.8, 83rd percentile), solid sales (5000), affordable price, and low return rate — a balanced performer. Epsilon Elite (rank 10) suffers from both the highest price and low sales despite a good rating. Kappa Ultra (rank 6) has a perfect rating and zero return rate but almost no sales volume. This pattern powers recommendation engines and marketplace ranking algorithms.",
+  "companies": ["Amazon", "Google", "Alibaba"],
+  "created_at": "2026-09-24"
+}

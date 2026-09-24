@@ -1,0 +1,26 @@
+{
+  "id": "253",
+  "slug": "sales-velocity",
+  "title": "Sales Velocity — Units Sold per Day per Product",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "SUM", "MIN", "MAX", "date arithmetic", "NULLIF", "velocity metrics"],
+  "description": "Calculate the **sales velocity** for each product: total units sold divided by the number of days active (from first sale to last sale, inclusive). Show product name, total units, date range, days active, and units_per_day rounded to 2 decimals.",
+  "schema_sql": "CREATE TABLE order_items (item_id INT, product_id INT, product_name VARCHAR(100), quantity INT, order_date DATE); INSERT INTO order_items VALUES (1,1,'Laptop',2,'2026-01-05'),(2,1,'Laptop',1,'2026-01-12'),(3,1,'Laptop',3,'2026-01-20'),(4,1,'Laptop',2,'2026-02-05'),(5,2,'Phone',5,'2026-01-08'),(6,2,'Phone',3,'2026-01-15'),(7,2,'Phone',4,'2026-02-10'),(8,3,'Tablet',1,'2026-01-10'),(9,3,'Tablet',2,'2026-02-01');",
+  "solution_sql": "SELECT product_name, SUM(quantity) AS total_units, MIN(order_date) AS first_sale_date, MAX(order_date) AS last_sale_date, MAX(order_date) - MIN(order_date) + 1 AS days_active, ROUND(SUM(quantity)::NUMERIC / NULLIF(MAX(order_date) - MIN(order_date) + 1, 0), 2) AS units_per_day FROM order_items GROUP BY product_id, product_name ORDER BY units_per_day DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Phone: 12 units over 34 days=0.35/day. Laptop: 8 units over 32 days=0.25/day. Tablet: 3 units over 23 days=0.13/day.",
+      "expected_row_count": 3,
+      "expected_columns": ["product_name", "total_units", "first_sale_date", "last_sale_date", "days_active", "units_per_day"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use MAX(order_date) - MIN(order_date) + 1 to compute the number of days active (inclusive of both the first and last sale dates).",
+    "Wrap the divisor in NULLIF(..., 0) to avoid division by zero for products with only a single sale date (where max-min=0)."
+  ],
+  "explanation": "Sales velocity measures product sell-through rate. Laptop: 2+1+3+2=8 units, Jan 5 to Feb 5 = 31+1=32 days active, velocity=8/32=0.25. Phone: 5+3+4=12 units, Jan 8 to Feb 10=33+1=34 days, velocity=12/34≈0.35. Tablet: 1+2=3 units, Jan 10 to Feb 1=22+1=23 days, velocity=3/23≈0.13. NULLIF prevents divide-by-zero if a product has only one sale date.",
+  "companies": ["Walmart", "Target"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,36 @@
+{
+  "id": "298",
+  "slug": "string-parsing-contacts",
+  "title": "String Parsing: Extract Structured Data from Concatenated Field",
+  "difficulty": "hard",
+  "tags": ["SPLIT_PART", "string functions", "data cleaning", "CTE", "LOWER", "SUBSTRING"],
+  "description": "A `raw_contacts` table stores contact data as a single pipe-delimited string in the format `FirstName|LastName|email@domain.com|phone`. **Parse each record** to extract: first name, last name, full email, email username (part before `@`), email domain (part after `@`), and phone number. Additionally, flag any contacts whose email domain is a `.com` domain.\n\n**Table: raw_contacts**\n\n| Column | Type |\n|--------|------|\n| contact_id | INT |\n| raw_data | VARCHAR |\n\nOutput columns: `contact_id`, `first_name`, `last_name`, `email`, `username`, `domain`, `phone`, `is_com_domain` (boolean). Order by `contact_id`.",
+  "schema_sql": "CREATE TABLE raw_contacts (contact_id INT, raw_data VARCHAR); INSERT INTO raw_contacts VALUES (1,'John|Doe|john.doe@gmail.com|555-1234'),(2,'Jane|Smith|jane.smith@yahoo.com|555-5678'),(3,'Bob|Johnson|bob.j@company.org|555-9012'),(4,'Alice|Williams|alice.w@startup.io|555-3456'),(5,'Charlie|Brown|c.brown@enterprise.net|555-7890'),(6,'Diana|Prince|d.prince@corp.com|555-2345'),(7,'Eve|Adams|eve@personal.me|555-6789'),(8,'Frank|Miller|frank.miller@business.com|555-0123');",
+  "solution_sql": "SELECT contact_id, SPLIT_PART(raw_data, '|', 1) AS first_name, SPLIT_PART(raw_data, '|', 2) AS last_name, SPLIT_PART(raw_data, '|', 3) AS email, SPLIT_PART(SPLIT_PART(raw_data, '|', 3), '@', 1) AS username, SPLIT_PART(SPLIT_PART(raw_data, '|', 3), '@', 2) AS domain, SPLIT_PART(raw_data, '|', 4) AS phone, CASE WHEN SPLIT_PART(SPLIT_PART(raw_data, '|', 3), '@', 2) LIKE '%.com' THEN true ELSE false END AS is_com_domain FROM raw_contacts ORDER BY contact_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Parsed structured fields from pipe-delimited raw contact data",
+      "expected_row_count": 8,
+      "expected_columns": ["contact_id", "first_name", "last_name", "email", "username", "domain", "phone", "is_com_domain"],
+      "expected_rows": [
+        { "contact_id": 1, "first_name": "John", "last_name": "Doe", "email": "john.doe@gmail.com", "username": "john.doe", "domain": "gmail.com", "phone": "555-1234", "is_com_domain": true },
+        { "contact_id": 2, "first_name": "Jane", "last_name": "Smith", "email": "jane.smith@yahoo.com", "username": "jane.smith", "domain": "yahoo.com", "phone": "555-5678", "is_com_domain": true },
+        { "contact_id": 3, "first_name": "Bob", "last_name": "Johnson", "email": "bob.j@company.org", "username": "bob.j", "domain": "company.org", "phone": "555-9012", "is_com_domain": false },
+        { "contact_id": 4, "first_name": "Alice", "last_name": "Williams", "email": "alice.w@startup.io", "username": "alice.w", "domain": "startup.io", "phone": "555-3456", "is_com_domain": false },
+        { "contact_id": 5, "first_name": "Charlie", "last_name": "Brown", "email": "c.brown@enterprise.net", "username": "c.brown", "domain": "enterprise.net", "phone": "555-7890", "is_com_domain": false },
+        { "contact_id": 6, "first_name": "Diana", "last_name": "Prince", "email": "d.prince@corp.com", "username": "d.prince", "domain": "corp.com", "phone": "555-2345", "is_com_domain": true },
+        { "contact_id": 7, "first_name": "Eve", "last_name": "Adams", "email": "eve@personal.me", "username": "eve", "domain": "personal.me", "phone": "555-6789", "is_com_domain": false },
+        { "contact_id": 8, "first_name": "Frank", "last_name": "Miller", "email": "frank.miller@business.com", "username": "frank.miller", "domain": "business.com", "phone": "555-0123", "is_com_domain": true }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "SPLIT_PART(raw_data, '|', N) extracts the Nth field (1-indexed) from a pipe-delimited string. Use it to pull first_name (1), last_name (2), email (3), and phone (4).",
+    "To extract the username and domain from the email, nest SPLIT_PART calls: SPLIT_PART(SPLIT_PART(raw_data, '|', 3), '@', 1) gives the part before '@', and SPLIT_PART(..., '@', 2) gives the domain. Use LIKE '%.com' on the domain to flag commercial email addresses."
+  ],
+  "explanation": "SPLIT_PART is PostgreSQL's function to extract a specific token from a delimited string (equivalent to Python's split()[n]). Nesting two SPLIT_PART calls extracts nested structure: first split by '|' to get the email field, then split by '@' to separate username from domain. The is_com_domain flag uses a LIKE '%.com' pattern on the extracted domain — contacts 1, 2, 6, and 8 have .com domains. This string-parsing pattern is ubiquitous in data engineering when loading CSVs, log files, or legacy system exports where data is stored denormalized in a single column. In production, this logic would live in a staging transform layer.",
+  "companies": ["Palantir", "Databricks", "Twilio"],
+  "created_at": "2026-09-24"
+}

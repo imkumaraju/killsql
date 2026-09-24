@@ -1,0 +1,26 @@
+{
+  "id": "240",
+  "slug": "weekend-orders",
+  "title": "Aggregate Orders by Weekday vs Weekend",
+  "difficulty": "medium",
+  "tags": ["SELECT", "EXTRACT", "ISODOW", "CASE", "GROUP BY", "COUNT", "SUM", "date functions"],
+  "description": "Classify each order as placed on a **Weekend** (Saturday or Sunday) or **Weekday** (Monday–Friday) using `EXTRACT(ISODOW ...)`. Then aggregate the **total order count** and **total revenue** for each day type.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2026-01-05',100.00),(2,2,'2026-01-06',200.00),(3,3,'2026-01-07',150.00),(4,4,'2026-01-08',300.00),(5,5,'2026-01-09',250.00),(6,6,'2026-01-10',180.00),(7,7,'2026-01-11',220.00),(8,8,'2026-01-12',90.00),(9,9,'2026-01-13',110.00),(10,10,'2026-01-14',130.00),(11,11,'2026-01-15',170.00),(12,12,'2026-01-16',140.00);",
+  "solution_sql": "SELECT CASE WHEN EXTRACT(ISODOW FROM order_date) IN (6, 7) THEN 'Weekend' ELSE 'Weekday' END AS day_type, COUNT(*) AS order_count, SUM(amount) AS total_revenue FROM orders GROUP BY CASE WHEN EXTRACT(ISODOW FROM order_date) IN (6, 7) THEN 'Weekend' ELSE 'Weekday' END ORDER BY day_type",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan 10=Sat, Jan 11=Sun are weekends (2 orders). All other 10 orders are weekdays.",
+      "expected_row_count": 2,
+      "expected_columns": ["day_type", "order_count", "total_revenue"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "EXTRACT(ISODOW FROM order_date) returns ISO day of week: 1=Monday through 7=Sunday — so 6=Saturday and 7=Sunday are the weekend values.",
+    "Use a CASE expression in both SELECT and GROUP BY to classify each order, then COUNT and SUM within each group."
+  ],
+  "explanation": "ISODOW (ISO Day Of Week) returns 1 for Monday through 7 for Sunday. Jan 10, 2026=Saturday(6) and Jan 11=Sunday(7) are weekends. The remaining 10 dates (Jan 5 Mon through Jan 9 Fri, Jan 12 Mon through Jan 16 Fri) are weekdays. Weekend orders=2, revenue=180+220=400. Weekday orders=10, revenue=all others.",
+  "companies": ["Shopify", "Uber Eats"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "251",
+  "slug": "rfm-analysis",
+  "title": "RFM Analysis — Recency, Frequency, Monetary Buckets",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CTE", "window functions", "NTILE", "GROUP BY", "CONCAT", "date arithmetic", "marketing analytics"],
+  "description": "Perform an **RFM (Recency, Frequency, Monetary)** analysis on 8 customers:\n- **R score**: days since last order (1=most recent, 4=least recent) using NTILE(4)\n- **F score**: order count (4=most frequent)\n- **M score**: total spend (4=highest spender)\n\nReturn each customer with their R, F, M scores and a concatenated rfm_segment code.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2026-01-05',500.00),(2,1,'2026-02-15',600.00),(3,1,'2026-03-20',700.00),(4,2,'2026-02-10',200.00),(5,2,'2026-03-15',300.00),(6,3,'2026-01-10',150.00),(7,3,'2026-02-05',180.00),(8,3,'2026-02-20',160.00),(9,3,'2026-03-25',170.00),(10,4,'2026-01-08',50.00),(11,5,'2026-01-12',80.00),(12,5,'2026-01-25',90.00),(13,6,'2026-01-20',800.00),(14,6,'2026-02-25',900.00),(15,6,'2026-03-10',750.00),(16,7,'2026-01-03',1000.00),(17,8,'2026-02-01',250.00),(18,8,'2026-03-05',280.00);",
+  "solution_sql": "WITH rfm_base AS (SELECT customer_id, '2026-03-31'::DATE - MAX(order_date) AS recency, COUNT(*) AS frequency, SUM(amount) AS monetary FROM orders GROUP BY customer_id), rfm_scored AS (SELECT customer_id, recency, frequency, monetary, NTILE(4) OVER (ORDER BY recency ASC) AS r_score, NTILE(4) OVER (ORDER BY frequency DESC) AS f_score, NTILE(4) OVER (ORDER BY monetary DESC) AS m_score FROM rfm_base) SELECT customer_id, recency, frequency, monetary, r_score, f_score, m_score, CONCAT(r_score, f_score, m_score) AS rfm_segment FROM rfm_scored ORDER BY customer_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 customers each with recency (days since last order vs 2026-03-31), frequency, monetary, and 3-digit RFM segment code",
+      "expected_row_count": 8,
+      "expected_columns": ["customer_id", "recency", "frequency", "monetary", "r_score", "f_score", "m_score", "rfm_segment"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use a CTE to compute per-customer recency (reference_date - MAX(order_date)), frequency (COUNT(*)), and monetary (SUM(amount)).",
+    "Apply NTILE(4) three times in a second CTE: ORDER BY recency ASC for R (lower recency = more recent = higher score), ORDER BY frequency DESC and monetary DESC for F and M."
+  ],
+  "explanation": "RFM segments customers for targeted marketing. The first CTE aggregates raw metrics per customer. NTILE(4) divides 8 customers into 4 quartile groups of 2 each. R scores: C3(6 days)=1, C1(11)=1, C2(16)=2, C6(21)=2, C8(26)=3, C5(65)=3, C4(82)=4, C7(87)=4. The concatenated rfm_segment (e.g., '141') enables quick customer segmentation for campaigns.",
+  "companies": ["Klaviyo", "Salesforce Marketing Cloud"],
+  "created_at": "2026-09-24"
+}

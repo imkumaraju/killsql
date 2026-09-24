@@ -1,0 +1,26 @@
+{
+  "id": "255",
+  "slug": "supplier-lead-time-analysis",
+  "title": "Supplier Lead Time Analysis",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "AVG", "MAX", "MIN", "COUNT", "date arithmetic", "supply chain"],
+  "description": "Analyze purchase order lead times by supplier. For each supplier, compute the **average lead time** (days from order to receipt), **maximum lead time**, **minimum lead time**, and **order count**. Order by average lead time descending to identify slowest suppliers.",
+  "schema_sql": "CREATE TABLE purchase_orders (po_id INT, supplier_id INT, ordered_date DATE, received_date DATE); INSERT INTO purchase_orders VALUES (1,1,'2026-01-05','2026-01-12'),(2,1,'2026-01-20','2026-01-27'),(3,1,'2026-02-10','2026-02-18'),(4,2,'2026-01-08','2026-01-15'),(5,2,'2026-01-25','2026-02-05'),(6,2,'2026-02-12','2026-02-20'),(7,3,'2026-01-15','2026-01-22'),(8,3,'2026-02-01','2026-02-06'),(9,4,'2026-01-10','2026-01-24'),(10,4,'2026-02-05','2026-02-20');",
+  "solution_sql": "SELECT supplier_id, COUNT(*) AS order_count, ROUND(AVG(received_date - ordered_date), 1) AS avg_lead_time_days, MAX(received_date - ordered_date) AS max_lead_time_days, MIN(received_date - ordered_date) AS min_lead_time_days FROM purchase_orders GROUP BY supplier_id ORDER BY avg_lead_time_days DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 suppliers: S4 avg=14.5d (slowest), S2 avg=8.7d, S1 avg=7.3d, S3 avg=6.0d (fastest)",
+      "expected_row_count": 4,
+      "expected_columns": ["supplier_id", "order_count", "avg_lead_time_days", "max_lead_time_days", "min_lead_time_days"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Subtract ordered_date from received_date to compute lead time in days — PostgreSQL date subtraction returns an integer.",
+    "Group by supplier_id and apply AVG, MAX, MIN to the lead time expression within the aggregation."
+  ],
+  "explanation": "Lead time = received_date - ordered_date. Supplier 4: 14 days (Jan 10→24) and 15 days (Feb 5→20) → avg=14.5 (slowest). Supplier 2: 7, 11, 8 days → avg=8.7. Supplier 1: 7, 7, 8 days → avg=7.3. Supplier 3: 7, 5 days → avg=6.0 (fastest). This analysis identifies suppliers causing delays and informs SLA negotiations.",
+  "companies": ["SAP", "Oracle"],
+  "created_at": "2026-09-24"
+}
