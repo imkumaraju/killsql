@@ -1,0 +1,38 @@
+{
+  "id": "282",
+  "slug": "org-chart-path-string",
+  "title": "Full Org Chart Path as String",
+  "difficulty": "hard",
+  "tags": ["recursive CTE", "string concatenation", "tree traversal", "self join"],
+  "description": "An `employees` table stores a reporting hierarchy via `manager_id`. For every employee, **construct the full root-to-leaf path** as a single string (e.g., `Alice > Bob > Dave > Grace`) and report the employee's depth in the hierarchy.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| manager_id | INT |\n\nOutput columns: `employee_name`, `path` (full path from CEO to employee), `depth` (0 for CEO). Order by `path`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, manager_id INT); INSERT INTO employees VALUES (1, 'Alice', NULL), (2, 'Bob', 1), (3, 'Carol', 1), (4, 'Dave', 2), (5, 'Eve', 2), (6, 'Frank', 3), (7, 'Grace', 4), (8, 'Hank', 4), (9, 'Iris', 6), (10, 'Jack', 6);",
+  "solution_sql": "WITH RECURSIVE org_path AS (SELECT id, name, name AS path, 0 AS depth FROM employees WHERE manager_id IS NULL UNION ALL SELECT e.id, e.name, op.path || ' > ' || e.name, op.depth + 1 FROM employees e JOIN org_path op ON e.manager_id = op.id) SELECT name AS employee_name, path, depth FROM org_path ORDER BY path",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All employees with their full hierarchical path and depth",
+      "expected_row_count": 10,
+      "expected_columns": ["employee_name", "path", "depth"],
+      "expected_rows": [
+        { "employee_name": "Alice", "path": "Alice", "depth": 0 },
+        { "employee_name": "Bob", "path": "Alice > Bob", "depth": 1 },
+        { "employee_name": "Dave", "path": "Alice > Bob > Dave", "depth": 2 },
+        { "employee_name": "Grace", "path": "Alice > Bob > Dave > Grace", "depth": 3 },
+        { "employee_name": "Hank", "path": "Alice > Bob > Dave > Hank", "depth": 3 },
+        { "employee_name": "Eve", "path": "Alice > Bob > Eve", "depth": 2 },
+        { "employee_name": "Carol", "path": "Alice > Carol", "depth": 1 },
+        { "employee_name": "Frank", "path": "Alice > Carol > Frank", "depth": 2 },
+        { "employee_name": "Iris", "path": "Alice > Carol > Frank > Iris", "depth": 3 },
+        { "employee_name": "Jack", "path": "Alice > Carol > Frank > Jack", "depth": 3 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "The anchor of the CTE selects the root employee (manager_id IS NULL) and initializes path = name and depth = 0. The recursive step appends ' > ' || child_name to the inherited path.",
+    "Ordering by the concatenated path string naturally produces a depth-first, alphabetical ordering — no need for a separate depth-based ORDER BY."
+  ],
+  "explanation": "A recursive CTE starts from the CEO (manager_id IS NULL) and traverses downward. At each step, the child's path is built by appending ' > ' and the child's name to the parent's path. The depth counter increments by 1 per level. Ordering by the path column produces a visually intuitive org chart traversal, and because names at each level are alphabetical the output is also alphabetically sorted within each subtree. This pattern is foundational for rendering org charts, file-system trees, or category breadcrumbs.",
+  "companies": ["LinkedIn", "Google", "Microsoft"],
+  "created_at": "2026-09-24"
+}

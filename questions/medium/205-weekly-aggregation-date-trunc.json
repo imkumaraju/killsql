@@ -1,0 +1,26 @@
+{
+  "id": "205",
+  "slug": "weekly-aggregation-date-trunc",
+  "title": "Weekly Sales Totals Using DATE_TRUNC",
+  "difficulty": "medium",
+  "tags": ["DATE_TRUNC", "GROUP BY", "SUM", "date functions", "aggregation"],
+  "description": "Aggregate daily sales into weekly totals using DATE_TRUNC to group by the start of each ISO week.\n\n**Table: daily_sales** — `sale_date`, `amount`\n\nOutput columns: `week_start`, `total_sales`, `days_with_sales`. Order by `week_start`.",
+  "schema_sql": "CREATE TABLE daily_sales (sale_date DATE, amount INT); INSERT INTO daily_sales VALUES ('2026-01-05',1200),('2026-01-06',850),('2026-01-07',1100),('2026-01-12',1500),('2026-01-13',920),('2026-01-14',780),('2026-01-15',1350),('2026-01-19',990),('2026-01-20',1400),('2026-01-21',600),('2026-01-22',880),('2026-01-26',1700),('2026-01-27',1250);",
+  "solution_sql": "SELECT DATE_TRUNC('week', sale_date) AS week_start, SUM(amount) AS total_sales, COUNT(*) AS days_with_sales FROM daily_sales GROUP BY DATE_TRUNC('week', sale_date) ORDER BY week_start",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "13 daily records spanning 4 weeks; 4 rows of weekly aggregates",
+      "expected_row_count": 4,
+      "expected_columns": ["week_start", "total_sales", "days_with_sales"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "DATE_TRUNC('week', date) truncates a date to the Monday of its ISO week — all dates in the same week map to the same Monday.",
+    "Use the truncated date in both the SELECT and GROUP BY; you can use the alias in ORDER BY."
+  ],
+  "explanation": "DATE_TRUNC('week', sale_date) maps each date to its week's Monday. Dates Jan 5-7 → week 2026-01-05 (3 days, 3150 total). Jan 12-15 → week 2026-01-12 (4 days, 4550). Jan 19-22 → week 2026-01-19 (4 days, 3870). Jan 26-27 → week 2026-01-26 (2 days, 2950). 13 daily rows collapse into 4 weekly rows.",
+  "companies": ["Tableau", "Looker"],
+  "created_at": "2026-09-24"
+}

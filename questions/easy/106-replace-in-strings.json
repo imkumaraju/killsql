@@ -1,0 +1,26 @@
+{
+  "id": "106",
+  "slug": "replace-in-strings",
+  "title": "Replace Words in Review Text",
+  "difficulty": "easy",
+  "tags": ["SELECT", "REPLACE", "string functions"],
+  "description": "Write a query that returns `id`, `product_id`, and a cleaned version of `review_text` where every occurrence of the word `bad` is replaced with `***` as `cleaned_review`.\n\n**Table: reviews**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| product_id | INT |\n| review_text | VARCHAR |",
+  "schema_sql": "CREATE TABLE reviews (id INT, product_id INT, review_text VARCHAR); INSERT INTO reviews VALUES (1, 1, 'This is a great product'), (2, 2, 'bad quality, very bad'), (3, 3, 'Excellent item, highly recommend'), (4, 4, 'bad packaging but good product'), (5, 5, 'Perfect, no complaints'), (6, 6, 'Good value for money');",
+  "solution_sql": "SELECT id, product_id, REPLACE(review_text, 'bad', '***') AS cleaned_review FROM reviews",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 rows with 'bad' replaced by '***' in review_text",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "product_id", "cleaned_review"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`REPLACE(column, search_string, replace_string)` substitutes every occurrence of `search_string` with `replace_string`.",
+    "If the word does not appear in a row, the original text is returned unchanged."
+  ],
+  "explanation": "`REPLACE(review_text, 'bad', '***')` scans each review and swaps every instance of 'bad' with '***'. Rows without the word are unaffected.",
+  "companies": ["Amazon", "Yelp"],
+  "created_at": "2026-09-24"
+}

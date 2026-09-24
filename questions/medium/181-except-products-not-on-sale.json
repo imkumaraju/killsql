@@ -1,0 +1,26 @@
+{
+  "id": "181",
+  "slug": "except-products-not-on-sale",
+  "title": "Products Not Currently on Sale Using EXCEPT",
+  "difficulty": "medium",
+  "tags": ["EXCEPT", "SET operations", "SELECT"],
+  "description": "Find all products that are **not** currently on sale by subtracting the sale product list from the full product list using EXCEPT.\n\n**Table: products** — `id`, `name`\n\n**Table: sale_products** — `product_id`, `discount_pct`\n\nOutput column: `name`. Order by `name`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR); INSERT INTO products VALUES (1,'Widget A'),(2,'Widget B'),(3,'Gadget X'),(4,'Gadget Y'),(5,'Book Alpha'),(6,'Book Beta'),(7,'Shirt Pro'),(8,'Shirt Lite'); CREATE TABLE sale_products (product_id INT, discount_pct INT); INSERT INTO sale_products VALUES (1,10),(3,20),(5,15),(7,25),(2,5);",
+  "solution_sql": "SELECT name FROM products WHERE id IN (SELECT id FROM products EXCEPT SELECT product_id FROM sale_products) ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 products; 5 are on sale (ids 1,2,3,5,7); 3 are not on sale (Gadget Y, Book Beta, Shirt Lite)",
+      "expected_row_count": 3,
+      "expected_columns": ["name"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "EXCEPT returns rows from the first query that do not appear in the second query — it is the SQL equivalent of set difference.",
+    "You can also achieve this with LEFT JOIN ... WHERE sale_products.product_id IS NULL, but EXCEPT is more concise."
+  ],
+  "explanation": "SELECT id FROM products returns ids 1-8. SELECT product_id FROM sale_products returns 1,2,3,5,7. EXCEPT removes those from the first set, leaving 4,6,8. These correspond to Gadget Y, Book Beta, and Shirt Lite. The outer query fetches their names, giving 3 rows.",
+  "companies": ["Zalando", "ASOS"],
+  "created_at": "2026-09-24"
+}

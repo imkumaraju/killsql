@@ -1,0 +1,38 @@
+{
+  "id": "281",
+  "slug": "recursive-bom-explosion",
+  "title": "Recursive Bill of Materials Explosion",
+  "difficulty": "hard",
+  "tags": ["recursive CTE", "self join", "aggregation", "tree traversal"],
+  "description": "A `bom` (Bill of Materials) table stores a multi-level product hierarchy where each part can have sub-parts. Starting from the root product (part_id = 1, 'Bike'), **explode the full BOM** to find every component's effective quantity needed and its total cost contribution when building one complete Bike.\n\n**Table: bom**\n\n| Column | Type |\n|--------|------|\n| part_id | INT |\n| part_name | VARCHAR |\n| parent_id | INT |\n| quantity_per_parent | INT |\n| unit_cost | NUMERIC(10,2) |\n\nOutput all non-root parts with columns: `part_name`, `effective_qty` (total units needed), `unit_cost`, `total_cost` (unit_cost × effective_qty). Order by `part_name`.",
+  "schema_sql": "CREATE TABLE bom (part_id INT, part_name VARCHAR, parent_id INT, quantity_per_parent INT, unit_cost NUMERIC(10,2)); INSERT INTO bom VALUES (1, 'Bike', NULL, 1, 0.00), (2, 'Frame', 1, 1, 120.00), (3, 'Wheel Assembly', 1, 2, 0.00), (4, 'Drivetrain', 1, 1, 0.00), (5, 'Rim', 3, 1, 25.00), (6, 'Tire', 3, 1, 18.00), (7, 'Spoke', 3, 36, 0.50), (8, 'Chain', 4, 1, 15.00), (9, 'Sprocket', 4, 1, 12.00), (10, 'Pedal', 4, 2, 8.00), (11, 'Inner Tube', 6, 1, 4.00);",
+  "solution_sql": "WITH RECURSIVE explosion AS (SELECT part_id, part_name, 1 AS effective_qty, unit_cost, unit_cost * 1 AS total_cost FROM bom WHERE part_id = 1 UNION ALL SELECT b.part_id, b.part_name, e.effective_qty * b.quantity_per_parent AS effective_qty, b.unit_cost, b.unit_cost * e.effective_qty * b.quantity_per_parent AS total_cost FROM bom b JOIN explosion e ON b.parent_id = e.part_id) SELECT part_name, effective_qty, unit_cost, ROUND(total_cost, 2) AS total_cost FROM explosion WHERE part_id != 1 ORDER BY part_name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All BOM components with effective quantities and cost contributions",
+      "expected_row_count": 10,
+      "expected_columns": ["part_name", "effective_qty", "unit_cost", "total_cost"],
+      "expected_rows": [
+        { "part_name": "Chain", "effective_qty": 1, "unit_cost": 15.00, "total_cost": 15.00 },
+        { "part_name": "Drivetrain", "effective_qty": 1, "unit_cost": 0.00, "total_cost": 0.00 },
+        { "part_name": "Frame", "effective_qty": 1, "unit_cost": 120.00, "total_cost": 120.00 },
+        { "part_name": "Inner Tube", "effective_qty": 2, "unit_cost": 4.00, "total_cost": 8.00 },
+        { "part_name": "Pedal", "effective_qty": 2, "unit_cost": 8.00, "total_cost": 16.00 },
+        { "part_name": "Rim", "effective_qty": 2, "unit_cost": 25.00, "total_cost": 50.00 },
+        { "part_name": "Spoke", "effective_qty": 72, "unit_cost": 0.50, "total_cost": 36.00 },
+        { "part_name": "Sprocket", "effective_qty": 1, "unit_cost": 12.00, "total_cost": 12.00 },
+        { "part_name": "Tire", "effective_qty": 2, "unit_cost": 18.00, "total_cost": 36.00 },
+        { "part_name": "Wheel Assembly", "effective_qty": 2, "unit_cost": 0.00, "total_cost": 0.00 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "The anchor of the recursive CTE is the root part (parent_id IS NULL). In each recursive step, multiply the parent's accumulated effective_qty by the child's quantity_per_parent to propagate quantities down the tree.",
+    "Track both effective_qty and running cost in the CTE columns so the recursive step can compute total_cost = unit_cost × effective_qty without a separate join."
+  ],
+  "explanation": "A recursive CTE starts at the root ('Bike') with effective_qty = 1. Each recursive step joins child parts to their parent, multiplying quantities: effective_qty = parent_effective_qty × quantity_per_parent. For example, each Wheel Assembly needs 2 units, and each Wheel Assembly contains 36 Spokes, so 2 × 36 = 72 Spokes total. The total_cost per part is simply unit_cost × effective_qty. Filtering out the root (part_id ≠ 1) and ordering alphabetically gives the full BOM explosion. This pattern is essential in manufacturing ERP systems for computing material requirements.",
+  "companies": ["Amazon", "Palantir", "SAP"],
+  "created_at": "2026-09-24"
+}

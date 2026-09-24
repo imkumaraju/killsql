@@ -1,0 +1,26 @@
+{
+  "id": "185",
+  "slug": "array-agg-products-per-category",
+  "title": "Aggregate Products into an Array Per Category",
+  "difficulty": "medium",
+  "tags": ["ARRAY_AGG", "GROUP BY", "aggregation", "array functions"],
+  "description": "For each product category aggregate all product names into an array and count how many products are in each category.\n\n**Table: products** — `id`, `name`, `category`\n\nOutput columns: `category`, `product_names`, `product_count`. Order by `category`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR); INSERT INTO products VALUES (1,'Widget A','Electronics'),(2,'Widget B','Electronics'),(3,'Gadget X','Electronics'),(4,'Shirt Pro','Clothing'),(5,'Shirt Lite','Clothing'),(6,'Pants X','Clothing'),(7,'Book Alpha','Books'),(8,'Book Beta','Books');",
+  "solution_sql": "SELECT category, ARRAY_AGG(name ORDER BY name) AS product_names, COUNT(*) AS product_count FROM products GROUP BY category ORDER BY category",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 categories: Books (2 products), Clothing (3 products), Electronics (3 products)",
+      "expected_row_count": 3,
+      "expected_columns": ["category", "product_names", "product_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "ARRAY_AGG(name ORDER BY name) collects all name values within the group into an ordered array.",
+    "In DuckDB you can also use LIST(name ORDER BY name) — both return an array/list type column."
+  ],
+  "explanation": "ARRAY_AGG is an aggregate function that collects values into an array rather than a scalar. GROUP BY category produces one row per category. Books: ['Book Alpha', 'Book Beta'] (count=2). Clothing: ['Pants X', 'Shirt Lite', 'Shirt Pro'] (count=3). Electronics: ['Gadget X', 'Widget A', 'Widget B'] (count=3). Arrays are useful for passing structured data to application layers.",
+  "companies": ["PostgreSQL", "DuckDB"],
+  "created_at": "2026-09-24"
+}

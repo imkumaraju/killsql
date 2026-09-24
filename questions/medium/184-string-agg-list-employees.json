@@ -1,0 +1,26 @@
+{
+  "id": "184",
+  "slug": "string-agg-list-employees",
+  "title": "Comma-Separated Employee List Per Department",
+  "difficulty": "medium",
+  "tags": ["STRING_AGG", "GROUP BY", "aggregation", "string functions"],
+  "description": "For each department produce a single comma-separated list of employee names sorted alphabetically.\n\n**Table: employees** — `id`, `name`, `department`\n\nOutput columns: `department`, `employee_list`, `headcount`. Order by `department`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR); INSERT INTO employees VALUES (1,'Alice','Engineering'),(2,'Bob','Engineering'),(3,'Carol','Engineering'),(4,'Dave','Marketing'),(5,'Eve','Marketing'),(6,'Frank','HR'),(7,'Grace','HR'),(8,'Henry','HR');",
+  "solution_sql": "SELECT department, STRING_AGG(name, ', ' ORDER BY name) AS employee_list, COUNT(*) AS headcount FROM employees GROUP BY department ORDER BY department",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 departments: Engineering (3 employees), HR (3 employees), Marketing (2 employees)",
+      "expected_row_count": 3,
+      "expected_columns": ["department", "employee_list", "headcount"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "STRING_AGG(name, ', ' ORDER BY name) concatenates all names in the group with ', ' as the separator in alphabetical order.",
+    "MySQL uses GROUP_CONCAT(name ORDER BY name SEPARATOR ', ') — STRING_AGG is the standard SQL / PostgreSQL / DuckDB syntax."
+  ],
+  "explanation": "STRING_AGG is an aggregate function that collects values into a delimited string. GROUP BY department produces one row per department. Engineering: 'Alice, Bob, Carol'. HR: 'Frank, Grace, Henry'. Marketing: 'Dave, Eve'. headcount from COUNT(*) is included to verify the list length matches.",
+  "companies": ["Postgres", "Snowflake"],
+  "created_at": "2026-09-24"
+}

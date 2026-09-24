@@ -1,0 +1,26 @@
+{
+  "id": "145",
+  "slug": "inner-join-two-tables",
+  "title": "Join Orders with Customer Details",
+  "difficulty": "easy",
+  "tags": ["SELECT", "INNER JOIN", "joins"],
+  "description": "Write a query to return each order with its customer's details. Return `order_id` (from orders.id), `customer_name`, `city`, `amount`, and `order_date`.\n\n**Table: customers** — `id`, `name`, `city`\n\n**Table: orders** — `id`, `customer_id`, `amount`, `order_date`",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, city VARCHAR); CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL, order_date DATE); INSERT INTO customers VALUES (1,'Alice Johnson','New York'),(2,'Bob Smith','Chicago'),(3,'Carol Davis','Houston'),(4,'Diana Prince','Seattle'); INSERT INTO orders VALUES (1,1,150.00,'2026-09-01'),(2,2,200.00,'2026-09-05'),(3,1,75.00,'2026-09-10'),(4,3,320.00,'2026-09-12'),(5,2,125.00,'2026-09-15'),(6,4,450.00,'2026-09-18');",
+  "solution_sql": "SELECT o.id AS order_id, c.name AS customer_name, c.city, o.amount, o.order_date FROM orders o INNER JOIN customers c ON o.customer_id = c.id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 rows with order details enriched by customer name and city",
+      "expected_row_count": 6,
+      "expected_columns": ["order_id", "customer_name", "city", "amount", "order_date"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`INNER JOIN table ON condition` returns only rows where the join condition matches in both tables.",
+    "The join key is `orders.customer_id = customers.id`. All 6 orders have a matching customer, so all 6 are returned."
+  ],
+  "explanation": "`INNER JOIN customers c ON o.customer_id = c.id` links each order to its customer. Since every order has a valid `customer_id`, all 6 order rows are included with the enriched customer name and city.",
+  "companies": ["Shopify", "Amazon"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "191",
+  "slug": "gaps-in-sequence",
+  "title": "Find Missing IDs in a Sequence",
+  "difficulty": "medium",
+  "tags": ["gaps", "GENERATE_SERIES", "EXCEPT", "sequence", "data quality"],
+  "description": "Find all integer IDs that are missing from the `registered_users` table between 1 and the maximum registered ID.\n\n**Table: registered_users** — `id`, `username`\n\nOutput column: `missing_id`. Order by `missing_id`.",
+  "schema_sql": "CREATE TABLE registered_users (id INT, username VARCHAR); INSERT INTO registered_users VALUES (1,'alice'),(2,'bob'),(4,'dave'),(5,'eve'),(7,'grace'),(8,'henry'),(9,'iris'),(11,'kim');",
+  "solution_sql": "SELECT n AS missing_id FROM generate_series(1, (SELECT MAX(id) FROM registered_users)) AS t(n) WHERE n NOT IN (SELECT id FROM registered_users) ORDER BY missing_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "IDs 1-11 with max=11; IDs 3, 6, 10 are missing — 3 rows returned",
+      "expected_row_count": 3,
+      "expected_columns": ["missing_id"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Generate the complete sequence from 1 to MAX(id) using generate_series(), then subtract the existing IDs with NOT IN or EXCEPT.",
+    "An alternative uses a self-join: LAG to find gaps where the current id minus the previous id is greater than 1."
+  ],
+  "explanation": "generate_series(1, 11) produces integers 1 through 11. NOT IN (SELECT id FROM registered_users) removes the IDs that do exist. The remaining values — 3, 6, and 10 — are the missing IDs. This is the classic gap-detection pattern used in data quality checks.",
+  "companies": ["Airbnb", "Uber"],
+  "created_at": "2026-09-24"
+}

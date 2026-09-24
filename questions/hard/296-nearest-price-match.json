@@ -1,0 +1,34 @@
+{
+  "id": "296",
+  "slug": "nearest-price-match",
+  "title": "Nearest Price Match Across Two Catalogs",
+  "difficulty": "hard",
+  "tags": ["CROSS JOIN", "window functions", "ROW_NUMBER", "CTE", "ABS", "ranking"],
+  "description": "Two product catalogs (`catalog_a` and `catalog_b`) each list products with prices. For each product in `catalog_a`, **find the closest price match** from `catalog_b` (minimum absolute price difference). If there is a tie, return the catalog_b product with the lower `product_id`.\n\n**Tables: catalog_a, catalog_b**\n\n| Column | Type |\n|--------|------|\n| product_id | INT |\n| product_name | VARCHAR |\n| price | NUMERIC(10,2) |\n\nOutput columns: `a_id`, `a_name`, `a_price`, `b_id`, `b_name`, `b_price`, `price_diff`. Order by `a_id`.",
+  "schema_sql": "CREATE TABLE catalog_a (product_id INT, product_name VARCHAR, price NUMERIC(10,2)); INSERT INTO catalog_a VALUES (1,'Widget Pro',29.99),(2,'Gadget X',149.99),(3,'Doohickey',9.99),(4,'Thingamajig',299.99),(5,'Gizmo Elite',79.99),(6,'Device Plus',199.99); CREATE TABLE catalog_b (product_id INT, product_name VARCHAR, price NUMERIC(10,2)); INSERT INTO catalog_b VALUES (101,'Widget Premium',32.50),(102,'Gadget Y',145.00),(103,'Doohickey Lite',8.99),(104,'Thingamajig Pro',310.00),(105,'Gizmo Basic',74.99),(106,'Device Standard',185.00),(107,'Widget Basic',24.99),(108,'Mega Gadget',499.99);",
+  "solution_sql": "WITH price_matches AS (SELECT a.product_id AS a_id, a.product_name AS a_name, a.price AS a_price, b.product_id AS b_id, b.product_name AS b_name, b.price AS b_price, ABS(a.price - b.price) AS price_diff, ROW_NUMBER() OVER (PARTITION BY a.product_id ORDER BY ABS(a.price - b.price), b.product_id) AS rn FROM catalog_a a CROSS JOIN catalog_b b) SELECT a_id, a_name, a_price, b_id, b_name, b_price, price_diff FROM price_matches WHERE rn = 1 ORDER BY a_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Closest catalog_b match for each catalog_a product",
+      "expected_row_count": 6,
+      "expected_columns": ["a_id", "a_name", "a_price", "b_id", "b_name", "b_price", "price_diff"],
+      "expected_rows": [
+        { "a_id": 1, "a_name": "Widget Pro", "a_price": 29.99, "b_id": 101, "b_name": "Widget Premium", "b_price": 32.50, "price_diff": 2.51 },
+        { "a_id": 2, "a_name": "Gadget X", "a_price": 149.99, "b_id": 102, "b_name": "Gadget Y", "b_price": 145.00, "price_diff": 4.99 },
+        { "a_id": 3, "a_name": "Doohickey", "a_price": 9.99, "b_id": 103, "b_name": "Doohickey Lite", "b_price": 8.99, "price_diff": 1.00 },
+        { "a_id": 4, "a_name": "Thingamajig", "a_price": 299.99, "b_id": 104, "b_name": "Thingamajig Pro", "b_price": 310.00, "price_diff": 10.01 },
+        { "a_id": 5, "a_name": "Gizmo Elite", "a_price": 79.99, "b_id": 105, "b_name": "Gizmo Basic", "b_price": 74.99, "price_diff": 5.00 },
+        { "a_id": 6, "a_name": "Device Plus", "a_price": 199.99, "b_id": 106, "b_name": "Device Standard", "b_price": 185.00, "price_diff": 14.99 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "CROSS JOIN catalog_a with catalog_b to generate all (a, b) product pairs, then compute ABS(a.price - b.price) as the price difference. This is O(n×m) but straightforward for catalog-sized datasets.",
+    "Apply ROW_NUMBER() OVER (PARTITION BY a.product_id ORDER BY ABS(a.price - b.price), b.product_id) to rank catalog_b matches for each catalog_a product. Filter WHERE rn = 1 to keep only the best match, with b.product_id as a tiebreaker."
+  ],
+  "explanation": "A CROSS JOIN generates every possible pairing between the two catalogs. For each catalog_a product, ROW_NUMBER() ranks all catalog_b matches in ascending order of price difference, using b.product_id as a secondary sort for tie-breaking. Filtering to rn = 1 retains only the closest match. Notable results: Widget Pro (29.99) matches Widget Premium (32.50) with a diff of just 2.51 — closer than Widget Basic (24.99, diff=5.00); Gadget X (149.99) matches Gadget Y (145.00) with a 4.99 difference; Doohickey (9.99) matches Doohickey Lite (8.99) at only 1.00 difference. The CROSS JOIN approach is O(n×m) so it works well for small-to-medium catalog sizes; for large catalogs, approximate matching with bucketing or similarity search is preferred.",
+  "companies": ["Amazon", "Google Shopping", "Alibaba"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "118",
+  "slug": "is-null-filter",
+  "title": "Find Top-Level Employees with No Manager",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "IS NULL", "NULL handling"],
+  "description": "Write a query to find all employees who **do not have a manager** (i.e., `manager_id` is NULL). Return `id`, `name`, and `salary`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| manager_id | INT |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, manager_id INT); INSERT INTO employees VALUES (1, 'Alice', 120000, NULL), (2, 'Bob', 90000, 1), (3, 'Carol', 85000, 1), (4, 'Diana', 95000, NULL), (5, 'Evan', 75000, 2), (6, 'Frank', 80000, 3), (7, 'Grace', 110000, NULL);",
+  "solution_sql": "SELECT id, name, salary FROM employees WHERE manager_id IS NULL",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 3 top-level employees (Alice, Diana, Grace) whose manager_id is NULL",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "name", "salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use `IS NULL` to test for missing values. `= NULL` does **not** work in SQL — it always evaluates to unknown.",
+    "Top-level employees (e.g., executives) typically have no manager, so `manager_id` is NULL."
+  ],
+  "explanation": "`WHERE manager_id IS NULL` correctly identifies rows where the column contains no value. Employees Alice, Diana, and Grace have no manager, making them the top-level hierarchy.",
+  "companies": ["Google", "Meta"],
+  "created_at": "2026-09-24"
+}

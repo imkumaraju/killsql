@@ -1,0 +1,26 @@
+{
+  "id": "134",
+  "slug": "count-distinct",
+  "title": "Count Distinct Customers",
+  "difficulty": "easy",
+  "tags": ["SELECT", "COUNT", "DISTINCT", "aggregates"],
+  "description": "Write a query that returns a single row showing the **number of unique customers** who placed at least one order as `unique_customers`, alongside the **total number of orders** as `total_orders`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| product_id | INT |\n| amount | DECIMAL |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, product_id INT, amount DECIMAL); INSERT INTO orders VALUES (1, 1, 101, 150.00), (2, 2, 102, 200.00), (3, 1, 103, 75.50), (4, 3, 101, 300.00), (5, 2, 104, 125.00), (6, 4, 102, 220.00), (7, 1, 105, 95.00), (8, 5, 101, 180.00), (9, 3, 103, 160.00);",
+  "solution_sql": "SELECT COUNT(DISTINCT customer_id) AS unique_customers, COUNT(*) AS total_orders FROM orders",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 1 row: unique_customers=5, total_orders=9",
+      "expected_row_count": 1,
+      "expected_columns": ["unique_customers", "total_orders"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`COUNT(DISTINCT column)` counts unique non-NULL values in a column, ignoring duplicates.",
+    "9 orders but only 5 distinct customer IDs (1, 2, 3, 4, 5) — customers 1, 2, and 3 placed multiple orders."
+  ],
+  "explanation": "`COUNT(DISTINCT customer_id)` deduplicates the customer IDs before counting, giving 5. `COUNT(*)` counts all 9 order rows. Together they show the difference between unique buyers and total transactions.",
+  "companies": ["Shopify", "Stripe"],
+  "created_at": "2026-09-24"
+}

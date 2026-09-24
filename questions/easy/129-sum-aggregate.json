@@ -1,0 +1,26 @@
+{
+  "id": "129",
+  "slug": "sum-aggregate",
+  "title": "Total Amount Spent per Customer",
+  "difficulty": "easy",
+  "tags": ["SELECT", "SUM", "GROUP BY", "aggregates"],
+  "description": "Write a query to calculate the **total amount spent** by each customer. Return `customer_id` and `total_spent`, ordered by `total_spent` descending.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| amount | DECIMAL |\n| status | VARCHAR |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL, status VARCHAR); INSERT INTO orders VALUES (1, 1, 150.00, 'delivered'), (2, 2, 200.00, 'delivered'), (3, 1, 75.50, 'shipped'), (4, 3, 300.00, 'delivered'), (5, 2, 125.00, 'processing'), (6, 1, 220.00, 'delivered'), (7, 3, 180.00, 'shipped'), (8, 4, 95.00, 'delivered');",
+  "solution_sql": "SELECT customer_id, SUM(amount) AS total_spent FROM orders GROUP BY customer_id ORDER BY total_spent DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 rows (one per customer) with their total spend",
+      "expected_row_count": 4,
+      "expected_columns": ["customer_id", "total_spent"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`SUM(column)` adds up all values within a group when used with `GROUP BY`.",
+    "Customer 3 spent the most (300 + 180 = 480), followed by customer 1 (150 + 75.50 + 220 = 445.50)."
+  ],
+  "explanation": "`SUM(amount)` with `GROUP BY customer_id` collapses all orders per customer into one row with the cumulative total. There are 4 distinct customers, so 4 rows are returned.",
+  "companies": ["Stripe", "Shopify"],
+  "created_at": "2026-09-24"
+}

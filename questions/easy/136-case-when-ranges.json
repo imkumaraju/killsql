@@ -1,0 +1,26 @@
+{
+  "id": "136",
+  "slug": "case-when-ranges",
+  "title": "Assign Salary Grade with CASE WHEN Ranges",
+  "difficulty": "easy",
+  "tags": ["SELECT", "CASE WHEN", "conditional logic"],
+  "description": "Write a query that assigns each employee a `salary_grade` based on their salary:\n- `salary >= 100000` → `'High'`\n- `salary >= 60000` → `'Mid'`\n- otherwise → `'Low'`\n\nReturn `id`, `name`, `salary`, and `salary_grade`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| department | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, department VARCHAR); INSERT INTO employees VALUES (1, 'Alice', 120000, 'Engineering'), (2, 'Bob', 75000, 'Marketing'), (3, 'Carol', 45000, 'Support'), (4, 'Diana', 95000, 'Engineering'), (5, 'Evan', 35000, 'Support'), (6, 'Frank', 60000, 'Sales'), (7, 'Grace', 150000, 'Management'), (8, 'Henry', 55000, 'Marketing');",
+  "solution_sql": "SELECT id, name, salary, CASE WHEN salary >= 100000 THEN 'High' WHEN salary >= 60000 THEN 'Mid' ELSE 'Low' END AS salary_grade FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 8 rows with salary_grade: 2 High, 3 Mid, 3 Low",
+      "expected_row_count": 8,
+      "expected_columns": ["id", "name", "salary", "salary_grade"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The 'searched CASE' form uses `CASE WHEN condition THEN result`. Conditions are evaluated top-to-bottom; the first match wins.",
+    "Order the conditions from most restrictive to least: check >= 100k first, then >= 60k, then fall through to the ELSE."
+  ],
+  "explanation": "CASE evaluates conditions in order: Alice (120k) and Grace (150k) hit the first `WHEN` → 'High'. Bob (75k), Diana (95k), Frank (60k) hit the second `WHEN` → 'Mid'. Carol (45k), Evan (35k), Henry (55k) fall to `ELSE` → 'Low'.",
+  "companies": ["Google", "Microsoft"],
+  "created_at": "2026-09-24"
+}

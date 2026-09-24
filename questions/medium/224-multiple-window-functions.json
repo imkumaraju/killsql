@@ -1,0 +1,26 @@
+{
+  "id": "224",
+  "slug": "multiple-window-functions",
+  "title": "Multiple Window Functions in One Query",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "ROW_NUMBER", "RANK", "SUM OVER", "PARTITION BY"],
+  "description": "For each sale record, compute three window metrics simultaneously: the salesperson's **rank within their region** (by amount descending), the **running total of sales** within the region (ordered by date), and a **global row number** across all sales.",
+  "schema_sql": "CREATE TABLE sales (sale_id INT, salesperson VARCHAR(100), region VARCHAR(50), amount DECIMAL(10,2), sale_date DATE); INSERT INTO sales VALUES (1,'Alice','North',5000.00,'2026-01-10'),(2,'Bob','North',3000.00,'2026-01-12'),(3,'Carol','South',7000.00,'2026-01-08'),(4,'Dave','South',4000.00,'2026-01-15'),(5,'Eve','North',6000.00,'2026-01-20'),(6,'Frank','South',5500.00,'2026-01-22'),(7,'Grace','East',8000.00,'2026-01-05'),(8,'Hank','East',4500.00,'2026-01-18');",
+  "solution_sql": "SELECT salesperson, region, amount, RANK() OVER (PARTITION BY region ORDER BY amount DESC) AS region_rank, SUM(amount) OVER (PARTITION BY region ORDER BY sale_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total, ROW_NUMBER() OVER (ORDER BY sale_id) AS row_num FROM sales ORDER BY region, amount DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All 8 sales each with region_rank, running_total, and row_num columns",
+      "expected_row_count": 8,
+      "expected_columns": ["salesperson", "region", "amount", "region_rank", "running_total", "row_num"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Each window function gets its own independent OVER() clause — RANK uses PARTITION BY region ORDER BY amount DESC, while the running total uses ORDER BY sale_date with ROWS UNBOUNDED PRECEDING.",
+    "ROW_NUMBER() OVER (ORDER BY sale_id) assigns a unique sequential number globally with no partitioning."
+  ],
+  "explanation": "Multiple window functions can coexist in the same SELECT, each with its own OVER() definition. RANK() within region by amount shows peer standing; SUM() with ROWS UNBOUNDED PRECEDING gives a cumulative total that grows as sale_date advances; ROW_NUMBER() globally numbers all 8 rows. None of these collapse the result set — all 8 rows are returned.",
+  "companies": ["Salesforce", "Oracle"],
+  "created_at": "2026-09-24"
+}

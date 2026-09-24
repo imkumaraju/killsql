@@ -1,0 +1,26 @@
+{
+  "id": "219",
+  "slug": "datediff-sla-breach",
+  "title": "Identify SLA Breaches Using DATEDIFF",
+  "difficulty": "medium",
+  "tags": ["DATEDIFF", "CASE WHEN", "date arithmetic", "WHERE", "SLA"],
+  "description": "For each support ticket calculate the number of days to resolve it and flag whether it breached the assigned SLA (days_to_resolve > sla_days).\n\n**Table: support_tickets** — `id`, `customer_id`, `created_date`, `resolved_date`, `sla_days`\n\nOutput columns: `id`, `customer_id`, `days_to_resolve`, `sla_days`, `sla_status`. Order by `id`.",
+  "schema_sql": "CREATE TABLE support_tickets (id INT, customer_id INT, created_date DATE, resolved_date DATE, sla_days INT); INSERT INTO support_tickets VALUES (1,101,'2026-09-01','2026-09-03',3),(2,102,'2026-09-02','2026-09-07',3),(3,103,'2026-09-05','2026-09-06',2),(4,104,'2026-09-08','2026-09-12',3),(5,105,'2026-09-10','2026-09-11',2),(6,106,'2026-09-12','2026-09-20',5),(7,107,'2026-09-15','2026-09-17',2),(8,108,'2026-09-18','2026-09-20',3);",
+  "solution_sql": "SELECT id, customer_id, DATEDIFF('day', created_date, resolved_date) AS days_to_resolve, sla_days, CASE WHEN DATEDIFF('day', created_date, resolved_date) > sla_days THEN 'SLA Breach' ELSE 'On Time' END AS sla_status FROM support_tickets ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 tickets; tickets 2 (5 days > 3), 4 (4 days > 3), 6 (8 days > 5) are SLA breaches; 5 are on time — 8 rows",
+      "expected_row_count": 8,
+      "expected_columns": ["id", "customer_id", "days_to_resolve", "sla_days", "sla_status"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "DATEDIFF('day', created_date, resolved_date) returns the number of calendar days between two dates.",
+    "Compare days_to_resolve against sla_days using CASE WHEN to label each ticket as 'SLA Breach' or 'On Time'."
+  ],
+  "explanation": "DATEDIFF('day', start, end) computes elapsed days. Ticket 1: Sep 1→Sep 3 = 2 days ≤ 3 sla → On Time. Ticket 2: Sep 2→Sep 7 = 5 days > 3 → SLA Breach. Ticket 3: 1 day ≤ 2 → On Time. Ticket 4: 4 days > 3 → SLA Breach. Ticket 5: 1 day ≤ 2 → On Time. Ticket 6: 8 days > 5 → SLA Breach. Tickets 7 and 8: On Time. 3 breaches total.",
+  "companies": ["Zendesk", "ServiceNow"],
+  "created_at": "2026-09-24"
+}

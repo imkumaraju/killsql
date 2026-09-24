@@ -1,0 +1,26 @@
+{
+  "id": "160",
+  "slug": "simple-subquery-in-where",
+  "title": "Find Employees Earning Above Average Salary",
+  "difficulty": "easy",
+  "tags": ["SELECT", "subquery", "WHERE", "AVG"],
+  "description": "Write a query to return all employees who earn **more than the company average salary**. Return `id`, `name`, `salary`, and `department`.\n\n**Hint:** Use a subquery `(SELECT AVG(salary) FROM employees)` inside the `WHERE` clause.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| department | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, department VARCHAR); INSERT INTO employees VALUES (1, 'Alice', 90000, 'Engineering'), (2, 'Bob', 75000, 'Marketing'), (3, 'Carol', 85000, 'Engineering'), (4, 'Diana', 60000, 'HR'), (5, 'Evan', 110000, 'Engineering'), (6, 'Frank', 95000, 'Sales'), (7, 'Grace', 70000, 'Marketing'), (8, 'Henry', 55000, 'Support');",
+  "solution_sql": "SELECT id, name, salary, department FROM employees WHERE salary > (SELECT AVG(salary) FROM employees)",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 employees with salary above the average of 80000",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "name", "salary", "department"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "A subquery inside `WHERE` is called a **scalar subquery** — it returns a single value that the outer query uses for comparison.",
+    "The average salary is (90k+75k+85k+60k+110k+95k+70k+55k)/8 = 640000/8 = 80000. Employees above 80k: Alice, Carol, Evan, Frank."
+  ],
+  "explanation": "`(SELECT AVG(salary) FROM employees)` computes the company average (80,000). The outer `WHERE salary > 80000` then filters to 4 employees: Alice (90k), Carol (85k), Evan (110k), and Frank (95k).",
+  "companies": ["Google", "Amazon"],
+  "created_at": "2026-09-24"
+}

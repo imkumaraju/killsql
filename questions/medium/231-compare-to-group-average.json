@@ -1,0 +1,26 @@
+{
+  "id": "231",
+  "slug": "compare-to-group-average",
+  "title": "Compare Each Employee to Their Department Average Salary",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "AVG OVER", "PARTITION BY", "CASE", "salary analysis"],
+  "description": "Show each employee's name, department, salary, their **department's average salary**, the **difference from average**, and a label: **'Above Average'**, **'Below Average'**, or **'Average'**.",
+  "schema_sql": "CREATE TABLE employees (emp_id INT, name VARCHAR(100), department VARCHAR(50), salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',85000),(3,'Carol','Engineering',105000),(4,'Dave','Engineering',75000),(5,'Eve','Marketing',65000),(6,'Frank','Marketing',70000),(7,'Grace','Marketing',80000),(8,'Hank','Sales',55000),(9,'Ivy','Sales',60000),(10,'Jack','Sales',72000);",
+  "solution_sql": "SELECT name, department, salary, ROUND(AVG(salary) OVER (PARTITION BY department), 2) AS dept_avg, salary - ROUND(AVG(salary) OVER (PARTITION BY department), 2) AS diff_from_avg, CASE WHEN salary > AVG(salary) OVER (PARTITION BY department) THEN 'Above Average' WHEN salary < AVG(salary) OVER (PARTITION BY department) THEN 'Below Average' ELSE 'Average' END AS comparison FROM employees ORDER BY department, salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 employees with dept_avg, diff, and comparison label. Engineering avg=90000, Marketing avg=71667, Sales avg=62333.",
+      "expected_row_count": 10,
+      "expected_columns": ["name", "department", "salary", "dept_avg", "diff_from_avg", "comparison"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use AVG(salary) OVER (PARTITION BY department) to compute the department average and attach it to every employee row without collapsing the data.",
+    "Subtract the window average from salary to get the diff, then use CASE on the same window expression to classify above/below/average."
+  ],
+  "explanation": "AVG(salary) OVER (PARTITION BY department) computes per-department averages and stamps them on every row. Engineering avg=90000: Alice(95k)=Above, Bob(85k)=Below, Carol(105k)=Above, Dave(75k)=Below. This approach avoids a self-join or correlated subquery. The CASE expression uses the window function result directly for classification.",
+  "companies": ["Google", "LinkedIn"],
+  "created_at": "2026-09-24"
+}

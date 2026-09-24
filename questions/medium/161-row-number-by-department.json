@@ -1,0 +1,26 @@
+{
+  "id": "161",
+  "slug": "row-number-by-department",
+  "title": "Row Number Within Each Department",
+  "difficulty": "medium",
+  "tags": ["window functions", "ROW_NUMBER", "PARTITION BY", "ORDER BY"],
+  "description": "Assign a sequential row number to each employee within their department, ordered by salary descending. Each department's numbering restarts at 1.\n\n**Table: employees** — `id`, `name`, `department`, `salary`\n\nOutput columns: `name`, `department`, `salary`, `row_num`. Order by `department`, `row_num`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',88000),(3,'Carol','Engineering',92000),(4,'Dave','Marketing',72000),(5,'Eve','Marketing',68000),(6,'Frank','Marketing',75000),(7,'Grace','HR',60000),(8,'Henry','HR',58000);",
+  "solution_sql": "SELECT name, department, salary, ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) AS row_num FROM employees ORDER BY department, row_num",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 employees across 3 departments each get a sequential row number per department",
+      "expected_row_count": 8,
+      "expected_columns": ["name", "department", "salary", "row_num"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) to restart numbering at 1 for each department.",
+    "ROW_NUMBER() never produces ties — even employees with identical salaries get different sequential numbers."
+  ],
+  "explanation": "ROW_NUMBER() assigns 1, 2, 3... within each PARTITION BY group. PARTITION BY department restarts the counter for each department. ORDER BY salary DESC means the highest-paid employee gets row_num=1. Engineering: Alice(95k)=1, Carol(92k)=2, Bob(88k)=3. Marketing: Frank(75k)=1, Dave(72k)=2, Eve(68k)=3. HR: Grace(60k)=1, Henry(58k)=2.",
+  "companies": ["Amazon", "Microsoft"],
+  "created_at": "2026-09-24"
+}

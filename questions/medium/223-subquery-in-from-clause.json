@@ -1,0 +1,26 @@
+{
+  "id": "223",
+  "slug": "subquery-in-from-clause",
+  "title": "Subquery in FROM Clause (Derived Table / Inline View)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "subquery", "FROM", "GROUP BY", "derived table", "inline view"],
+  "description": "Find all **product categories that contain more products than the average number of products per category**. Use a subquery in the FROM clause as a derived table to first compute counts, then filter against the average.",
+  "schema_sql": "CREATE TABLE products (product_id INT, name VARCHAR(100), category VARCHAR(50), price DECIMAL(10,2)); INSERT INTO products VALUES (1,'Widget A','Electronics',29.99),(2,'Widget B','Electronics',49.99),(3,'Widget C','Electronics',19.99),(4,'Widget D','Electronics',99.99),(5,'Gadget A','Toys',14.99),(6,'Gadget B','Toys',24.99),(7,'Tool A','Hardware',39.99),(8,'Tool B','Hardware',59.99),(9,'Tool C','Hardware',79.99),(10,'Book A','Books',12.99),(11,'Shirt A','Clothing',34.99),(12,'Pants A','Clothing',54.99);",
+  "solution_sql": "SELECT category, product_count FROM (SELECT category, COUNT(*) AS product_count FROM products GROUP BY category) cat_counts WHERE product_count > (SELECT AVG(product_count) FROM (SELECT COUNT(*) AS product_count FROM products GROUP BY category) sub) ORDER BY product_count DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 categories: Electronics(4), Hardware(3), Toys(2), Clothing(2), Books(1). Average=2.4. Electronics and Hardware exceed the average.",
+      "expected_row_count": 2,
+      "expected_columns": ["category", "product_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Place a GROUP BY subquery in the FROM clause to pre-compute counts per category — this derived table can then be referenced in the outer WHERE clause.",
+    "The average to compare against must itself come from a subquery since you cannot use aggregate functions in a WHERE clause."
+  ],
+  "explanation": "The derived table in FROM materializes category counts: Electronics=4, Hardware=3, Toys=2, Clothing=2, Books=1 — average=12/5=2.4. The outer WHERE filters rows where product_count > 2.4, yielding Electronics(4) and Hardware(3). A second subquery computes the AVG because WHERE cannot directly reference aggregates.",
+  "companies": ["eBay", "Walmart"],
+  "created_at": "2026-09-24"
+}

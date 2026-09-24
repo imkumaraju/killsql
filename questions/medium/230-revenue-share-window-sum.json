@@ -1,0 +1,26 @@
+{
+  "id": "230",
+  "slug": "revenue-share-window-sum",
+  "title": "Revenue Share per Category Using Window SUM",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "SUM OVER", "PARTITION BY", "percentage", "revenue share"],
+  "description": "For each individual sale, compute its **percentage contribution to the total revenue of its own category**. Show product name, category, sale amount, and category_share_pct rounded to 2 decimal places.",
+  "schema_sql": "CREATE TABLE sales (sale_id INT, product_name VARCHAR(100), category VARCHAR(50), amount DECIMAL(10,2)); INSERT INTO sales VALUES (1,'Laptop','Electronics',1200.00),(2,'Phone','Electronics',800.00),(3,'Tablet','Electronics',400.00),(4,'Headphones','Electronics',200.00),(5,'Shirt','Clothing',50.00),(6,'Pants','Clothing',80.00),(7,'Jacket','Clothing',150.00),(8,'Hammer','Hardware',30.00),(9,'Drill','Hardware',120.00),(10,'Wrench','Hardware',25.00);",
+  "solution_sql": "SELECT product_name, category, amount, ROUND(amount * 100.0 / SUM(amount) OVER (PARTITION BY category), 2) AS category_share_pct FROM sales ORDER BY category, amount DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 sales each showing its % of category total. Electronics total=2600, Clothing=280, Hardware=175.",
+      "expected_row_count": 10,
+      "expected_columns": ["product_name", "category", "amount", "category_share_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "SUM(amount) OVER (PARTITION BY category) returns the category total on every row in that category — without grouping or reducing the row count.",
+    "Divide each row's amount by the partition sum and multiply by 100 to compute the percentage share."
+  ],
+  "explanation": "SUM(amount) OVER (PARTITION BY category) computes the total sales per category and stamps it on every row — the result set remains 10 rows. Dividing individual amount by this total gives the proportion. Electronics: Laptop=1200/2600=46.15%, Phone=800/2600=30.77%, Tablet=15.38%, Headphones=7.69%. The window function avoids a self-join and is much more efficient.",
+  "companies": ["Amazon", "eBay"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "293",
+  "slug": "fraud-detection-hourly-transactions",
+  "title": "Fraud Detection: 3+ Transactions Within 1 Hour",
+  "difficulty": "hard",
+  "tags": ["self join", "CTE", "timestamp arithmetic", "HAVING", "fraud detection", "interval"],
+  "description": "A `transactions` table records customer purchases with timestamps. **Detect potentially fraudulent customers** who made 3 or more transactions within any rolling 1-hour window. Return the customer_id and the maximum number of transactions found in any single 1-hour window for that customer.\n\n**Table: transactions**\n\n| Column | Type |\n|--------|------|\n| txn_id | INT |\n| customer_id | INT |\n| txn_time | TIMESTAMP |\n| amount | NUMERIC(10,2) |\n| merchant_id | INT |\n\nOutput columns: `customer_id`, `max_txns_in_1hr`. Order by `customer_id`.",
+  "schema_sql": "CREATE TABLE transactions (txn_id INT, customer_id INT, txn_time TIMESTAMP, amount NUMERIC(10,2), merchant_id INT); INSERT INTO transactions VALUES (1,101,'2024-01-15 10:00:00',50.00,1),(2,101,'2024-01-15 10:20:00',75.00,2),(3,101,'2024-01-15 10:45:00',30.00,3),(4,101,'2024-01-15 11:30:00',200.00,1),(5,102,'2024-01-15 14:00:00',100.00,1),(6,102,'2024-01-15 15:10:00',80.00,2),(7,103,'2024-01-15 09:00:00',25.00,1),(8,103,'2024-01-15 09:30:00',45.00,2),(9,103,'2024-01-15 09:55:00',60.00,3),(10,103,'2024-01-15 10:15:00',35.00,4),(11,104,'2024-01-15 16:00:00',500.00,1),(12,104,'2024-01-15 16:30:00',300.00,2),(13,104,'2024-01-15 16:55:00',150.00,3);",
+  "solution_sql": "WITH window_counts AS (SELECT t1.customer_id, t1.txn_id, COUNT(*) AS txns_in_window FROM transactions t1 JOIN transactions t2 ON t1.customer_id = t2.customer_id AND t2.txn_time >= t1.txn_time AND t2.txn_time < t1.txn_time + INTERVAL '1 hour' GROUP BY t1.customer_id, t1.txn_id) SELECT customer_id, MAX(txns_in_window) AS max_txns_in_1hr FROM window_counts GROUP BY customer_id HAVING MAX(txns_in_window) >= 3 ORDER BY customer_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Customers with 3+ transactions in any 1-hour window",
+      "expected_row_count": 3,
+      "expected_columns": ["customer_id", "max_txns_in_1hr"],
+      "expected_rows": [
+        { "customer_id": 101, "max_txns_in_1hr": 3 },
+        { "customer_id": 103, "max_txns_in_1hr": 3 },
+        { "customer_id": 104, "max_txns_in_1hr": 3 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Self-join the transactions table on customer_id, anchoring on each transaction t1 and counting all t2 transactions where t2.txn_time falls within [t1.txn_time, t1.txn_time + 1 hour). This gives the count of transactions in the 1-hour window starting at each transaction.",
+    "The outer query groups by customer_id and applies HAVING MAX(txns_in_window) >= 3 to keep only customers where at least one window had 3 or more transactions. Customer 102 has a 70-minute gap between its only two transactions and is correctly excluded."
+  ],
+  "explanation": "For each anchor transaction t1, a self-join counts all transactions t2 from the same customer that occur within the next 60 minutes. Customer 101's window starting at 10:00 covers transactions at 10:00, 10:20, and 10:45 (3 in 45 minutes). Customer 103's window starting at 09:00 covers 09:00, 09:30, and 09:55 (3 in 55 minutes), and a second window at 09:30 also covers 3 (09:30, 09:55, 10:15). Customer 102's only pair is 70 minutes apart, so no window hits the threshold. The HAVING clause efficiently filters to only the flagged customers. This pattern is a core component of real-time fraud scoring at payment processors.",
+  "companies": ["Stripe", "PayPal", "Visa"],
+  "created_at": "2026-09-24"
+}

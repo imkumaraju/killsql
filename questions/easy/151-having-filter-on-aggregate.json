@@ -1,0 +1,26 @@
+{
+  "id": "151",
+  "slug": "having-filter-on-aggregate",
+  "title": "Customers Who Spent More Than $500",
+  "difficulty": "easy",
+  "tags": ["SELECT", "HAVING", "SUM", "GROUP BY", "aggregates"],
+  "description": "Write a query to find customers whose **total order amount exceeds $500**. Return `customer_id` and `total_spent`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| amount | DECIMAL |\n| order_date | DATE |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL, order_date DATE); INSERT INTO orders VALUES (1, 1, 150.00, '2026-09-01'), (2, 2, 200.00, '2026-09-02'), (3, 1, 450.00, '2026-09-03'), (4, 3, 300.00, '2026-09-04'), (5, 2, 350.00, '2026-09-05'), (6, 3, 125.00, '2026-09-06'), (7, 4, 90.00, '2026-09-07'), (8, 1, 200.00, '2026-09-08');",
+  "solution_sql": "SELECT customer_id, SUM(amount) AS total_spent FROM orders GROUP BY customer_id HAVING SUM(amount) > 500",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 2 customers: customer 1 (800) and customer 2 (550)",
+      "expected_row_count": 2,
+      "expected_columns": ["customer_id", "total_spent"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`HAVING` filters groups **after** aggregation. Use it for conditions on aggregate values like `SUM(...)` or `COUNT(...)`.",
+    "You cannot use `WHERE SUM(amount) > 500` — `WHERE` runs before grouping and does not know the sum yet."
+  ],
+  "explanation": "`GROUP BY customer_id` totals each customer's spend: customer 1 = 800, customer 2 = 550, customer 3 = 425, customer 4 = 90. `HAVING SUM(amount) > 500` keeps only customers 1 and 2.",
+  "companies": ["Stripe", "Shopify"],
+  "created_at": "2026-09-24"
+}

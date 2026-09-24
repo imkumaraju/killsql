@@ -1,0 +1,34 @@
+{
+  "id": "286",
+  "slug": "session-stitching-gap-tolerance",
+  "title": "Session Stitching with 30-Minute Gap Tolerance",
+  "difficulty": "hard",
+  "tags": ["window functions", "LAG", "CTE", "session analysis", "timestamp arithmetic", "cumulative sum"],
+  "description": "An `events` table records user activity timestamps. Two consecutive events for the same user belong to the **same session** if the gap between them is ≤ 30 minutes; a gap of more than 30 minutes starts a new session.\n\nFor each user, identify all sessions and compute: session start time, session end time, number of events, and session duration in minutes.\n\n**Table: events**\n\n| Column | Type |\n|--------|------|\n| event_id | INT |\n| user_id | INT |\n| event_time | TIMESTAMP |\n| event_type | VARCHAR |\n\nOutput columns: `user_id`, `session_num`, `session_start`, `session_end`, `event_count`, `duration_minutes`. Order by `user_id`, `session_num`.",
+  "schema_sql": "CREATE TABLE events (event_id INT, user_id INT, event_time TIMESTAMP, event_type VARCHAR); INSERT INTO events VALUES (1,1,'2024-01-01 09:00:00','page_view'),(2,1,'2024-01-01 09:15:00','click'),(3,1,'2024-01-01 09:25:00','page_view'),(4,1,'2024-01-01 10:10:00','purchase'),(5,1,'2024-01-01 10:20:00','page_view'),(6,1,'2024-01-01 11:30:00','click'),(7,2,'2024-01-01 08:00:00','page_view'),(8,2,'2024-01-01 08:20:00','click'),(9,2,'2024-01-01 09:00:00','purchase'),(10,2,'2024-01-01 09:10:00','page_view'),(11,2,'2024-01-01 09:45:00','click'),(12,2,'2024-01-01 09:50:00','page_view');",
+  "solution_sql": "WITH event_gaps AS (SELECT event_id, user_id, event_time, event_type, LAG(event_time) OVER (PARTITION BY user_id ORDER BY event_time) AS prev_time FROM events), session_flags AS (SELECT *, CASE WHEN prev_time IS NULL OR EXTRACT(EPOCH FROM (event_time - prev_time)) > 1800 THEN 1 ELSE 0 END AS new_session FROM event_gaps), session_ids AS (SELECT *, SUM(new_session) OVER (PARTITION BY user_id ORDER BY event_time ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS session_num FROM session_flags) SELECT user_id, session_num, MIN(event_time) AS session_start, MAX(event_time) AS session_end, COUNT(*) AS event_count, ROUND(EXTRACT(EPOCH FROM MAX(event_time) - MIN(event_time)) / 60.0, 1) AS duration_minutes FROM session_ids GROUP BY user_id, session_num ORDER BY user_id, session_num",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Sessions per user with correct start/end times and event counts",
+      "expected_row_count": 6,
+      "expected_columns": ["user_id", "session_num", "session_start", "session_end", "event_count", "duration_minutes"],
+      "expected_rows": [
+        { "user_id": 1, "session_num": 1, "session_start": "2024-01-01 09:00:00", "session_end": "2024-01-01 09:25:00", "event_count": 3, "duration_minutes": 25.0 },
+        { "user_id": 1, "session_num": 2, "session_start": "2024-01-01 10:10:00", "session_end": "2024-01-01 10:20:00", "event_count": 2, "duration_minutes": 10.0 },
+        { "user_id": 1, "session_num": 3, "session_start": "2024-01-01 11:30:00", "session_end": "2024-01-01 11:30:00", "event_count": 1, "duration_minutes": 0.0 },
+        { "user_id": 2, "session_num": 1, "session_start": "2024-01-01 08:00:00", "session_end": "2024-01-01 08:20:00", "event_count": 2, "duration_minutes": 20.0 },
+        { "user_id": 2, "session_num": 2, "session_start": "2024-01-01 09:00:00", "session_end": "2024-01-01 09:10:00", "event_count": 2, "duration_minutes": 10.0 },
+        { "user_id": 2, "session_num": 3, "session_start": "2024-01-01 09:45:00", "session_end": "2024-01-01 09:50:00", "event_count": 2, "duration_minutes": 5.0 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use LAG() to compare each event's timestamp with the previous event for the same user. Flag a new session (1) when the gap exceeds 1800 seconds (30 minutes) or when there is no previous event.",
+    "Apply a cumulative SUM() of the session-start flag ordered by event_time within each user partition. This creates a session identifier that increments each time a new session begins."
+  ],
+  "explanation": "This problem requires a three-step CTE chain. First, LAG() computes the time since the previous event per user. Second, a CASE expression flags each event as a session starter (gap > 30 min or first event). Third, a cumulative SUM() of those flags — partitioned by user and ordered by time — assigns a monotonically increasing session ID. Finally, GROUP BY user_id and session_num aggregates session metrics. The EXTRACT(EPOCH FROM ...) / 60 trick converts a timestamp interval to minutes. This session-stitching pattern is fundamental to product analytics at every consumer tech company.",
+  "companies": ["Amplitude", "Meta", "Netflix"],
+  "created_at": "2026-09-24"
+}

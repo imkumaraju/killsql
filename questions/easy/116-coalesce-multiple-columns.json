@@ -1,0 +1,26 @@
+{
+  "id": "116",
+  "slug": "coalesce-multiple-columns",
+  "title": "Return First Available Phone Number",
+  "difficulty": "easy",
+  "tags": ["SELECT", "COALESCE", "NULL handling"],
+  "description": "Each employee may have a `work_phone`, `mobile_phone`, or `home_phone`. Write a query that returns `id`, `name`, and a `contact_phone` which is the **first non-NULL** phone number across those three columns (in that priority order). If all are NULL, return `'No phone'`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| work_phone | VARCHAR |\n| mobile_phone | VARCHAR |\n| home_phone | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, work_phone VARCHAR, mobile_phone VARCHAR, home_phone VARCHAR); INSERT INTO employees VALUES (1, 'Alice', '555-1001', '555-2001', NULL), (2, 'Bob', NULL, '555-2002', '555-3002'), (3, 'Carol', NULL, NULL, '555-3003'), (4, 'Diana', '555-1004', NULL, NULL), (5, 'Evan', NULL, NULL, NULL), (6, 'Frank', '555-1006', '555-2006', '555-3006');",
+  "solution_sql": "SELECT id, name, COALESCE(work_phone, mobile_phone, home_phone, 'No phone') AS contact_phone FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 rows; Evan gets 'No phone', others get their first available phone",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "name", "contact_phone"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`COALESCE(val1, val2, ..., valN)` returns the first non-NULL value from the list.",
+    "Add a final fallback literal (`'No phone'`) as the last argument to handle the all-NULL case."
+  ],
+  "explanation": "`COALESCE(work_phone, mobile_phone, home_phone, 'No phone')` checks each column left-to-right and returns the first non-NULL value. Evan has no phones, so he gets the fallback string 'No phone'.",
+  "companies": ["Salesforce", "HubSpot"],
+  "created_at": "2026-09-24"
+}

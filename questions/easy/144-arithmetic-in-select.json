@@ -1,0 +1,26 @@
+{
+  "id": "144",
+  "slug": "arithmetic-in-select",
+  "title": "Calculate Price Including Tax",
+  "difficulty": "easy",
+  "tags": ["SELECT", "arithmetic", "calculated column"],
+  "description": "Write a query that returns `id`, `name`, `price`, and the **total price including tax** as `price_with_tax`, rounded to 2 decimal places.\n\nFormula: `price * (1 + tax_rate)`\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| price | DECIMAL |\n| tax_rate | DECIMAL |",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, price DECIMAL, tax_rate DECIMAL); INSERT INTO products VALUES (1, 'Laptop', 999.00, 0.08), (2, 'Phone', 699.00, 0.08), (3, 'Tablet', 449.00, 0.10), (4, 'Watch', 299.00, 0.10), (5, 'Earbuds', 149.00, 0.05), (6, 'Charger', 29.00, 0.05);",
+  "solution_sql": "SELECT id, name, price, ROUND(price * (1 + tax_rate), 2) AS price_with_tax FROM products",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 rows with price_with_tax as price*(1+tax_rate) rounded to 2dp",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "name", "price", "price_with_tax"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Arithmetic operators (`+`, `-`, `*`, `/`) work directly on numeric columns inside `SELECT`.",
+    "Wrap the expression in `ROUND(..., 2)` to get a clean 2-decimal-place currency value."
+  ],
+  "explanation": "`price * (1 + tax_rate)` computes the total price. For the Laptop at $999 with 8% tax: 999 × 1.08 = 1078.92. `ROUND(..., 2)` ensures the result is displayed as a proper currency amount.",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-24"
+}

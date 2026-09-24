@@ -1,0 +1,26 @@
+{
+  "id": "143",
+  "slug": "table-alias",
+  "title": "Use Table Aliases in a JOIN",
+  "difficulty": "easy",
+  "tags": ["SELECT", "table alias", "INNER JOIN"],
+  "description": "Write a query using **table aliases** (`e` for employees, `d` for departments) to return `id`, `name`, the department `name` as `department`, and the department `location` for every employee.\n\n**Table: employees** — `id`, `name`, `salary`, `department_id`\n\n**Table: departments** — `id`, `name`, `location`",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, department_id INT); CREATE TABLE departments (id INT, name VARCHAR, location VARCHAR); INSERT INTO employees VALUES (1,'Alice',95000,1),(2,'Bob',75000,2),(3,'Carol',85000,1),(4,'Diana',65000,3),(5,'Evan',90000,2); INSERT INTO departments VALUES (1,'Engineering','New York'),(2,'Marketing','Chicago'),(3,'HR','Boston');",
+  "solution_sql": "SELECT e.id, e.name, d.name AS department, d.location FROM employees e JOIN departments d ON e.department_id = d.id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 5 rows with employee id, name, department name, and location",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "name", "department", "location"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "A table alias is defined right after the table name: `FROM employees e`. Then use `e.column` to reference its columns.",
+    "Table aliases are required when two tables have columns with the same name (like `id` and `name` here) to avoid ambiguity."
+  ],
+  "explanation": "`FROM employees e JOIN departments d` assigns short aliases. `e.name` refers to the employee's name, while `d.name AS department` refers to the department's name — aliases resolve the column-name conflict.",
+  "companies": ["Google", "Microsoft"],
+  "created_at": "2026-09-24"
+}

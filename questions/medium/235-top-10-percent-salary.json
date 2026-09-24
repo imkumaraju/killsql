@@ -1,0 +1,26 @@
+{
+  "id": "235",
+  "slug": "top-10-percent-salary",
+  "title": "Employees in Top 10% by Salary Using PERCENT_RANK",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "PERCENT_RANK", "subquery", "salary percentile"],
+  "description": "Find all employees whose salary places them in the **top 10%** of all salaries (PERCENT_RANK ≥ 0.90). Show name, department, salary, and their percent rank rounded to 4 decimal places.",
+  "schema_sql": "CREATE TABLE employees (emp_id INT, name VARCHAR(100), department VARCHAR(50), salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',85000),(3,'Carol','Marketing',62000),(4,'Dave','Sales',48000),(5,'Eve','Engineering',110000),(6,'Frank','Finance',155000),(7,'Grace','Engineering',72000),(8,'Hank','HR',52000),(9,'Ivy','Finance',180000),(10,'Jack','Marketing',78000);",
+  "solution_sql": "SELECT name, department, salary, ROUND(pr, 4) AS pct_rank FROM (SELECT name, department, salary, PERCENT_RANK() OVER (ORDER BY salary) AS pr FROM employees) ranked WHERE pr >= 0.90 ORDER BY salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "With 10 employees, PERCENT_RANK=1.0 for the highest earner (Ivy, 180000). Only Ivy qualifies at pct_rank≥0.90.",
+      "expected_row_count": 1,
+      "expected_columns": ["name", "department", "salary", "pct_rank"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "PERCENT_RANK() = (rank - 1) / (total_rows - 1), so with 10 employees the top earner always gets 1.0 and the bottom gets 0.0.",
+    "Window functions cannot be filtered in WHERE directly — wrap the query in a subquery and apply WHERE pr >= 0.90 in the outer query."
+  ],
+  "explanation": "PERCENT_RANK() computes a relative rank from 0 to 1. With 10 employees, the formula is (rank-1)/9. The top 10% threshold (≥0.90) requires a rank of at least (0.90×9)+1 = 9.1, i.e., rank 10 — only the highest earner. Ivy at $180,000 has PERCENT_RANK=1.0 and is the sole result. The subquery is needed because window functions are evaluated after WHERE and cannot be filtered inline.",
+  "companies": ["McKinsey", "Goldman Sachs"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "166",
+  "slug": "ntile-salary-quartiles",
+  "title": "Salary Quartile Buckets Using NTILE",
+  "difficulty": "medium",
+  "tags": ["window functions", "NTILE", "ORDER BY", "buckets", "quartile"],
+  "description": "Divide all employees into 4 equal salary quartile groups (1=lowest, 4=highest) using NTILE.\n\n**Table: employees** — `id`, `name`, `salary`\n\nOutput columns: `name`, `salary`, `quartile`. Order by `salary`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice',45000),(2,'Bob',52000),(3,'Carol',61000),(4,'Dave',68000),(5,'Eve',75000),(6,'Frank',83000),(7,'Grace',91000),(8,'Henry',102000),(9,'Iris',115000),(10,'Jake',130000),(11,'Kim',145000),(12,'Leo',160000);",
+  "solution_sql": "SELECT name, salary, NTILE(4) OVER (ORDER BY salary) AS quartile FROM employees ORDER BY salary",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "12 employees divided evenly into 4 quartiles of 3 employees each",
+      "expected_row_count": 12,
+      "expected_columns": ["name", "salary", "quartile"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "NTILE(4) divides the ordered rows into 4 buckets as evenly as possible, assigning bucket numbers 1 through 4.",
+    "With 12 rows and NTILE(4), each bucket gets exactly 3 rows; if rows don't divide evenly, earlier buckets get the extra row."
+  ],
+  "explanation": "NTILE(n) divides the result set into n buckets. With 12 employees ordered by salary, NTILE(4) assigns quartile 1 to the 3 lowest earners (Alice 45k, Bob 52k, Carol 61k), quartile 2 to the next 3, and so on up to quartile 4 for the 3 highest earners. Useful for percentile-based segmentation.",
+  "companies": ["Netflix", "LinkedIn"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "216",
+  "slug": "stddev-pop-salary-department",
+  "title": "Salary Spread by Department Using STDDEV_POP",
+  "difficulty": "medium",
+  "tags": ["STDDEV_POP", "GROUP BY", "AVG", "statistical aggregation"],
+  "description": "Calculate the population standard deviation and average salary for each department to understand how spread out salaries are.\n\n**Table: employees** — `id`, `name`, `department`, `salary`\n\nOutput columns: `department`, `avg_salary`, `salary_stddev`, `headcount`. Order by `department`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',88000),(3,'Carol','Engineering',92000),(4,'Dave','Engineering',110000),(5,'Eve','Engineering',85000),(6,'Frank','Marketing',72000),(7,'Grace','Marketing',68000),(8,'Henry','Marketing',75000),(9,'Iris','HR',58000),(10,'Jake','HR',62000),(11,'Kim','HR',55000);",
+  "solution_sql": "SELECT department, ROUND(AVG(salary), 0) AS avg_salary, ROUND(STDDEV_POP(salary), 2) AS salary_stddev, COUNT(*) AS headcount FROM employees GROUP BY department ORDER BY department",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 departments; Engineering has the highest salary spread (stddev); HR the lowest",
+      "expected_row_count": 3,
+      "expected_columns": ["department", "avg_salary", "salary_stddev", "headcount"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "STDDEV_POP computes the population standard deviation (divides by N); use STDDEV_SAMP to divide by N-1 for a sample.",
+    "A high stddev relative to avg indicates a wide salary range within the department."
+  ],
+  "explanation": "STDDEV_POP(salary) measures dispersion around the mean. Engineering: avg=94000, values span 85k-110k → higher stddev. Marketing: avg≈71667, values span 68k-75k → lower stddev. HR: avg≈58333, span 55k-62k → lowest stddev. High stddev relative to average indicates large pay variation, which matters for equity analysis.",
+  "companies": ["Workday", "Lattice"],
+  "created_at": "2026-09-24"
+}

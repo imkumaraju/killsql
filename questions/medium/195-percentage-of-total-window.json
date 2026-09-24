@@ -1,0 +1,26 @@
+{
+  "id": "195",
+  "slug": "percentage-of-total-window",
+  "title": "Each Sale as a Percentage of Total Revenue",
+  "difficulty": "medium",
+  "tags": ["window functions", "SUM OVER", "percentage", "arithmetic"],
+  "description": "For each sale show the amount and its percentage contribution to the total revenue across all sales.\n\n**Table: sales** — `id`, `salesperson`, `amount`\n\nOutput columns: `salesperson`, `amount`, `pct_of_total`. Order by `amount` DESC.",
+  "schema_sql": "CREATE TABLE sales (id INT, salesperson VARCHAR, amount DECIMAL(10,2)); INSERT INTO sales VALUES (1,'Alice',12000.00),(2,'Bob',8500.00),(3,'Carol',15000.00),(4,'Dave',6200.00),(5,'Eve',9800.00),(6,'Frank',11500.00),(7,'Grace',7300.00),(8,'Henry',14200.00);",
+  "solution_sql": "SELECT salesperson, amount, ROUND(100.0 * amount / SUM(amount) OVER (), 2) AS pct_of_total FROM sales ORDER BY amount DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 sales; pct_of_total values sum to 100%; Carol has the highest single sale at 15000",
+      "expected_row_count": 8,
+      "expected_columns": ["salesperson", "amount", "pct_of_total"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "SUM(amount) OVER () with no PARTITION BY or ORDER BY computes the grand total across all rows.",
+    "Divide each row's amount by the grand total and multiply by 100 to get the percentage contribution."
+  ],
+  "explanation": "SUM(amount) OVER () returns the same grand total (84500) for every row. Dividing each individual amount by 84500 and multiplying by 100 gives the percentage. Alice: 12000/84500 ≈ 14.20%. Carol: 15000/84500 ≈ 17.75%. All percentages sum to 100%. This pattern avoids a separate subquery for the total.",
+  "companies": ["Salesforce", "HubSpot"],
+  "created_at": "2026-09-24"
+}

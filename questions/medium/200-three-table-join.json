@@ -1,0 +1,26 @@
+{
+  "id": "200",
+  "slug": "three-table-join",
+  "title": "Order Details with Customer and Product Names",
+  "difficulty": "medium",
+  "tags": ["JOIN", "three-table join", "INNER JOIN", "SELECT"],
+  "description": "Join orders, customers, and products tables to produce a full order report showing customer name, product name, category, and order amount.\n\n**Table: customers** — `id`, `name`\n\n**Table: products** — `id`, `name`, `category`\n\n**Table: orders** — `id`, `customer_id`, `product_id`, `amount`\n\nOutput columns: `order_id`, `customer_name`, `product_name`, `category`, `amount`. Order by `order_id`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR); INSERT INTO customers VALUES (1,'Alice'),(2,'Bob'),(3,'Carol'),(4,'Dave'); CREATE TABLE products (id INT, name VARCHAR, category VARCHAR); INSERT INTO products VALUES (1,'Widget A','Electronics'),(2,'Shirt X','Clothing'),(3,'Book 1','Books'),(4,'Gadget Y','Electronics'); CREATE TABLE orders (id INT, customer_id INT, product_id INT, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,1,49.99),(2,1,3,14.99),(3,2,2,29.99),(4,2,4,79.99),(5,3,1,49.99),(6,3,2,29.99),(7,4,3,14.99),(8,4,4,79.99);",
+  "solution_sql": "SELECT o.id AS order_id, c.name AS customer_name, p.name AS product_name, p.category, o.amount FROM orders o JOIN customers c ON o.customer_id = c.id JOIN products p ON o.product_id = p.id ORDER BY o.id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 orders joining 4 customers and 4 products — 8 rows with full details",
+      "expected_row_count": 8,
+      "expected_columns": ["order_id", "customer_name", "product_name", "category", "amount"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Chain two JOIN clauses: first join orders to customers, then join the result to products.",
+    "Use table aliases (o, c, p) to keep the query readable and avoid column name ambiguity."
+  ],
+  "explanation": "The first JOIN connects orders to customers via customer_id. The second JOIN connects to products via product_id. Order 1: Alice bought Widget A (Electronics) for 49.99. Order 4: Bob bought Gadget Y (Electronics) for 79.99. All 8 orders have valid customer and product references so all 8 rows are returned by INNER JOIN.",
+  "companies": ["Amazon", "eBay"],
+  "created_at": "2026-09-24"
+}

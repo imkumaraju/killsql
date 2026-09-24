@@ -1,0 +1,26 @@
+{
+  "id": "125",
+  "slug": "not-like-pattern",
+  "title": "Find Products NOT Starting with S",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "NOT LIKE", "string functions", "filtering"],
+  "description": "Write a query to return all products whose `name` does **not** start with the letter `'S'`. Return `id`, `name`, and `price`.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| price | DECIMAL |\n| category | VARCHAR |",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, price DECIMAL, category VARCHAR); INSERT INTO products VALUES (1, 'Laptop', 999.99, 'Electronics'), (2, 'Smartphone', 699.99, 'Electronics'), (3, 'Tablet', 449.99, 'Electronics'), (4, 'Speaker', 99.99, 'Electronics'), (5, 'Headphones', 199.99, 'Electronics'), (6, 'Smartwatch', 299.99, 'Electronics'), (7, 'Charger', 29.99, 'Accessories'), (8, 'Screen Protector', 9.99, 'Accessories');",
+  "solution_sql": "SELECT id, name, price FROM products WHERE name NOT LIKE 'S%'",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 products whose name does not start with S",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "name", "price"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`NOT LIKE 'S%'` excludes any row where the name begins with 'S'. The `%` still matches any suffix.",
+    "Products starting with 'S': Smartphone, Speaker, Smartwatch, Screen Protector — these 4 are excluded."
+  ],
+  "explanation": "`NOT LIKE 'S%'` filters out any product name beginning with 'S', leaving Laptop, Tablet, Headphones, and Charger — 4 products total.",
+  "companies": ["Amazon", "Best Buy"],
+  "created_at": "2026-09-24"
+}

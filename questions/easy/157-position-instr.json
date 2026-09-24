@@ -1,0 +1,26 @@
+{
+  "id": "157",
+  "slug": "position-instr",
+  "title": "Find the Position of @ in Email Addresses",
+  "difficulty": "easy",
+  "tags": ["SELECT", "POSITION", "INSTR", "string functions"],
+  "description": "Write a query that returns `id`, `name`, `email`, and the character position of `'@'` in the email as `at_position`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, email VARCHAR); INSERT INTO employees VALUES (1, 'Alice', 'alice@company.com'), (2, 'Bob', 'bob.smith@company.com'), (3, 'Carol', 'carol@techcorp.com'), (4, 'Diana', 'diana.prince@company.com'), (5, 'Evan', 'evan@startup.io'), (6, 'Frank', 'frank.w@techcorp.com');",
+  "solution_sql": "SELECT id, name, email, POSITION('@' IN email) AS at_position FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 rows with the position of @ in each email address",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "name", "email", "at_position"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`POSITION('substring' IN column)` returns the 1-based index of the first occurrence. Returns 0 if not found.",
+    "In MySQL you can also use `INSTR(email, '@')` — it works identically."
+  ],
+  "explanation": "`POSITION('@' IN email)` finds where the @ symbol sits in each email. alice@ is at position 6, bob.smith@ at 10, carol@ at 6, diana.prince@ at 13, evan@ at 5, frank.w@ at 8.",
+  "companies": ["Mailchimp", "SendGrid"],
+  "created_at": "2026-09-24"
+}

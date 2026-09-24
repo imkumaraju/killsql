@@ -1,0 +1,26 @@
+{
+  "id": "229",
+  "slug": "conditional-count-case",
+  "title": "Conditional COUNT with CASE Expression",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "COUNT", "CASE", "conditional aggregation", "pivot"],
+  "description": "For each customer, count their support tickets by priority level (**high**, **medium**, **low**) in a single pivoted query using `CASE` expressions inside `COUNT()`. Show all four columns: high_count, medium_count, low_count, total_count.",
+  "schema_sql": "CREATE TABLE support_tickets (ticket_id INT, customer_id INT, priority VARCHAR(10), status VARCHAR(20), created_at DATE); INSERT INTO support_tickets VALUES (1,1,'high','open','2026-01-05'),(2,1,'high','closed','2026-01-10'),(3,1,'medium','open','2026-01-15'),(4,2,'low','closed','2026-01-08'),(5,2,'medium','open','2026-01-12'),(6,2,'medium','closed','2026-01-20'),(7,3,'high','open','2026-01-18'),(8,3,'low','open','2026-01-22'),(9,3,'low','closed','2026-01-25'),(10,4,'medium','closed','2026-01-28'),(11,4,'high','open','2026-02-01'),(12,4,'low','open','2026-02-05');",
+  "solution_sql": "SELECT customer_id, COUNT(CASE WHEN priority = 'high' THEN 1 END) AS high_count, COUNT(CASE WHEN priority = 'medium' THEN 1 END) AS medium_count, COUNT(CASE WHEN priority = 'low' THEN 1 END) AS low_count, COUNT(*) AS total_count FROM support_tickets GROUP BY customer_id ORDER BY customer_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 customers with priority counts. C1: high=2,med=1,low=0. C2: high=0,med=2,low=1. C3: high=1,med=0,low=2. C4: high=1,med=1,low=1.",
+      "expected_row_count": 4,
+      "expected_columns": ["customer_id", "high_count", "medium_count", "low_count", "total_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Wrap a CASE expression inside COUNT(): COUNT(CASE WHEN priority='high' THEN 1 END) counts only rows where the CASE returns a non-NULL value.",
+    "When CASE has no ELSE clause, non-matching rows return NULL — and COUNT() automatically skips NULLs, making this an effective conditional count."
+  ],
+  "explanation": "COUNT(CASE WHEN priority='high' THEN 1 END) returns 1 for high-priority tickets and NULL otherwise; COUNT ignores NULLs, so only matching rows are counted. Repeating this pattern for each priority produces a pivot table without any JOIN or subquery. This technique works in all SQL dialects that support CASE, making it more portable than the FILTER clause approach.",
+  "companies": ["Zendesk", "ServiceNow"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "171",
+  "slug": "moving-average-stock-price",
+  "title": "3-Day Moving Average of Stock Closing Price",
+  "difficulty": "medium",
+  "tags": ["window functions", "AVG OVER", "ROWS BETWEEN", "moving average"],
+  "description": "Calculate a 3-day moving average of stock closing prices (current day plus the 2 preceding days).\n\n**Table: stock_prices** — `price_date`, `closing_price`\n\nOutput columns: `price_date`, `closing_price`, `moving_avg_3d`. Order by `price_date`.",
+  "schema_sql": "CREATE TABLE stock_prices (price_date DATE, closing_price DECIMAL(10,2)); INSERT INTO stock_prices VALUES ('2026-01-01',150.00),('2026-01-02',152.50),('2026-01-03',148.75),('2026-01-04',155.00),('2026-01-05',158.25),('2026-01-06',153.50),('2026-01-07',160.00),('2026-01-08',162.75),('2026-01-09',159.00),('2026-01-10',165.50);",
+  "solution_sql": "SELECT price_date, closing_price, ROUND(AVG(closing_price) OVER (ORDER BY price_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 2) AS moving_avg_3d FROM stock_prices ORDER BY price_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 days; first row avg = itself only, second = avg of 2 days, from day 3 onward = true 3-day average",
+      "expected_row_count": 10,
+      "expected_columns": ["price_date", "closing_price", "moving_avg_3d"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "ROWS BETWEEN 2 PRECEDING AND CURRENT ROW defines a sliding window of the current row and the 2 rows before it.",
+    "For the first two rows the window is smaller since there are not enough preceding rows; the average is computed over however many rows exist."
+  ],
+  "explanation": "AVG(closing_price) OVER (ORDER BY price_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) computes the average of up to 3 rows. Day 1: avg(150.00) = 150.00. Day 2: avg(150.00, 152.50) = 151.25. Day 3: avg(150.00, 152.50, 148.75) = 150.42. From Day 3 onward it is a true 3-day moving average. This smoothing technique is widely used in financial analysis.",
+  "companies": ["Bloomberg", "Goldman Sachs"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "212",
+  "slug": "customer-segmentation-ntile",
+  "title": "Customer Tier Segmentation Using NTILE",
+  "difficulty": "medium",
+  "tags": ["window functions", "NTILE", "ORDER BY", "segmentation", "CTE"],
+  "description": "Segment customers into three tiers (1=Bronze, 2=Silver, 3=Gold) based on their total spend using NTILE(3), then label each tier.\n\n**Table: customer_spend** — `customer_id`, `name`, `total_spend`\n\nOutput columns: `name`, `total_spend`, `tier_num`, `tier_label`. Order by `total_spend` DESC.",
+  "schema_sql": "CREATE TABLE customer_spend (customer_id INT, name VARCHAR, total_spend DECIMAL(10,2)); INSERT INTO customer_spend VALUES (1,'Alice',4500.00),(2,'Bob',1200.00),(3,'Carol',8900.00),(4,'Dave',650.00),(5,'Eve',3100.00),(6,'Frank',7200.00),(7,'Grace',280.00),(8,'Henry',5600.00),(9,'Iris',2300.00),(10,'Jake',950.00),(11,'Kim',6800.00),(12,'Leo',420.00);",
+  "solution_sql": "WITH segmented AS (SELECT name, total_spend, NTILE(3) OVER (ORDER BY total_spend DESC) AS tier_num FROM customer_spend) SELECT name, total_spend, tier_num, CASE tier_num WHEN 1 THEN 'Gold' WHEN 2 THEN 'Silver' ELSE 'Bronze' END AS tier_label FROM segmented ORDER BY total_spend DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "12 customers divided into 3 tiers of 4 each: top 4 spenders = Gold, middle 4 = Silver, bottom 4 = Bronze",
+      "expected_row_count": 12,
+      "expected_columns": ["name", "total_spend", "tier_num", "tier_label"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "NTILE(3) OVER (ORDER BY total_spend DESC) assigns 1 to the top third, 2 to the middle, 3 to the bottom.",
+    "Use a CTE to first compute tier_num, then add the tier_label with CASE in the outer SELECT."
+  ],
+  "explanation": "NTILE(3) with 12 customers assigns 4 to each tier. Ordered by total_spend DESC: Carol(8900), Kim(6800), Frank(7200), Henry(5600) → Gold (tier 1). Alice(4500), Eve(3100), Iris(2300), Bob(1200) → Silver (tier 2). Jake(950), Dave(650), Leo(420), Grace(280) → Bronze (tier 3). The CASE translates numeric tier to a label.",
+  "companies": ["Salesforce", "Braze"],
+  "created_at": "2026-09-24"
+}

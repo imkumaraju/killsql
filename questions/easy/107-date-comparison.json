@@ -1,0 +1,26 @@
+{
+  "id": "107",
+  "slug": "date-comparison",
+  "title": "Filter Orders by Date",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "date functions", "CURRENT_DATE"],
+  "description": "Write a query to return all orders placed **on or after September 1, 2026**. Return `id`, `customer_id`, `order_date`, and `status`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| status | VARCHAR |\n\nIn production you would typically replace the literal date with `CURRENT_DATE - INTERVAL '30 days'`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, status VARCHAR); INSERT INTO orders VALUES (1, 101, '2026-09-01', 'shipped'), (2, 102, '2026-09-10', 'delivered'), (3, 103, '2026-08-15', 'delivered'), (4, 104, '2026-09-20', 'processing'), (5, 105, '2026-07-30', 'delivered'), (6, 106, '2026-09-22', 'shipped'), (7, 107, '2026-08-01', 'delivered');",
+  "solution_sql": "SELECT id, customer_id, order_date, status FROM orders WHERE order_date >= '2026-09-01'",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 orders placed on or after 2026-09-01",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "customer_id", "order_date", "status"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Compare a DATE column to a date literal string like `'2026-09-01'` using `>=`, `>`, `<`, or `<=`.",
+    "Use `CURRENT_DATE` (or `NOW()`) in real applications instead of a hard-coded date to stay relative to today."
+  ],
+  "explanation": "`WHERE order_date >= '2026-09-01'` filters rows to only those on or after the given date. DATE comparisons work just like numeric comparisons in SQL.",
+  "companies": ["Shopify", "Uber"],
+  "created_at": "2026-09-24"
+}

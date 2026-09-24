@@ -1,0 +1,26 @@
+{
+  "id": "173",
+  "slug": "min-max-over-window",
+  "title": "Compare Each Product Price to Its Category Min and Max",
+  "difficulty": "medium",
+  "tags": ["window functions", "MIN OVER", "MAX OVER", "PARTITION BY"],
+  "description": "For each product show the minimum and maximum price in its category alongside its own price, without collapsing rows.\n\n**Table: products** — `id`, `name`, `category`, `price`\n\nOutput columns: `name`, `category`, `price`, `category_min`, `category_max`. Order by `category`, `price`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL(10,2)); INSERT INTO products VALUES (1,'Widget A','Electronics',29.99),(2,'Widget B','Electronics',49.99),(3,'Widget C','Electronics',19.99),(4,'Shirt X','Clothing',25.00),(5,'Shirt Y','Clothing',45.00),(6,'Shirt Z','Clothing',15.00),(7,'Book 1','Books',12.99),(8,'Book 2','Books',18.99),(9,'Book 3','Books',9.99);",
+  "solution_sql": "SELECT name, category, price, MIN(price) OVER (PARTITION BY category) AS category_min, MAX(price) OVER (PARTITION BY category) AS category_max FROM products ORDER BY category, price",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "9 products across 3 categories; each row shows its category's min and max price",
+      "expected_row_count": 9,
+      "expected_columns": ["name", "category", "price", "category_min", "category_max"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "MIN(price) OVER (PARTITION BY category) and MAX(price) OVER (PARTITION BY category) compute partition-level aggregates without collapsing rows.",
+    "No ORDER BY is needed in the window clause when you want the overall partition min/max rather than a running min/max."
+  ],
+  "explanation": "By using MIN() and MAX() as window functions with PARTITION BY category, each product row gets its category's minimum and maximum price. Electronics: min=19.99, max=49.99. Clothing: min=15.00, max=45.00. Books: min=9.99, max=18.99. All 9 rows are preserved unlike GROUP BY which would collapse to 3 rows.",
+  "companies": ["Amazon", "Target"],
+  "created_at": "2026-09-24"
+}

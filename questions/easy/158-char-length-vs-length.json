@@ -1,0 +1,26 @@
+{
+  "id": "158",
+  "slug": "char-length-vs-length",
+  "title": "CHAR_LENGTH vs LENGTH on Messages",
+  "difficulty": "easy",
+  "tags": ["SELECT", "CHAR_LENGTH", "LENGTH", "string functions"],
+  "description": "Write a query that returns `id`, `content`, the character count as `char_count` (using `CHAR_LENGTH`), and the byte count as `byte_count` (using `LENGTH`) for each message.\n\nFor ASCII text these values are equal. The difference matters for multi-byte (UTF-8) characters.\n\n**Table: messages**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| sender_id | INT |\n| content | VARCHAR |\n| sent_at | DATE |",
+  "schema_sql": "CREATE TABLE messages (id INT, sender_id INT, content VARCHAR, sent_at DATE); INSERT INTO messages VALUES (1, 1, 'Hello World', '2026-09-01'), (2, 2, 'How are you doing today?', '2026-09-02'), (3, 3, 'SQL is fun!', '2026-09-03'), (4, 4, 'Great meeting everyone', '2026-09-04'), (5, 5, 'See you tomorrow', '2026-09-05');",
+  "solution_sql": "SELECT id, content, CHAR_LENGTH(content) AS char_count, LENGTH(content) AS byte_count FROM messages",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 5 rows with char_count and byte_count for each message",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "content", "char_count", "byte_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`CHAR_LENGTH(str)` counts characters (code points). `LENGTH(str)` counts bytes.",
+    "For pure ASCII strings both functions return the same value. They differ when the string contains multi-byte UTF-8 characters like emojis or accented letters."
+  ],
+  "explanation": "`CHAR_LENGTH` counts the number of characters while `LENGTH` counts bytes. For all-ASCII messages they return identical results. Understanding the difference is critical for applications storing Unicode content.",
+  "companies": ["Slack", "Discord"],
+  "created_at": "2026-09-24"
+}

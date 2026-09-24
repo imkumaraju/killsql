@@ -1,0 +1,26 @@
+{
+  "id": "210",
+  "slug": "funnel-analysis-conversion",
+  "title": "Funnel Analysis with Step-by-Step Conversion Rates",
+  "difficulty": "medium",
+  "tags": ["CTE", "LAG", "COUNT DISTINCT", "GROUP BY", "CASE WHEN", "funnel"],
+  "description": "Calculate the number of distinct users and the conversion rate from the previous step for each stage of a purchase funnel (view → cart → checkout → purchase).\n\n**Table: funnel_events** — `user_id`, `step`\n\nOutput columns: `step`, `users`, `conversion_from_prev`. Order by funnel step order.",
+  "schema_sql": "CREATE TABLE funnel_events (user_id INT, step VARCHAR); INSERT INTO funnel_events VALUES (1,'view'),(2,'view'),(3,'view'),(4,'view'),(5,'view'),(6,'view'),(7,'view'),(8,'view'),(1,'cart'),(2,'cart'),(3,'cart'),(4,'cart'),(5,'cart'),(6,'cart'),(1,'checkout'),(2,'checkout'),(3,'checkout'),(4,'checkout'),(1,'purchase'),(2,'purchase'),(3,'purchase');",
+  "solution_sql": "WITH step_counts AS (SELECT step, COUNT(DISTINCT user_id) AS users, CASE step WHEN 'view' THEN 1 WHEN 'cart' THEN 2 WHEN 'checkout' THEN 3 WHEN 'purchase' THEN 4 END AS step_order FROM funnel_events GROUP BY step), with_prev AS (SELECT *, LAG(users) OVER (ORDER BY step_order) AS prev_users FROM step_counts) SELECT step, users, ROUND(100.0 * users / prev_users, 1) AS conversion_from_prev FROM with_prev ORDER BY step_order",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 funnel steps: view=8, cart=6 (75%), checkout=4 (66.7%), purchase=3 (75%); 4 rows with NULL conversion for first step",
+      "expected_row_count": 4,
+      "expected_columns": ["step", "users", "conversion_from_prev"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use a CASE expression to assign a numeric step_order so steps can be sorted and compared with LAG().",
+    "LAG(users) OVER (ORDER BY step_order) fetches the previous step's user count for the conversion rate denominator."
+  ],
+  "explanation": "step_counts CTE counts distinct users per step: view=8, cart=6, checkout=4, purchase=3. with_prev CTE adds the previous step's user count via LAG(). Conversion rates: view→cart 6/8=75%, cart→checkout 4/6=66.7%, checkout→purchase 3/4=75%. The view step has NULL conversion (no prior step). Dropped users at each step represent abandonment.",
+  "companies": ["Google Analytics", "Mixpanel"],
+  "created_at": "2026-09-24"
+}

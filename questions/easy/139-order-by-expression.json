@@ -1,0 +1,26 @@
+{
+  "id": "139",
+  "slug": "order-by-expression",
+  "title": "Sort Products by Profit Margin",
+  "difficulty": "easy",
+  "tags": ["SELECT", "ORDER BY", "arithmetic", "sorting"],
+  "description": "Write a query that returns `id`, `name`, `price`, `cost`, and the profit (`price - cost`) as `profit`. Sort the results by `profit` **descending** so the most profitable product appears first.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| price | DECIMAL |\n| cost | DECIMAL |",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, price DECIMAL, cost DECIMAL); INSERT INTO products VALUES (1, 'Laptop', 999.99, 750.00), (2, 'Phone', 699.99, 400.00), (3, 'Tablet', 449.99, 300.00), (4, 'Watch', 299.99, 100.00), (5, 'Earbuds', 149.99, 80.00), (6, 'Charger', 29.99, 5.00);",
+  "solution_sql": "SELECT id, name, price, cost, (price - cost) AS profit FROM products ORDER BY (price - cost) DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 products ordered by profit descending",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "name", "price", "cost", "profit"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "You can use an arithmetic expression directly in `ORDER BY` — or reference the alias defined in `SELECT`.",
+    "Phone profit (699.99 - 400 = 299.99) beats Laptop profit (999.99 - 750 = 249.99), so Phone ranks first."
+  ],
+  "explanation": "`ORDER BY (price - cost) DESC` computes the profit on the fly and sorts largest profit first. Phone ($299.99) > Laptop ($249.99) > Watch ($199.99) > Tablet ($149.99) > Earbuds ($69.99) > Charger ($24.99).",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-24"
+}

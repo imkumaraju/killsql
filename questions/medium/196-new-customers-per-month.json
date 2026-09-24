@@ -1,0 +1,26 @@
+{
+  "id": "196",
+  "slug": "new-customers-per-month",
+  "title": "Count New Customers Acquired Each Month",
+  "difficulty": "medium",
+  "tags": ["CTE", "GROUP BY", "MIN", "DATE_TRUNC", "cohort"],
+  "description": "Count how many customers placed their very first order each calendar month (new customer acquisitions).\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `amount`\n\nOutput columns: `month`, `new_customers`. Order by `month`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,101,'2026-01-10',100.00),(2,102,'2026-01-15',200.00),(3,101,'2026-02-05',150.00),(4,103,'2026-02-12',300.00),(5,104,'2026-02-20',250.00),(6,105,'2026-03-01',180.00),(7,102,'2026-03-10',220.00),(8,106,'2026-04-05',400.00);",
+  "solution_sql": "WITH first_orders AS (SELECT customer_id, DATE_TRUNC('month', MIN(order_date)) AS first_month FROM orders GROUP BY customer_id) SELECT first_month AS month, COUNT(*) AS new_customers FROM first_orders GROUP BY first_month ORDER BY month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan: customers 101,102 first ordered (2 new). Feb: customers 103,104 (2 new). Mar: customer 105 (1 new). Apr: customer 106 (1 new). 4 rows.",
+      "expected_row_count": 4,
+      "expected_columns": ["month", "new_customers"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use MIN(order_date) GROUP BY customer_id to find each customer's first order date, then DATE_TRUNC('month', ...) to group by month.",
+    "Customer 101 ordered in both Jan and Feb — only their Jan order counts toward new_customers."
+  ],
+  "explanation": "The first_orders CTE finds each customer's earliest order date and truncates it to the month. Then grouping by first_month and counting gives new customers per month. Customer 102 ordered in Jan and Mar but is counted only in Jan. The result shows acquisition trends: Jan=2, Feb=2, Mar=1, Apr=1 — 4 rows.",
+  "companies": ["Shopify", "Stripe"],
+  "created_at": "2026-09-24"
+}

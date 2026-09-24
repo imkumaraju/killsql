@@ -1,0 +1,26 @@
+{
+  "id": "148",
+  "slug": "distinct-multiple-columns",
+  "title": "Find Unique Department-City Combinations",
+  "difficulty": "easy",
+  "tags": ["SELECT", "DISTINCT", "filtering"],
+  "description": "Write a query to return all **unique combinations of `department` and `city`** from the employees table. Return `department` and `city`, sorted by `department` then `city`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| department | VARCHAR |\n| city | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, city VARCHAR); INSERT INTO employees VALUES (1, 'Alice', 'Engineering', 'New York'), (2, 'Bob', 'Marketing', 'Chicago'), (3, 'Carol', 'Engineering', 'New York'), (4, 'Diana', 'HR', 'Boston'), (5, 'Evan', 'Engineering', 'Chicago'), (6, 'Frank', 'Marketing', 'Chicago'), (7, 'Grace', 'HR', 'Boston'), (8, 'Henry', 'Marketing', 'New York');",
+  "solution_sql": "SELECT DISTINCT department, city FROM employees ORDER BY department, city",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 5 distinct department-city pairs",
+      "expected_row_count": 5,
+      "expected_columns": ["department", "city"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "`DISTINCT` on multiple columns deduplicates based on the **combination** of all listed columns.",
+    "Engineering+New York appears twice (Alice and Carol) but is returned only once."
+  ],
+  "explanation": "`SELECT DISTINCT department, city` considers the pair as a unit for deduplication. Engineering+New York (×2) and Marketing+Chicago (×2) and HR+Boston (×2) each collapse to one row, giving 5 unique pairs.",
+  "companies": ["Google", "LinkedIn"],
+  "created_at": "2026-09-24"
+}

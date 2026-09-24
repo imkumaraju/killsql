@@ -1,0 +1,37 @@
+{
+  "id": "283",
+  "slug": "graph-shortest-path-bfs",
+  "title": "Graph Shortest Path via BFS",
+  "difficulty": "hard",
+  "tags": ["recursive CTE", "graph traversal", "BFS", "window functions", "UNION"],
+  "description": "A `friendships` table models a social network as an undirected graph (each friendship is stored in both directions). A `users` table holds usernames. Starting from user_id = 1 (Alice), **find the minimum number of hops (shortest path) to reach every other user** in the network using a BFS approach in a recursive CTE.\n\n**Tables: users, friendships**\n\n| Column | Type |\n|--------|------|\n| user_id | INT |\n| username | VARCHAR |\n\n| Column | Type |\n|--------|------|\n| user_id | INT |\n| friend_id | INT |\n\nOutput columns: `username`, `min_hops`. Order by `min_hops`, then `username`.",
+  "schema_sql": "CREATE TABLE users (user_id INT, username VARCHAR); INSERT INTO users VALUES (1,'Alice'),(2,'Bob'),(3,'Carol'),(4,'Dave'),(5,'Eve'),(6,'Frank'),(7,'Grace'),(8,'Hank'),(9,'Iris'); CREATE TABLE friendships (user_id INT, friend_id INT); INSERT INTO friendships VALUES (1,2),(2,1),(1,3),(3,1),(2,4),(4,2),(3,5),(5,3),(4,6),(6,4),(5,6),(6,5),(6,7),(7,6),(7,8),(8,7),(1,9),(9,1),(9,8),(8,9);",
+  "solution_sql": "WITH RECURSIVE bfs AS (SELECT user_id AS node, 0 AS depth FROM users WHERE user_id = 1 UNION SELECT f.friend_id, b.depth + 1 FROM bfs b JOIN friendships f ON f.user_id = b.node WHERE b.depth < 9) SELECT u.username, MIN(b.depth) AS min_hops FROM bfs b JOIN users u ON u.user_id = b.node GROUP BY u.user_id, u.username ORDER BY min_hops, u.username",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Shortest hop distance from Alice (user 1) to all reachable users",
+      "expected_row_count": 9,
+      "expected_columns": ["username", "min_hops"],
+      "expected_rows": [
+        { "username": "Alice", "min_hops": 0 },
+        { "username": "Bob", "min_hops": 1 },
+        { "username": "Carol", "min_hops": 1 },
+        { "username": "Iris", "min_hops": 1 },
+        { "username": "Dave", "min_hops": 2 },
+        { "username": "Eve", "min_hops": 2 },
+        { "username": "Hank", "min_hops": 2 },
+        { "username": "Frank", "min_hops": 3 },
+        { "username": "Grace", "min_hops": 3 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use UNION (not UNION ALL) in the recursive CTE so that the same (node, depth) pair is never added twice. Add a depth limit (e.g., WHERE depth < 9) to prevent unbounded recursion in cyclic graphs.",
+    "Because UNION deduplication operates on the full row (node + depth), wrap the result in an outer query with GROUP BY + MIN(depth) to extract the true shortest distance for each node."
+  ],
+  "explanation": "The BFS recursive CTE starts at Alice (depth 0) and expands to direct friends at depth 1, their unvisited friends at depth 2, and so on. Using UNION (not UNION ALL) prevents the same (node, depth) row from appearing more than once; a depth cap guards against infinite traversal on cycles. The same node may appear at multiple depths across iterations, so the outer GROUP BY with MIN(depth) extracts the minimum (shortest) hop count. This mirrors the classic BFS algorithm and is used in social network 'degrees of separation' features at companies like LinkedIn and Meta.",
+  "companies": ["Meta", "LinkedIn", "Twitter"],
+  "created_at": "2026-09-24"
+}

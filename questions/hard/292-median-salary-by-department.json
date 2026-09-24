@@ -1,0 +1,31 @@
+{
+  "id": "292",
+  "slug": "median-salary-by-department",
+  "title": "Median Salary by Department using PERCENTILE_CONT",
+  "difficulty": "hard",
+  "tags": ["PERCENTILE_CONT", "ordered-set aggregate", "window functions", "GROUP BY", "statistics"],
+  "description": "An `employee_salaries` table stores salaries by department. For each department, compute the **median salary** using `PERCENTILE_CONT(0.5)`, the mean salary (rounded to nearest integer), and the min/max salary range.\n\n**Table: employee_salaries**\n\n| Column | Type |\n|--------|------|\n| department | VARCHAR |\n| employee_id | INT |\n| salary | INT |\n\nOutput columns: `department`, `median_salary`, `avg_salary` (rounded), `min_salary`, `max_salary`, `employee_count`. Order by `department`.",
+  "schema_sql": "CREATE TABLE employee_salaries (department VARCHAR, employee_id INT, salary INT); INSERT INTO employee_salaries VALUES ('Engineering',1,95000),('Engineering',2,105000),('Engineering',3,115000),('Engineering',4,88000),('Engineering',5,132000),('Engineering',6,78000),('Sales',7,65000),('Sales',8,72000),('Sales',9,68000),('Sales',10,85000),('Sales',11,75000),('HR',12,60000),('HR',13,55000),('HR',14,63000),('HR',15,58000);",
+  "solution_sql": "SELECT department, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median_salary, ROUND(AVG(salary)) AS avg_salary, MIN(salary) AS min_salary, MAX(salary) AS max_salary, COUNT(*) AS employee_count FROM employee_salaries GROUP BY department ORDER BY department",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Median and salary statistics per department",
+      "expected_row_count": 3,
+      "expected_columns": ["department", "median_salary", "avg_salary", "min_salary", "max_salary", "employee_count"],
+      "expected_rows": [
+        { "department": "Engineering", "median_salary": 100000.0, "avg_salary": 102167, "min_salary": 78000, "max_salary": 132000, "employee_count": 6 },
+        { "department": "HR", "median_salary": 59000.0, "avg_salary": 59000, "min_salary": 55000, "max_salary": 63000, "employee_count": 4 },
+        { "department": "Sales", "median_salary": 72000.0, "avg_salary": 73000, "min_salary": 65000, "max_salary": 85000, "employee_count": 5 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) is an ordered-set aggregate function — not a regular aggregate and not a window function. It interpolates between the two middle values for even-numbered groups (Engineering's 6 employees yield (95000 + 105000) / 2 = 100000).",
+    "Unlike PERCENTILE_DISC which returns an actual data point, PERCENTILE_CONT interpolates and can return a non-integer value for even-sized groups. Use it alongside standard GROUP BY aggregates like AVG, MIN, and MAX."
+  ],
+  "explanation": "PERCENTILE_CONT is an ordered-set aggregate that computes the continuous (interpolated) median: for Engineering's 6 sorted salaries [78k, 88k, 95k, 105k, 115k, 132k] the 50th percentile falls between the 3rd and 4th values, yielding (95000 + 105000) / 2 = 100000. For Sales's 5 sorted values the exact middle (3rd) is 72000. For HR's 4 values the interpolated median is (58000 + 60000) / 2 = 59000. The average salary (102167 for Engineering) demonstrates that means are pulled toward outliers like the 132k earner, whereas the median (100000) is more robust — a distinction critical in compensation fairness analysis.",
+  "companies": ["Google", "Meta", "LinkedIn"],
+  "created_at": "2026-09-24"
+}

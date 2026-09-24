@@ -1,0 +1,26 @@
+{
+  "id": "104",
+  "slug": "concat-strings",
+  "title": "Concatenate First and Last Name",
+  "difficulty": "easy",
+  "tags": ["SELECT", "CONCAT", "string functions"],
+  "description": "Write a query that returns `id`, a combined `full_name` (first name + space + last name), and `department` for every employee.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| first_name | VARCHAR |\n| last_name | VARCHAR |\n| department | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, first_name VARCHAR, last_name VARCHAR, department VARCHAR); INSERT INTO employees VALUES (1, 'Alice', 'Johnson', 'Engineering'), (2, 'Bob', 'Smith', 'Marketing'), (3, 'Carol', 'Davis', 'Engineering'), (4, 'Diana', 'Prince', 'HR'), (5, 'Evan', 'Brown', 'Sales'), (6, 'Frank', 'Wilson', 'Engineering');",
+  "solution_sql": "SELECT id, CONCAT(first_name, ' ', last_name) AS full_name, department FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 rows with full_name as 'FirstName LastName'",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "full_name", "department"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`CONCAT(a, b, c, ...)` joins multiple strings together. Include a space `' '` as a separator between first and last name.",
+    "In some SQL dialects you can also use the `||` operator: `first_name || ' ' || last_name`."
+  ],
+  "explanation": "`CONCAT(first_name, ' ', last_name)` assembles the two name columns with a space in between, producing a single `full_name` string for each employee.",
+  "companies": ["Google", "Meta"],
+  "created_at": "2026-09-24"
+}

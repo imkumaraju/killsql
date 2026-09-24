@@ -1,0 +1,26 @@
+{
+  "id": "222",
+  "slug": "scalar-subquery-select",
+  "title": "Scalar Subquery in SELECT Clause",
+  "difficulty": "medium",
+  "tags": ["SELECT", "correlated subquery", "AVG", "scalar subquery"],
+  "description": "For each employee, show their name, salary, and the **average salary of their department** using a correlated scalar subquery in the SELECT clause — without using a JOIN or window function.",
+  "schema_sql": "CREATE TABLE employees (emp_id INT, name VARCHAR(100), department_id INT, salary INT); INSERT INTO employees VALUES (1,'Alice',1,90000),(2,'Bob',1,80000),(3,'Carol',1,70000),(4,'Dave',2,120000),(5,'Eve',2,110000),(6,'Frank',3,55000),(7,'Grace',3,60000),(8,'Hank',3,65000);",
+  "solution_sql": "SELECT name, salary, (SELECT ROUND(AVG(e2.salary), 2) FROM employees e2 WHERE e2.department_id = e.department_id) AS dept_avg_salary FROM employees e ORDER BY department_id, name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All 8 employees each decorated with their department's average salary",
+      "expected_row_count": 8,
+      "expected_columns": ["name", "salary", "dept_avg_salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Write SELECT AVG(e2.salary) FROM employees e2 WHERE e2.department_id = e.department_id directly inside the SELECT list — this is the scalar subquery.",
+    "The outer query alias 'e' is referenced inside the subquery, making it a correlated subquery that re-executes once per outer row."
+  ],
+  "explanation": "A scalar subquery in the SELECT clause returns exactly one value per outer row. The subquery references e.department_id from the outer query (alias e), which correlates it — the database re-evaluates it for each employee. Dept 1 avg = 80000, Dept 2 avg = 115000, Dept 3 avg = 60000. This pattern is handy but less efficient than a JOIN for large tables.",
+  "companies": ["Google", "Microsoft"],
+  "created_at": "2026-09-24"
+}

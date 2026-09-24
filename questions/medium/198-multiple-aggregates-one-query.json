@@ -1,0 +1,26 @@
+{
+  "id": "198",
+  "slug": "multiple-aggregates-one-query",
+  "title": "Full Department Salary Statistics in One Query",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "COUNT", "SUM", "AVG", "MAX", "MIN", "aggregation"],
+  "description": "Compute the headcount, total salary bill, average salary, maximum salary, and minimum salary for each department in a single query.\n\n**Table: employees** — `id`, `name`, `department`, `salary`\n\nOutput columns: `department`, `headcount`, `total_salary`, `avg_salary`, `max_salary`, `min_salary`. Order by `department`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',88000),(3,'Carol','Engineering',92000),(4,'Dave','Marketing',72000),(5,'Eve','Marketing',68000),(6,'Frank','Marketing',75000),(7,'Grace','HR',60000),(8,'Henry','HR',58000),(9,'Iris','HR',62000);",
+  "solution_sql": "SELECT department, COUNT(*) AS headcount, SUM(salary) AS total_salary, ROUND(AVG(salary), 0) AS avg_salary, MAX(salary) AS max_salary, MIN(salary) AS min_salary FROM employees GROUP BY department ORDER BY department",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 departments: Engineering (3 employees), HR (3 employees), Marketing (3 employees) — 3 rows",
+      "expected_row_count": 3,
+      "expected_columns": ["department", "headcount", "total_salary", "avg_salary", "max_salary", "min_salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "All five aggregate functions (COUNT, SUM, AVG, MAX, MIN) can be combined in a single SELECT with one GROUP BY pass.",
+    "ROUND(AVG(salary), 0) avoids fractional salaries in the output."
+  ],
+  "explanation": "A single GROUP BY pass computes all aggregates simultaneously. Engineering: headcount=3, total=275000, avg=91667, max=95000, min=88000. Marketing: headcount=3, total=215000, avg=71667, max=75000, min=68000. HR: headcount=3, total=180000, avg=60000, max=62000, min=58000. All in 3 output rows.",
+  "companies": ["Workday", "BambooHR"],
+  "created_at": "2026-09-24"
+}

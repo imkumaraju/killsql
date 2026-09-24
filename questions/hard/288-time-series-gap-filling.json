@@ -1,0 +1,48 @@
+{
+  "id": "288",
+  "slug": "time-series-gap-filling",
+  "title": "Time-Series Gap Filling with Zero Revenue Days",
+  "difficulty": "hard",
+  "tags": ["GENERATE_SERIES", "LEFT JOIN", "CROSS JOIN", "COALESCE", "date arithmetic", "CTE"],
+  "description": "A `daily_sales` table records revenue by product and date, but not every product has a sale every day. **Fill in missing dates** (from 2024-01-01 to 2024-01-10) for each product with `0` revenue so the output has a complete daily time series.\n\n**Table: daily_sales**\n\n| Column | Type |\n|--------|------|\n| sale_date | DATE |\n| product_id | INT |\n| revenue | NUMERIC(10,2) |\n\nOutput columns: `sale_date`, `product_id`, `revenue` (0.00 for missing days). Order by `product_id`, `sale_date`.",
+  "schema_sql": "CREATE TABLE daily_sales (sale_date DATE, product_id INT, revenue NUMERIC(10,2)); INSERT INTO daily_sales VALUES ('2024-01-01',1,500.00),('2024-01-02',1,300.00),('2024-01-04',1,450.00),('2024-01-05',1,200.00),('2024-01-08',1,600.00),('2024-01-01',2,100.00),('2024-01-05',2,150.00),('2024-01-06',2,120.00),('2024-01-08',2,200.00),('2024-01-09',2,180.00);",
+  "solution_sql": "WITH date_series AS (SELECT generate_series('2024-01-01'::DATE, '2024-01-10'::DATE, '1 day'::INTERVAL)::DATE AS sale_date), products AS (SELECT DISTINCT product_id FROM daily_sales), all_dates AS (SELECT d.sale_date, p.product_id FROM date_series d CROSS JOIN products p) SELECT a.sale_date, a.product_id, COALESCE(s.revenue, 0.00) AS revenue FROM all_dates a LEFT JOIN daily_sales s ON a.sale_date = s.sale_date AND a.product_id = s.product_id ORDER BY a.product_id, a.sale_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Complete daily time series for both products with zeros for missing days",
+      "expected_row_count": 20,
+      "expected_columns": ["sale_date", "product_id", "revenue"],
+      "expected_rows": [
+        { "sale_date": "2024-01-01", "product_id": 1, "revenue": 500.00 },
+        { "sale_date": "2024-01-02", "product_id": 1, "revenue": 300.00 },
+        { "sale_date": "2024-01-03", "product_id": 1, "revenue": 0.00 },
+        { "sale_date": "2024-01-04", "product_id": 1, "revenue": 450.00 },
+        { "sale_date": "2024-01-05", "product_id": 1, "revenue": 200.00 },
+        { "sale_date": "2024-01-06", "product_id": 1, "revenue": 0.00 },
+        { "sale_date": "2024-01-07", "product_id": 1, "revenue": 0.00 },
+        { "sale_date": "2024-01-08", "product_id": 1, "revenue": 600.00 },
+        { "sale_date": "2024-01-09", "product_id": 1, "revenue": 0.00 },
+        { "sale_date": "2024-01-10", "product_id": 1, "revenue": 0.00 },
+        { "sale_date": "2024-01-01", "product_id": 2, "revenue": 100.00 },
+        { "sale_date": "2024-01-02", "product_id": 2, "revenue": 0.00 },
+        { "sale_date": "2024-01-03", "product_id": 2, "revenue": 0.00 },
+        { "sale_date": "2024-01-04", "product_id": 2, "revenue": 0.00 },
+        { "sale_date": "2024-01-05", "product_id": 2, "revenue": 150.00 },
+        { "sale_date": "2024-01-06", "product_id": 2, "revenue": 120.00 },
+        { "sale_date": "2024-01-07", "product_id": 2, "revenue": 0.00 },
+        { "sale_date": "2024-01-08", "product_id": 2, "revenue": 200.00 },
+        { "sale_date": "2024-01-09", "product_id": 2, "revenue": 180.00 },
+        { "sale_date": "2024-01-10", "product_id": 2, "revenue": 0.00 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use generate_series('2024-01-01'::DATE, '2024-01-10'::DATE, '1 day'::INTERVAL) to produce every date in the range. CROSS JOIN this with the list of distinct product_ids to create a complete (date, product) grid.",
+    "LEFT JOIN the actual sales data onto this complete grid using both date and product_id. Use COALESCE(revenue, 0.00) to replace NULLs (missing days) with zero."
+  ],
+  "explanation": "The solution first generates a complete date spine using generate_series, then CROSS JOINs it with the distinct product list to create every (date, product) combination that should exist. A LEFT JOIN against the actual sales table fills in real revenue where it exists and leaves NULL otherwise, which COALESCE converts to 0. This gap-filling technique is essential for building accurate time-series charts, computing correct period-over-period growth rates, and feeding ML models that require dense time series inputs without missing indices.",
+  "companies": ["Databricks", "Snowflake", "Airbnb"],
+  "created_at": "2026-09-24"
+}

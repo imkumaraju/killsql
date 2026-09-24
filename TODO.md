@@ -10,7 +10,7 @@ Snapshot: **2026-09-21**. v1 product code is largely built. The 100-problem bank
 | Practice engine | Done | Works without an account | DuckDB-WASM, Monaco, validator, CI |
 | Practice UX (items 2–11) | Done | **On main** | Schema preview, fail diffs, guest progress, tracks, daily, autocomplete |
 | Auth, submissions, profiles, streaks | Done | **Secrets in Actions; apply 001–003, then enable Google** | KillSQL @ `pbsrivwuhq2thtgut`; `.env.local` filled locally |
-| Leaderboard | Basic page | **Not configured** | Polish (hide 0-solved, ties, highlight you) still open |
+| Leaderboard | Done | **Needs live Supabase** | Hides 0-solved, breaks ties by streak then username, highlights you |
 | Donations | Dodo draft | **Not live** | Stripe removed locally; merchant verification still pending |
 
 `main` has the MVP, Stripe donate, Vercel/CI fixes, the git migration pipeline, and practice UX. The Dodo Payments swap is still only in the working tree.
@@ -102,7 +102,7 @@ On first login the app:
 
 - [ ] Verify signed-in submission saving, solved-problem stats, profiles, leaderboard, and goal streaks.
 - [ ] Verify the daily `/api/cron/streaks` job is authorized and running (needs `CRON_SECRET` + `SUPABASE_SERVICE_ROLE_KEY` on Vercel).
-- [ ] After first sign-in, push local guest solves up to `submissions` (today the UI only *merges* local + server slugs for display).
+- [x] After first sign-in, push local guest solves up to `submissions` (`POST /api/submissions/sync`, once onboarding is done).
 
 ## Dodo Payments integration
 
@@ -153,7 +153,7 @@ User-facing practice features. Items that need a live Supabase project wait unti
 ### Blocked on Supabase
 
 - [ ] **1. Turn auth on** — Enable Google in the dashboard, apply 001–003, set Vercel env. First login asks for a username and avatar (`/welcome`); skip assigns defaults.
-- [ ] **12. Leaderboard polish** — Hide 0-solved accounts, break ties, highlight the signed-in user. Needs a live `user_stats` feed.
+- [x] **12. Leaderboard polish** — Hide 0-solved accounts, break ties by streak then username, highlight the signed-in user. Still needs a live `user_stats` feed to show rows.
 
 ## Later / out of scope
 

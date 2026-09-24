@@ -1,0 +1,35 @@
+{
+  "id": "287",
+  "slug": "merge-overlapping-subscriptions",
+  "title": "Merge Overlapping Subscription Intervals",
+  "difficulty": "hard",
+  "tags": ["window functions", "CTE", "islands and gaps", "interval merging", "MAX OVER"],
+  "description": "A `subscriptions` table records start and end dates of subscription periods per customer. Periods may overlap or be adjacent. **Merge all overlapping intervals** per customer into consolidated active periods and report the merged period start, end, and number of days active.\n\n**Table: subscriptions**\n\n| Column | Type |\n|--------|------|\n| sub_id | INT |\n| customer_id | INT |\n| start_date | DATE |\n| end_date | DATE |\n\nOutput columns: `customer_id`, `period_start`, `period_end`, `days_active`. Order by `customer_id`, `period_start`.",
+  "schema_sql": "CREATE TABLE subscriptions (sub_id INT, customer_id INT, start_date DATE, end_date DATE); INSERT INTO subscriptions VALUES (1,1,'2024-01-01','2024-03-31'),(2,1,'2024-03-15','2024-06-30'),(3,1,'2024-08-01','2024-10-31'),(4,1,'2024-10-15','2024-12-31'),(5,2,'2024-01-01','2024-02-28'),(6,2,'2024-04-01','2024-06-30'),(7,2,'2024-06-01','2024-08-31'),(8,2,'2024-09-01','2024-12-31'),(9,3,'2024-01-01','2024-12-31'),(10,1,'2024-07-01','2024-07-31');",
+  "solution_sql": "WITH sorted AS (SELECT customer_id, start_date, end_date, MAX(end_date) OVER (PARTITION BY customer_id ORDER BY start_date ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_max_end FROM subscriptions), island_starts AS (SELECT customer_id, start_date, end_date, CASE WHEN prev_max_end IS NULL OR start_date > prev_max_end THEN 1 ELSE 0 END AS is_start FROM sorted), island_groups AS (SELECT customer_id, start_date, end_date, SUM(is_start) OVER (PARTITION BY customer_id ORDER BY start_date) AS island_id FROM island_starts) SELECT customer_id, MIN(start_date) AS period_start, MAX(end_date) AS period_end, (MAX(end_date) - MIN(start_date) + 1) AS days_active FROM island_groups GROUP BY customer_id, island_id ORDER BY customer_id, period_start",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Merged subscription periods per customer",
+      "expected_row_count": 7,
+      "expected_columns": ["customer_id", "period_start", "period_end", "days_active"],
+      "expected_rows": [
+        { "customer_id": 1, "period_start": "2024-01-01", "period_end": "2024-06-30", "days_active": 182 },
+        { "customer_id": 1, "period_start": "2024-07-01", "period_end": "2024-07-31", "days_active": 31 },
+        { "customer_id": 1, "period_start": "2024-08-01", "period_end": "2024-12-31", "days_active": 153 },
+        { "customer_id": 2, "period_start": "2024-01-01", "period_end": "2024-02-28", "days_active": 59 },
+        { "customer_id": 2, "period_start": "2024-04-01", "period_end": "2024-08-31", "days_active": 153 },
+        { "customer_id": 2, "period_start": "2024-09-01", "period_end": "2024-12-31", "days_active": 122 },
+        { "customer_id": 3, "period_start": "2024-01-01", "period_end": "2024-12-31", "days_active": 366 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "For each subscription ordered by start_date, use MAX(end_date) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) to find the latest end date of all previous records. If the current start_date > prev_max_end (or prev_max_end IS NULL), this subscription begins a new island.",
+    "Assign island IDs with a cumulative SUM of the is_start flag, then GROUP BY customer_id and island_id to aggregate period_start = MIN(start_date) and period_end = MAX(end_date). days_active = end - start + 1 for inclusive counting."
+  ],
+  "explanation": "This is the classic 'islands and gaps' problem for overlapping intervals. The key insight is computing the running maximum end_date of all preceding subscriptions: if a new subscription's start_date exceeds that maximum, there is a genuine gap and a new island begins. A cumulative SUM of these island-start flags partitioned by customer creates an island group ID. Grouping by this ID then yields merged period boundaries via MIN/MAX aggregation. The days_active calculation is inclusive (end - start + 1). This technique powers subscription analytics, employee absence tracking, and coverage analysis at SaaS companies.",
+  "companies": ["Stripe", "Zuora", "Salesforce"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "291",
+  "slug": "busiest-consecutive-days",
+  "title": "Busiest 3 Consecutive Days by Revenue",
+  "difficulty": "hard",
+  "tags": ["window functions", "ROWS BETWEEN", "LEAD", "ranking", "sliding window"],
+  "description": "A `daily_revenue` table records total revenue for each calendar day. Find the **3 consecutive calendar days with the highest combined revenue**. Return the start date, end date, and total revenue for that window.\n\n**Table: daily_revenue**\n\n| Column | Type |\n|--------|------|\n| rev_date | DATE |\n| revenue | NUMERIC(10,2) |\n\nOutput columns: `start_date`, `end_date`, `total_revenue`. Return only the single best window.",
+  "schema_sql": "CREATE TABLE daily_revenue (rev_date DATE, revenue NUMERIC(10,2)); INSERT INTO daily_revenue VALUES ('2024-01-01',1000),('2024-01-02',1500),('2024-01-03',2000),('2024-01-04',1800),('2024-01-05',2500),('2024-01-06',3000),('2024-01-07',1200),('2024-01-08',800),('2024-01-09',1100),('2024-01-10',900),('2024-01-11',2200),('2024-01-12',2800),('2024-01-13',3500),('2024-01-14',1600);",
+  "solution_sql": "WITH windowed AS (SELECT rev_date AS start_date, SUM(revenue) OVER (ORDER BY rev_date ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING) AS window_revenue, LEAD(rev_date, 2) OVER (ORDER BY rev_date) AS end_date FROM daily_revenue) SELECT start_date, end_date, window_revenue AS total_revenue FROM windowed WHERE end_date IS NOT NULL ORDER BY total_revenue DESC LIMIT 1",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Single best 3-day revenue window",
+      "expected_row_count": 1,
+      "expected_columns": ["start_date", "end_date", "total_revenue"],
+      "expected_rows": [
+        { "start_date": "2024-01-11", "end_date": "2024-01-13", "total_revenue": 8500.00 }
+      ],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use SUM(revenue) OVER (ORDER BY rev_date ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING) to compute the rolling 3-day total starting at each row. Pair it with LEAD(rev_date, 2) to capture the end date of each window.",
+    "Filter out rows where LEAD(rev_date, 2) IS NULL — those rows don't have a complete 3-day window (the last two rows). Then ORDER BY window_revenue DESC LIMIT 1 returns only the best window."
+  ],
+  "explanation": "A forward-looking window function SUM(...) OVER (ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING) computes the revenue total for each possible 3-day window starting at each date. LEAD(rev_date, 2) retrieves the end date two rows ahead. Rows at the end of the series that lack a full 3-day window produce NULL for end_date and are excluded by the WHERE clause. Sorting by total_revenue descending and taking LIMIT 1 yields the optimal window. Checking all windows: Jan 4–6 has 7300, Jan 11–13 has 8500 (the maximum), Jan 12–14 has 7900. This sliding-window maximum pattern is used in flash sale optimization, staffing scheduling, and peak-load analysis.",
+  "companies": ["Amazon", "Uber", "DoorDash"],
+  "created_at": "2026-09-24"
+}

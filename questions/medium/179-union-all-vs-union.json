@@ -1,0 +1,26 @@
+{
+  "id": "179",
+  "slug": "union-all-vs-union",
+  "title": "Combine Customer Lists with UNION ALL vs UNION",
+  "difficulty": "medium",
+  "tags": ["UNION ALL", "UNION", "deduplication", "SET operations"],
+  "description": "Combine customers from two regional tables using UNION ALL (keeps duplicates) and demonstrate what UNION alone would return by counting distinct vs total rows.\n\n**Table: us_customers** — `id`, `email`\n\n**Table: eu_customers** — `id`, `email`\n\nOutput (UNION ALL): `email`, `region`. Return all combined rows ordered by `email`.",
+  "schema_sql": "CREATE TABLE us_customers (id INT, email VARCHAR); INSERT INTO us_customers VALUES (1,'alice@x.com'),(2,'bob@x.com'),(3,'carol@x.com'),(4,'dave@x.com'),(5,'eve@x.com'); CREATE TABLE eu_customers (id INT, email VARCHAR); INSERT INTO eu_customers VALUES (1,'bob@x.com'),(2,'carol@x.com'),(3,'frank@x.com'),(4,'grace@x.com'),(5,'henry@x.com');",
+  "solution_sql": "SELECT email, 'US' AS region FROM us_customers UNION ALL SELECT email, 'EU' AS region FROM eu_customers ORDER BY email",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "UNION ALL returns all 10 rows (5 US + 5 EU) including bob and carol who appear in both",
+      "expected_row_count": 10,
+      "expected_columns": ["email", "region"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "UNION ALL concatenates all rows from both queries including duplicates; UNION deduplicates but is slower due to the sort step.",
+    "Adding a literal string column ('US' / 'EU') lets you track the source of each row after combining."
+  ],
+  "explanation": "UNION ALL appends all 5 US rows and all 5 EU rows for a total of 10 rows. bob@x.com and carol@x.com appear twice (once per region). If you used plain UNION instead, duplicates would be removed by comparing ALL columns — but since region differs ('US' vs 'EU'), both rows would still be kept. To truly deduplicate on email only you would need SELECT DISTINCT email FROM ... UNION ALL ...",
+  "companies": ["Booking.com", "Expedia"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "115",
+  "slug": "power-and-sqrt",
+  "title": "Calculate Square Area and Diagonal",
+  "difficulty": "easy",
+  "tags": ["SELECT", "POWER", "SQRT", "math functions"],
+  "description": "For each square shape, compute the **area** (`side_length²`) and the **diagonal** (`√2 × side_length`, rounded to 4 decimal places). Return `id`, `shape_name`, `area`, and `diagonal`.\n\n**Table: shapes**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| shape_name | VARCHAR |\n| side_length | DECIMAL |",
+  "schema_sql": "CREATE TABLE shapes (id INT, shape_name VARCHAR, side_length DECIMAL); INSERT INTO shapes VALUES (1, 'Small Square', 4.0), (2, 'Medium Square', 7.5), (3, 'Large Square', 12.0), (4, 'Tiny Square', 2.0), (5, 'Huge Square', 20.0);",
+  "solution_sql": "SELECT id, shape_name, POWER(side_length, 2) AS area, ROUND(SQRT(2) * side_length, 4) AS diagonal FROM shapes",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 5 rows with area (side^2) and diagonal (sqrt(2)*side) for each square",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "shape_name", "area", "diagonal"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`POWER(base, exponent)` raises a number to a power. `POWER(side_length, 2)` gives the area of a square.",
+    "`SQRT(x)` returns the square root. The diagonal of a square is `SQRT(2) * side_length`."
+  ],
+  "explanation": "`POWER(side_length, 2)` computes the area, and `ROUND(SQRT(2) * side_length, 4)` computes the diagonal length rounded to 4 decimal places using the Pythagorean theorem for squares.",
+  "companies": ["Autodesk", "NVIDIA"],
+  "created_at": "2026-09-24"
+}

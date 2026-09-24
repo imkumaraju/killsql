@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
+import DodoPayments from "dodopayments";
 import { isValidDonateAmount, sanitizeReturnPath } from "@/lib/donate";
 
 type Body = {
@@ -7,10 +7,21 @@ type Body = {
   returnPath?: unknown;
 };
 
-function getStripe() {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) return null;
-  return new Stripe(key);
+function getDodoEnvironment(): "test_mode" | "live_mode" {
+  return process.env.DODO_PAYMENTS_ENVIRONMENT === "live_mode" ? "live_mode" : "test_mode";
+}
+
+function getDodoClient() {
+  const key = process.env.DODO_PAYMENTS_API_KEY;
+  const productId = process.env.DODO_PAYMENTS_PRODUCT_ID;
+  if (!key || !productId) return null;
+  return {
+    client: new DodoPayments({
+      bearerToken: key,
+      environment: getDodoEnvironment(),
+    }),
+    productId,
+  };
 }
 
 function getSiteUrl() {
@@ -18,8 +29,8 @@ function getSiteUrl() {
 }
 
 export async function POST(request: Request) {
-  const stripe = getStripe();
-  if (!stripe) {
+  const dodo = getDodoClient();
+  if (!dodo) {
     return NextResponse.json(
       { error: "Donations aren't available yet" },
       { status: 503 },
@@ -43,35 +54,28 @@ export async function POST(request: Request) {
 
   const returnPath = sanitizeReturnPath(body.returnPath);
   const siteUrl = getSiteUrl();
-  const successUrl = `${siteUrl}/donate/success?next=${encodeURIComponent(returnPath)}`;
+  const returnUrl = `${siteUrl}/donate/success?next=${encodeURIComponent(returnPath)}`;
   const cancelUrl = `${siteUrl}${returnPath}`;
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      submit_type: "donate",
-      line_items: [
+    const session = await dodo.client.checkoutSessions.create({
+      product_cart: [
         {
+          product_id: dodo.productId,
           quantity: 1,
-          price_data: {
-            currency: "usd",
-            unit_amount: body.amountCents,
-            product_data: {
-              name: "KillSQL donation",
-              description: "Support free SQL practice",
-            },
-          },
+          amount: body.amountCents,
         },
       ],
-      success_url: successUrl,
+      return_url: returnUrl,
       cancel_url: cancelUrl,
+      metadata: { source: "killsql" },
     });
 
-    if (!session.url) {
+    if (!session.checkout_url) {
       return NextResponse.json({ error: "Could not start checkout" }, { status: 500 });
     }
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: session.checkout_url });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not start checkout";
     return NextResponse.json({ error: message }, { status: 500 });

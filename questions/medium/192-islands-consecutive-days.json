@@ -1,0 +1,26 @@
+{
+  "id": "192",
+  "slug": "islands-consecutive-days",
+  "title": "Find Consecutive Activity Streaks (Islands Problem)",
+  "difficulty": "medium",
+  "tags": ["islands", "window functions", "LAG", "SUM OVER", "GROUP BY", "consecutive dates"],
+  "description": "Find each consecutive streak (island) of daily user activity. Return the start date, end date, and length of each streak per user.\n\n**Table: user_activity** — `user_id`, `activity_date`\n\nOutput columns: `user_id`, `start_date`, `end_date`, `streak_length`. Order by `user_id`, `start_date`.",
+  "schema_sql": "CREATE TABLE user_activity (user_id INT, activity_date DATE); INSERT INTO user_activity VALUES (1,'2026-01-01'),(1,'2026-01-02'),(1,'2026-01-03'),(1,'2026-01-07'),(1,'2026-01-08'),(2,'2026-01-05'),(2,'2026-01-06'),(2,'2026-01-10');",
+  "solution_sql": "WITH diffs AS (SELECT user_id, activity_date, activity_date - LAG(activity_date) OVER (PARTITION BY user_id ORDER BY activity_date) AS day_diff FROM user_activity), flagged AS (SELECT *, SUM(CASE WHEN day_diff IS NULL OR day_diff > 1 THEN 1 ELSE 0 END) OVER (PARTITION BY user_id ORDER BY activity_date) AS island_id FROM diffs) SELECT user_id, MIN(activity_date) AS start_date, MAX(activity_date) AS end_date, COUNT(*) AS streak_length FROM flagged GROUP BY user_id, island_id ORDER BY user_id, start_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "User 1 has 2 streaks: Jan 1-3 (length 3) and Jan 7-8 (length 2). User 2 has 2 streaks: Jan 5-6 (length 2) and Jan 10 (length 1). Total 4 rows.",
+      "expected_row_count": 4,
+      "expected_columns": ["user_id", "start_date", "end_date", "streak_length"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "First compute day_diff = activity_date minus the previous activity_date using LAG; a NULL or value > 1 means a new island starts.",
+    "Use SUM(CASE WHEN new_island THEN 1 ELSE 0 END) OVER (PARTITION BY user_id ORDER BY activity_date) to assign a monotonically increasing island_id."
+  ],
+  "explanation": "Step 1: diffs CTE computes the gap to the previous date per user using LAG. Step 2: flagged CTE marks new island boundaries (day_diff IS NULL or > 1) and uses a running SUM to assign island_id. Step 3: GROUP BY user_id, island_id to collapse each island into one row with MIN/MAX dates and COUNT. User 1 has two islands; User 2 has two islands. Total: 4 rows.",
+  "companies": ["Meta", "LinkedIn"],
+  "created_at": "2026-09-24"
+}

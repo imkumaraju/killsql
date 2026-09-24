@@ -1,0 +1,30 @@
+{
+  "id": "289",
+  "slug": "monthly-sales-pivot",
+  "title": "Monthly Sales Pivot Table (Jan–Dec)",
+  "difficulty": "hard",
+  "tags": ["pivot", "CASE", "aggregation", "COALESCE", "conditional aggregation"],
+  "description": "A `monthly_sales` table stores product revenue by month. **Pivot the data** into a wide format with one row per product and 12 columns (one per month: jan, feb, …, dec) plus a total_revenue column. Missing months should show 0.\n\n**Table: monthly_sales**\n\n| Column | Type |\n|--------|------|\n| product_name | VARCHAR |\n| sale_month | INT |\n| sale_year | INT |\n| revenue | NUMERIC(10,2) |\n\nOutput columns: `product_name`, `jan`, `feb`, `mar`, `apr`, `may`, `jun`, `jul`, `aug`, `sep`, `oct`, `nov`, `dec`, `total_revenue` for year 2024. Order by `product_name`.",
+  "schema_sql": "CREATE TABLE monthly_sales (product_name VARCHAR, sale_month INT, sale_year INT, revenue NUMERIC(10,2)); INSERT INTO monthly_sales VALUES ('Widget A',1,2024,1000),('Widget A',2,2024,1500),('Widget A',3,2024,1200),('Widget A',4,2024,900),('Widget A',5,2024,1800),('Widget A',6,2024,2000),('Widget A',7,2024,1700),('Widget A',8,2024,1900),('Widget A',9,2024,1600),('Widget A',10,2024,2100),('Widget A',11,2024,2500),('Widget A',12,2024,3000),('Widget B',1,2024,500),('Widget B',2,2024,600),('Widget B',3,2024,550),('Widget B',4,2024,700),('Widget B',6,2024,800),('Widget B',8,2024,900),('Widget B',10,2024,1000),('Widget B',12,2024,1200);",
+  "solution_sql": "SELECT product_name, COALESCE(SUM(CASE WHEN sale_month = 1 THEN revenue END), 0) AS jan, COALESCE(SUM(CASE WHEN sale_month = 2 THEN revenue END), 0) AS feb, COALESCE(SUM(CASE WHEN sale_month = 3 THEN revenue END), 0) AS mar, COALESCE(SUM(CASE WHEN sale_month = 4 THEN revenue END), 0) AS apr, COALESCE(SUM(CASE WHEN sale_month = 5 THEN revenue END), 0) AS may, COALESCE(SUM(CASE WHEN sale_month = 6 THEN revenue END), 0) AS jun, COALESCE(SUM(CASE WHEN sale_month = 7 THEN revenue END), 0) AS jul, COALESCE(SUM(CASE WHEN sale_month = 8 THEN revenue END), 0) AS aug, COALESCE(SUM(CASE WHEN sale_month = 9 THEN revenue END), 0) AS sep, COALESCE(SUM(CASE WHEN sale_month = 10 THEN revenue END), 0) AS oct, COALESCE(SUM(CASE WHEN sale_month = 11 THEN revenue END), 0) AS nov, COALESCE(SUM(CASE WHEN sale_month = 12 THEN revenue END), 0) AS dec, SUM(revenue) AS total_revenue FROM monthly_sales WHERE sale_year = 2024 GROUP BY product_name ORDER BY product_name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Pivot of 2024 monthly revenue with zeros for missing months",
+      "expected_row_count": 2,
+      "expected_columns": ["product_name", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "total_revenue"],
+      "expected_rows": [
+        { "product_name": "Widget A", "jan": 1000, "feb": 1500, "mar": 1200, "apr": 900, "may": 1800, "jun": 2000, "jul": 1700, "aug": 1900, "sep": 1600, "oct": 2100, "nov": 2500, "dec": 3000, "total_revenue": 20200 },
+        { "product_name": "Widget B", "jan": 500, "feb": 600, "mar": 550, "apr": 700, "may": 0, "jun": 800, "jul": 0, "aug": 900, "sep": 0, "oct": 1000, "nov": 0, "dec": 1200, "total_revenue": 6250 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "For each month column, use SUM(CASE WHEN sale_month = N THEN revenue END). Since SUM of no matching rows returns NULL, wrap each expression with COALESCE(..., 0) to convert missing months to zero.",
+    "Filter by sale_year = 2024 before grouping. The GROUP BY product_name collapses all 12 month rows per product into a single pivoted row."
+  ],
+  "explanation": "SQL doesn't have a native PIVOT keyword in standard dialects, so pivoting is done via conditional aggregation: a CASE expression inside SUM() selects revenue only for a specific month, and SUM aggregates it (returning NULL if no rows match). COALESCE converts NULL to 0 for missing months. A single GROUP BY product_name then collapses all monthly rows for each product into one wide row. This technique generalizes to any categorical pivot (regions, segments, cohorts) and is foundational for building BI report tables that stakeholders can read in spreadsheets.",
+  "companies": ["Amazon", "Walmart", "Google"],
+  "created_at": "2026-09-24"
+}

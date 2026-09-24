@@ -1,0 +1,26 @@
+{
+  "id": "175",
+  "slug": "exists-customers-with-orders",
+  "title": "Customers Who Have Placed at Least One Order",
+  "difficulty": "medium",
+  "tags": ["EXISTS", "subquery", "SELECT", "WHERE"],
+  "description": "Find all customers who have placed at least one order using an EXISTS subquery.\n\n**Table: customers** — `id`, `name`, `email`\n\n**Table: orders** — `id`, `customer_id`, `amount`\n\nOutput columns: `name`, `email`. Order by `name`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR); INSERT INTO customers VALUES (1,'Alice','alice@example.com'),(2,'Bob','bob@example.com'),(3,'Carol','carol@example.com'),(4,'Dave','dave@example.com'),(5,'Eve','eve@example.com'),(6,'Frank','frank@example.com'); CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,120.00),(2,1,85.00),(3,2,200.00),(4,3,50.00),(5,4,310.00),(6,4,95.00),(7,5,175.00);",
+  "solution_sql": "SELECT name, email FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id) ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "6 customers; Frank (id=6) has no orders, so 5 customers are returned",
+      "expected_row_count": 5,
+      "expected_columns": ["name", "email"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "EXISTS returns TRUE as soon as the subquery finds any matching row — it does not need to count or return data.",
+    "The subquery correlates to the outer query through o.customer_id = c.id, checking each customer individually."
+  ],
+  "explanation": "EXISTS (SELECT 1 FROM orders WHERE customer_id = c.id) returns TRUE for customers 1-5 who all have at least one order. Customer 6 (Frank) has no matching rows in orders so EXISTS returns FALSE and Frank is excluded. EXISTS is more efficient than IN with large datasets because it short-circuits on the first match.",
+  "companies": ["Shopify", "Stripe"],
+  "created_at": "2026-09-24"
+}

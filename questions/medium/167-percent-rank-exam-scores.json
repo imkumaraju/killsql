@@ -1,0 +1,26 @@
+{
+  "id": "167",
+  "slug": "percent-rank-exam-scores",
+  "title": "Percentile Rank of Exam Scores",
+  "difficulty": "medium",
+  "tags": ["window functions", "PERCENT_RANK", "ORDER BY"],
+  "description": "Calculate the percent rank of each student's exam score — the fraction of students who scored strictly lower than this student.\n\n**Table: exam_results** — `student_id`, `name`, `score`\n\nOutput columns: `name`, `score`, `pct_rank`. Order by `score` DESC.",
+  "schema_sql": "CREATE TABLE exam_results (student_id INT, name VARCHAR, score INT); INSERT INTO exam_results VALUES (1,'Alice',95),(2,'Bob',88),(3,'Carol',92),(4,'Dave',78),(5,'Eve',88),(6,'Frank',65),(7,'Grace',72),(8,'Henry',95),(9,'Iris',80),(10,'Jake',55);",
+  "solution_sql": "SELECT name, score, ROUND(PERCENT_RANK() OVER (ORDER BY score), 4) AS pct_rank FROM exam_results ORDER BY score DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 students; top scorers have pct_rank=1.0, bottom scorer has pct_rank=0.0",
+      "expected_row_count": 10,
+      "expected_columns": ["name", "score", "pct_rank"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "PERCENT_RANK() = (rank - 1) / (total_rows - 1); the lowest value always gets 0.0 and the highest gets 1.0.",
+    "Equal scores receive the same PERCENT_RANK value since they share the same rank."
+  ],
+  "explanation": "PERCENT_RANK() computes (rank-1)/(N-1) where N is total rows. Jake (score 55) gets 0.0 and Alice/Henry (score 95) get 1.0. Bob and Eve both score 88 and share the same PERCENT_RANK value. This function is useful for comparing an individual score to the entire distribution.",
+  "companies": ["Chegg", "Coursera"],
+  "created_at": "2026-09-24"
+}

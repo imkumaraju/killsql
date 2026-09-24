@@ -1,0 +1,26 @@
+{
+  "id": "214",
+  "slug": "median-percentile-cont",
+  "title": "Median Salary Per Department Using PERCENTILE_CONT",
+  "difficulty": "medium",
+  "tags": ["PERCENTILE_CONT", "WITHIN GROUP", "ORDER BY", "GROUP BY", "median"],
+  "description": "Calculate the median (50th percentile) salary for each department using the PERCENTILE_CONT ordered-set aggregate function.\n\n**Table: employees** — `id`, `name`, `department`, `salary`\n\nOutput columns: `department`, `median_salary`, `avg_salary`. Order by `department`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',88000),(3,'Carol','Engineering',72000),(4,'Dave','Engineering',105000),(5,'Eve','Engineering',91000),(6,'Frank','Marketing',65000),(7,'Grace','Marketing',72000),(8,'Henry','Marketing',58000),(9,'Iris','HR',52000),(10,'Jake','HR',60000),(11,'Kim','HR',48000);",
+  "solution_sql": "SELECT department, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median_salary, ROUND(AVG(salary), 0) AS avg_salary FROM employees GROUP BY department ORDER BY department",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 departments: Engineering (5 employees), Marketing (3), HR (3) — 3 rows with median and average salary",
+      "expected_row_count": 3,
+      "expected_columns": ["department", "median_salary", "avg_salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) computes the exact 50th percentile using linear interpolation.",
+    "Use GROUP BY department to compute the median within each department separately."
+  ],
+  "explanation": "PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) is an ordered-set aggregate. Engineering salaries sorted: 72k,88k,91k,95k,105k → median = 91000 (middle value). Marketing: 58k,65k,72k → median = 65000. HR: 48k,52k,60k → median = 52000. Compare with AVG: medians and averages often differ when there are outliers.",
+  "companies": ["PostgreSQL", "Snowflake"],
+  "created_at": "2026-09-24"
+}

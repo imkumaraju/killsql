@@ -1,0 +1,26 @@
+{
+  "id": "146",
+  "slug": "left-join-non-matching",
+  "title": "Find Customers Who Have Never Ordered",
+  "difficulty": "easy",
+  "tags": ["SELECT", "LEFT JOIN", "IS NULL", "joins"],
+  "description": "Write a query to find customers who have **never placed an order**. Return `id`, `name`, and `email`.\n\n**Hint:** Use a LEFT JOIN and filter for rows where the orders table has no match.\n\n**Table: customers** — `id`, `name`, `email`\n\n**Table: orders** — `id`, `customer_id`, `amount`",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR); CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL); INSERT INTO customers VALUES (1,'Alice','alice@email.com'),(2,'Bob','bob@email.com'),(3,'Carol','carol@email.com'),(4,'Diana','diana@email.com'),(5,'Evan','evan@email.com'); INSERT INTO orders VALUES (1,1,150.00),(2,3,200.00),(3,1,75.00),(4,3,300.00),(5,5,125.00);",
+  "solution_sql": "SELECT c.id, c.name, c.email FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 2 customers who never ordered: Bob and Diana",
+      "expected_row_count": 2,
+      "expected_columns": ["id", "name", "email"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "A `LEFT JOIN` returns all rows from the left table, with NULLs for unmatched right-table columns.",
+    "After the LEFT JOIN, filter `WHERE o.id IS NULL` to keep only customers with no matching order."
+  ],
+  "explanation": "`LEFT JOIN orders` includes all 5 customers; for Bob (id=2) and Diana (id=4), there are no matching orders, so `o.id` is NULL. `WHERE o.id IS NULL` isolates those 2 customers.",
+  "companies": ["Shopify", "HubSpot"],
+  "created_at": "2026-09-24"
+}

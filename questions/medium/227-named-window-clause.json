@@ -1,0 +1,26 @@
+{
+  "id": "227",
+  "slug": "named-window-clause",
+  "title": "Named Window Using the WINDOW Clause",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "WINDOW clause", "PARTITION BY", "SUM OVER", "AVG OVER", "MAX OVER"],
+  "description": "For each order, show the order amount alongside the **regional total**, **regional average**, and **regional maximum** — all computed via window functions. Use a **named window** defined in a WINDOW clause to avoid repeating the partition expression three times.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, region VARCHAR(50), amount DECIMAL(10,2), order_date DATE); INSERT INTO orders VALUES (1,1,'North',250.00,'2026-01-05'),(2,2,'North',180.00,'2026-01-10'),(3,3,'South',320.00,'2026-01-12'),(4,4,'South',150.00,'2026-01-15'),(5,5,'East',400.00,'2026-01-18'),(6,6,'East',275.00,'2026-01-20'),(7,7,'North',310.00,'2026-01-22'),(8,8,'South',195.00,'2026-01-25'),(9,9,'East',350.00,'2026-01-28');",
+  "solution_sql": "SELECT order_id, region, amount, SUM(amount) OVER w AS region_total, ROUND(AVG(amount) OVER w, 2) AS region_avg, MAX(amount) OVER w AS region_max FROM orders WINDOW w AS (PARTITION BY region) ORDER BY region, order_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "9 orders each with region_total, region_avg, region_max. North total=740, South total=665, East total=1025.",
+      "expected_row_count": 9,
+      "expected_columns": ["order_id", "region", "amount", "region_total", "region_avg", "region_max"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Define the window once at the end of the query: WINDOW w AS (PARTITION BY region), then reference it in each function as SUM(amount) OVER w.",
+    "The WINDOW clause is supported in PostgreSQL, MySQL 8+, and SQLite 3.25+ — it avoids repeating the same OVER (PARTITION BY region) three times."
+  ],
+  "explanation": "The WINDOW clause (SQL:2003 standard) lets you name a window definition and reuse it across multiple functions. Here, w = PARTITION BY region, so SUM, AVG, and MAX all operate over the same partition without repetition. North: total=740, avg=246.67, max=310. South: total=665, avg=221.67, max=320. East: total=1025, avg=341.67, max=400.",
+  "companies": ["Stripe", "Square"],
+  "created_at": "2026-09-24"
+}

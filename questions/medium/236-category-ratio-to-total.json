@@ -1,0 +1,26 @@
+{
+  "id": "236",
+  "slug": "category-ratio-to-total",
+  "title": "Ratio of Each Category to Total Revenue",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "SUM", "scalar subquery", "percentage", "ratio"],
+  "description": "Calculate each product category's **total sales amount** and its **percentage of overall revenue** (revenue_pct). Use a scalar subquery for the grand total. Round revenue_pct to 2 decimal places and order by total sales descending.",
+  "schema_sql": "CREATE TABLE sales (sale_id INT, product_id INT, category VARCHAR(50), amount DECIMAL(10,2), sale_date DATE); INSERT INTO sales VALUES (1,1,'Electronics',500.00,'2026-01-05'),(2,2,'Electronics',300.00,'2026-01-10'),(3,3,'Electronics',800.00,'2026-01-15'),(4,4,'Clothing',150.00,'2026-01-08'),(5,5,'Clothing',200.00,'2026-01-12'),(6,6,'Hardware',100.00,'2026-01-20'),(7,7,'Hardware',75.00,'2026-01-22'),(8,8,'Books',50.00,'2026-01-25'),(9,9,'Books',30.00,'2026-01-28'),(10,10,'Electronics',400.00,'2026-02-01');",
+  "solution_sql": "SELECT category, SUM(amount) AS total_sales, ROUND(SUM(amount) * 100.0 / (SELECT SUM(amount) FROM sales), 2) AS revenue_pct FROM sales GROUP BY category ORDER BY total_sales DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 categories. Grand total=2605. Electronics=2000(76.78%), Clothing=350(13.44%), Hardware=175(6.72%), Books=80(3.07%)",
+      "expected_row_count": 4,
+      "expected_columns": ["category", "total_sales", "revenue_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use GROUP BY category with SUM(amount) to compute per-category revenue totals.",
+    "Divide each category sum by a scalar subquery (SELECT SUM(amount) FROM sales) which returns the grand total — multiply by 100 for a percentage."
+  ],
+  "explanation": "The scalar subquery (SELECT SUM(amount) FROM sales) returns 2605.00 — the single grand total — and is evaluated once. Each category sum is divided by this value. Electronics = 2000/2605×100 = 76.78%. Clothing = 350/2605×100 = 13.44%. Hardware = 175/2605×100 = 6.72%. Books = 80/2605×100 = 3.07%. The four percentages sum to approximately 100%.",
+  "companies": ["Walmart", "Target"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "194",
+  "slug": "top-n-per-group",
+  "title": "Top 2 Products Per Category by Revenue",
+  "difficulty": "medium",
+  "tags": ["TOP N per group", "ROW_NUMBER", "CTE", "PARTITION BY", "window functions"],
+  "description": "Find the top 2 revenue-generating products in each category. If there is a tie at position 2, include both (use RANK instead of ROW_NUMBER).\n\n**Table: product_sales** — `id`, `product_name`, `category`, `revenue`\n\nOutput columns: `product_name`, `category`, `revenue`, `rank_in_category`. Order by `category`, `rank_in_category`.",
+  "schema_sql": "CREATE TABLE product_sales (id INT, product_name VARCHAR, category VARCHAR, revenue INT); INSERT INTO product_sales VALUES (1,'Widget Pro','Electronics',85000),(2,'Widget Basic','Electronics',42000),(3,'Widget Mini','Electronics',31000),(4,'Shirt Premium','Clothing',55000),(5,'Shirt Basic','Clothing',38000),(6,'Shirt Slim','Clothing',22000),(7,'Novel X','Books',18000),(8,'Guide Y','Books',14000),(9,'Manual Z','Books',9000);",
+  "solution_sql": "WITH ranked AS (SELECT product_name, category, revenue, RANK() OVER (PARTITION BY category ORDER BY revenue DESC) AS rank_in_category FROM product_sales) SELECT product_name, category, revenue, rank_in_category FROM ranked WHERE rank_in_category <= 2 ORDER BY category, rank_in_category",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 categories × 2 top products each = 6 rows; no ties so RANK and ROW_NUMBER give the same result here",
+      "expected_row_count": 6,
+      "expected_columns": ["product_name", "category", "revenue", "rank_in_category"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use RANK() OVER (PARTITION BY category ORDER BY revenue DESC) inside a CTE, then filter WHERE rank_in_category <= 2.",
+    "RANK() is preferred over ROW_NUMBER() here because it includes all tied rows at the cutoff position."
+  ],
+  "explanation": "The CTE assigns RANK() partitioned by category and ordered by revenue DESC. Books: Novel X (rank 1), Guide Y (rank 2). Clothing: Shirt Premium (rank 1), Shirt Basic (rank 2). Electronics: Widget Pro (rank 1), Widget Basic (rank 2). Filtering rank <= 2 yields 6 rows. With RANK(), if two products were tied at rank 2 both would be returned.",
+  "companies": ["Amazon", "Flipkart"],
+  "created_at": "2026-09-24"
+}

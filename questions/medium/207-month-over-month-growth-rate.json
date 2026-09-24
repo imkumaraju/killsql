@@ -1,0 +1,26 @@
+{
+  "id": "207",
+  "slug": "month-over-month-growth-rate",
+  "title": "Month-over-Month Revenue Growth Rate",
+  "difficulty": "medium",
+  "tags": ["window functions", "LAG", "ORDER BY", "growth rate", "arithmetic"],
+  "description": "Calculate the month-over-month revenue growth rate percentage for each month.\n\n**Table: monthly_revenue** — `month`, `revenue`\n\nOutput columns: `month`, `revenue`, `mom_growth_pct`. Order by `month`.",
+  "schema_sql": "CREATE TABLE monthly_revenue (month VARCHAR, revenue DECIMAL(12,2)); INSERT INTO monthly_revenue VALUES ('2026-01',80000.00),('2026-02',88000.00),('2026-03',82000.00),('2026-04',95000.00),('2026-05',110000.00),('2026-06',105000.00),('2026-07',118000.00),('2026-08',130000.00);",
+  "solution_sql": "SELECT month, revenue, ROUND(100.0 * (revenue - LAG(revenue) OVER (ORDER BY month)) / LAG(revenue) OVER (ORDER BY month), 2) AS mom_growth_pct FROM monthly_revenue ORDER BY month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 months; Jan has NULL growth; Feb-Aug show MoM growth rates with 2 negative months (Mar and Jun)",
+      "expected_row_count": 8,
+      "expected_columns": ["month", "revenue", "mom_growth_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "MoM growth % = 100 * (current_revenue - prev_revenue) / prev_revenue; negative values mean the revenue declined.",
+    "The first month (Jan) will always have NULL for mom_growth_pct since there is no prior period."
+  ],
+  "explanation": "LAG(revenue) OVER (ORDER BY month) fetches the previous month's revenue. Feb growth: (88k-80k)/80k = +10.00%. Mar: (82k-88k)/88k = -6.82% (decline). Apr: (95k-82k)/82k = +15.85%. May: (110k-95k)/95k = +15.79%. Jun: -4.55% (decline). Jul: +12.38%. Aug: +10.17%. 8 rows total.",
+  "companies": ["Stripe", "Brex"],
+  "created_at": "2026-09-24"
+}

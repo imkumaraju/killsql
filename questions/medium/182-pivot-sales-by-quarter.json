@@ -1,0 +1,26 @@
+{
+  "id": "182",
+  "slug": "pivot-sales-by-quarter",
+  "title": "Pivot Quarterly Sales into Columns Using CASE",
+  "difficulty": "medium",
+  "tags": ["PIVOT", "CASE WHEN", "GROUP BY", "SUM", "conditional aggregation"],
+  "description": "Transform row-level quarterly sales data into a wide format with one column per quarter using conditional aggregation (CASE + GROUP BY).\n\n**Table: sales** — `region`, `quarter`, `amount`\n\nOutput columns: `region`, `q1`, `q2`, `q3`, `q4`. Order by `region`.",
+  "schema_sql": "CREATE TABLE sales (region VARCHAR, quarter VARCHAR, amount INT); INSERT INTO sales VALUES ('North','Q1',15000),('North','Q2',18000),('North','Q3',22000),('North','Q4',20000),('South','Q1',12000),('South','Q2',14000),('South','Q3',16000),('South','Q4',19000),('East','Q1',9000),('East','Q2',11000),('East','Q3',13000),('East','Q4',10000);",
+  "solution_sql": "SELECT region, SUM(CASE WHEN quarter = 'Q1' THEN amount ELSE 0 END) AS q1, SUM(CASE WHEN quarter = 'Q2' THEN amount ELSE 0 END) AS q2, SUM(CASE WHEN quarter = 'Q3' THEN amount ELSE 0 END) AS q3, SUM(CASE WHEN quarter = 'Q4' THEN amount ELSE 0 END) AS q4 FROM sales GROUP BY region ORDER BY region",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "12 input rows (3 regions × 4 quarters) collapsed into 3 pivot rows, one per region",
+      "expected_row_count": 3,
+      "expected_columns": ["region", "q1", "q2", "q3", "q4"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use SUM(CASE WHEN quarter = 'Q1' THEN amount ELSE 0 END) to filter each quarter into its own column.",
+    "GROUP BY region collapses the 4 quarter rows per region into a single wide row."
+  ],
+  "explanation": "This is the standard SQL PIVOT pattern: for each target column, use a conditional CASE WHEN inside an aggregate function. GROUP BY region turns 4 rows per region into 1. North: q1=15000, q2=18000, q3=22000, q4=20000. South: 12000,14000,16000,19000. East: 9000,11000,13000,10000. No native PIVOT syntax needed.",
+  "companies": ["Microsoft", "Tableau"],
+  "created_at": "2026-09-24"
+}

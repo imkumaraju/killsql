@@ -1,0 +1,48 @@
+{
+  "id": "290",
+  "slug": "quarterly-revenue-unpivot",
+  "title": "Quarterly Revenue Unpivot (Wide to Long Format)",
+  "difficulty": "hard",
+  "tags": ["unpivot", "UNION ALL", "normalization", "data transformation"],
+  "description": "A `quarterly_revenue` table stores each product's revenue in four separate columns (q1_revenue through q4_revenue). **Unpivot (normalize) this wide table** into a long format with one row per product per quarter.\n\n**Table: quarterly_revenue**\n\n| Column | Type |\n|--------|------|\n| product_id | INT |\n| product_name | VARCHAR |\n| q1_revenue | NUMERIC(10,2) |\n| q2_revenue | NUMERIC(10,2) |\n| q3_revenue | NUMERIC(10,2) |\n| q4_revenue | NUMERIC(10,2) |\n\nOutput columns: `product_id`, `product_name`, `quarter` (e.g., 'Q1'), `revenue`. Order by `product_id`, `quarter`.",
+  "schema_sql": "CREATE TABLE quarterly_revenue (product_id INT, product_name VARCHAR, q1_revenue NUMERIC(10,2), q2_revenue NUMERIC(10,2), q3_revenue NUMERIC(10,2), q4_revenue NUMERIC(10,2)); INSERT INTO quarterly_revenue VALUES (1,'Alpha',10000,12000,11000,15000),(2,'Beta',8000,9500,10000,12000),(3,'Gamma',5000,4500,6000,7000),(4,'Delta',20000,22000,19000,25000),(5,'Epsilon',3000,3500,4000,4500);",
+  "solution_sql": "SELECT product_id, product_name, 'Q1' AS quarter, q1_revenue AS revenue FROM quarterly_revenue UNION ALL SELECT product_id, product_name, 'Q2', q2_revenue FROM quarterly_revenue UNION ALL SELECT product_id, product_name, 'Q3', q3_revenue FROM quarterly_revenue UNION ALL SELECT product_id, product_name, 'Q4', q4_revenue FROM quarterly_revenue ORDER BY product_id, quarter",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All 20 product-quarter rows in long format",
+      "expected_row_count": 20,
+      "expected_columns": ["product_id", "product_name", "quarter", "revenue"],
+      "expected_rows": [
+        { "product_id": 1, "product_name": "Alpha", "quarter": "Q1", "revenue": 10000 },
+        { "product_id": 1, "product_name": "Alpha", "quarter": "Q2", "revenue": 12000 },
+        { "product_id": 1, "product_name": "Alpha", "quarter": "Q3", "revenue": 11000 },
+        { "product_id": 1, "product_name": "Alpha", "quarter": "Q4", "revenue": 15000 },
+        { "product_id": 2, "product_name": "Beta", "quarter": "Q1", "revenue": 8000 },
+        { "product_id": 2, "product_name": "Beta", "quarter": "Q2", "revenue": 9500 },
+        { "product_id": 2, "product_name": "Beta", "quarter": "Q3", "revenue": 10000 },
+        { "product_id": 2, "product_name": "Beta", "quarter": "Q4", "revenue": 12000 },
+        { "product_id": 3, "product_name": "Gamma", "quarter": "Q1", "revenue": 5000 },
+        { "product_id": 3, "product_name": "Gamma", "quarter": "Q2", "revenue": 4500 },
+        { "product_id": 3, "product_name": "Gamma", "quarter": "Q3", "revenue": 6000 },
+        { "product_id": 3, "product_name": "Gamma", "quarter": "Q4", "revenue": 7000 },
+        { "product_id": 4, "product_name": "Delta", "quarter": "Q1", "revenue": 20000 },
+        { "product_id": 4, "product_name": "Delta", "quarter": "Q2", "revenue": 22000 },
+        { "product_id": 4, "product_name": "Delta", "quarter": "Q3", "revenue": 19000 },
+        { "product_id": 4, "product_name": "Delta", "quarter": "Q4", "revenue": 25000 },
+        { "product_id": 5, "product_name": "Epsilon", "quarter": "Q1", "revenue": 3000 },
+        { "product_id": 5, "product_name": "Epsilon", "quarter": "Q2", "revenue": 3500 },
+        { "product_id": 5, "product_name": "Epsilon", "quarter": "Q3", "revenue": 4000 },
+        { "product_id": 5, "product_name": "Epsilon", "quarter": "Q4", "revenue": 4500 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Without a native UNPIVOT or VALUES pivot syntax, use four separate SELECT statements — one per quarter — each projecting a literal quarter label and the corresponding revenue column, combined with UNION ALL.",
+    "UNION ALL (not UNION) is required here because different products can have identical revenue values, and we must not deduplicate rows. The ORDER BY product_id, quarter sorts the long-format output correctly."
+  ],
+  "explanation": "SQL stores data in rows, but source systems often use wide (denormalized) layouts with one column per time period or category. Unpivoting with UNION ALL is the standard portable technique: each SELECT block maps one wide column to a long-format row with a literal label. Using UNION ALL instead of UNION preserves potential duplicate revenue values across products. The resulting long format enables GROUP BY quarter, window functions over time, and JOINs against dimension tables — all of which are impossible or cumbersome on the wide layout. This transformation is a prerequisite step in many ETL pipelines.",
+  "companies": ["Palantir", "Databricks", "Snowflake"],
+  "created_at": "2026-09-24"
+}

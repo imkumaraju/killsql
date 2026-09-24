@@ -1,0 +1,26 @@
+{
+  "id": "123",
+  "slug": "like-percent-wildcard",
+  "title": "Find Gmail Customers Using LIKE",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "LIKE", "string functions", "filtering"],
+  "description": "Write a query to return all customers whose `email` ends with `'@gmail.com'`. Return `id`, `name`, and `email`.\n\n**Table: customers**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |\n| city | VARCHAR |",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, city VARCHAR); INSERT INTO customers VALUES (1, 'Alice Johnson', 'alice@gmail.com', 'New York'), (2, 'Bob Smith', 'bob@yahoo.com', 'Chicago'), (3, 'Carol Davis', 'carol@gmail.com', 'Los Angeles'), (4, 'Diana Prince', 'diana@company.com', 'Houston'), (5, 'Evan Brown', 'evan@gmail.com', 'Phoenix'), (6, 'Frank Wilson', 'frank@hotmail.com', 'Seattle'), (7, 'Grace Lee', 'grace@gmail.com', 'Boston');",
+  "solution_sql": "SELECT id, name, email FROM customers WHERE email LIKE '%@gmail.com'",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 customers with gmail.com email addresses",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "name", "email"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The `%` wildcard in `LIKE` matches **zero or more** characters. `'%@gmail.com'` matches anything ending with '@gmail.com'.",
+    "Use `'%gmail%'` if you want to match gmail anywhere in the string, or `'%@gmail.com'` to anchor to the end."
+  ],
+  "explanation": "`LIKE '%@gmail.com'` uses `%` to match any prefix before the literal `@gmail.com`, returning 4 customers: Alice, Carol, Evan, and Grace.",
+  "companies": ["Google", "Mailchimp"],
+  "created_at": "2026-09-24"
+}

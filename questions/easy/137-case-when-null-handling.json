@@ -1,0 +1,26 @@
+{
+  "id": "137",
+  "slug": "case-when-null-handling",
+  "title": "Handle NULL Bonus with CASE WHEN",
+  "difficulty": "easy",
+  "tags": ["SELECT", "CASE WHEN", "NULL handling", "conditional logic"],
+  "description": "Write a query that returns `id`, `name`, `salary`, and `effective_bonus` where `effective_bonus` is the `bonus` value if not NULL, or **0** if the bonus is NULL.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| bonus | DECIMAL |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, bonus DECIMAL); INSERT INTO employees VALUES (1, 'Alice', 90000, 5000.00), (2, 'Bob', 75000, NULL), (3, 'Carol', 85000, 3000.00), (4, 'Diana', 60000, NULL), (5, 'Evan', 95000, 8000.00), (6, 'Frank', 70000, NULL), (7, 'Grace', 110000, 12000.00);",
+  "solution_sql": "SELECT id, name, salary, CASE WHEN bonus IS NULL THEN 0 ELSE bonus END AS effective_bonus FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 7 rows; NULL bonuses replaced by 0",
+      "expected_row_count": 7,
+      "expected_columns": ["id", "name", "salary", "effective_bonus"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use `CASE WHEN column IS NULL THEN fallback ELSE column END` to replace NULLs in a CASE expression.",
+    "You could also use `COALESCE(bonus, 0)` as a shorter equivalent — both approaches are valid."
+  ],
+  "explanation": "`CASE WHEN bonus IS NULL THEN 0 ELSE bonus END` returns 0 for employees Bob, Diana, and Frank (whose bonus is NULL), and the actual bonus for Alice, Carol, Evan, and Grace.",
+  "companies": ["Salesforce", "Oracle"],
+  "created_at": "2026-09-24"
+}

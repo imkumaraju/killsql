@@ -1,0 +1,26 @@
+{
+  "id": "138",
+  "slug": "order-by-multiple-columns",
+  "title": "Sort by Department and Salary",
+  "difficulty": "easy",
+  "tags": ["SELECT", "ORDER BY", "sorting"],
+  "description": "Write a query to return all employees sorted by `department` **ascending** and, within the same department, by `salary` **descending**. Return `id`, `name`, `department`, and `salary`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| department | VARCHAR |\n| salary | INT |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT); INSERT INTO employees VALUES (1, 'Alice', 'Engineering', 95000), (2, 'Bob', 'Marketing', 75000), (3, 'Carol', 'Engineering', 85000), (4, 'Diana', 'HR', 65000), (5, 'Evan', 'Marketing', 80000), (6, 'Frank', 'Engineering', 90000), (7, 'Grace', 'HR', 70000), (8, 'Henry', 'Marketing', 72000);",
+  "solution_sql": "SELECT id, name, department, salary FROM employees ORDER BY department ASC, salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns all 8 employees sorted by department A-Z then salary high-to-low",
+      "expected_row_count": 8,
+      "expected_columns": ["id", "name", "department", "salary"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "List multiple columns in `ORDER BY` separated by commas. The first column is the primary sort, the second is the tiebreaker.",
+    "`ASC` is the default sort direction; `DESC` reverses the order. Specify them explicitly for clarity."
+  ],
+  "explanation": "`ORDER BY department ASC, salary DESC` first groups by department alphabetically (Engineering → HR → Marketing), then within each department sorts employees from highest to lowest salary.",
+  "companies": ["LinkedIn", "Workday"],
+  "created_at": "2026-09-24"
+}

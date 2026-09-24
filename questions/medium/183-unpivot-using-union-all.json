@@ -1,0 +1,26 @@
+{
+  "id": "183",
+  "slug": "unpivot-using-union-all",
+  "title": "Unpivot Quarterly Columns to Rows Using UNION ALL",
+  "difficulty": "medium",
+  "tags": ["UNPIVOT", "UNION ALL", "SELECT", "data reshaping"],
+  "description": "Transform a wide table with one column per quarter into a long/tall format (one row per quarter per employee) using UNION ALL.\n\n**Table: quarterly_sales** — `employee`, `q1`, `q2`, `q3`, `q4`\n\nOutput columns: `employee`, `quarter`, `sales`. Order by `employee`, `quarter`.",
+  "schema_sql": "CREATE TABLE quarterly_sales (employee VARCHAR, q1 INT, q2 INT, q3 INT, q4 INT); INSERT INTO quarterly_sales VALUES ('Alice',12000,15000,18000,14000),('Bob',9000,11000,10000,13000),('Carol',20000,22000,25000,21000);",
+  "solution_sql": "SELECT employee, 'Q1' AS quarter, q1 AS sales FROM quarterly_sales UNION ALL SELECT employee, 'Q2', q2 FROM quarterly_sales UNION ALL SELECT employee, 'Q3', q3 FROM quarterly_sales UNION ALL SELECT employee, 'Q4', q4 FROM quarterly_sales ORDER BY employee, quarter",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 employees × 4 quarters = 12 rows in the unpivoted output",
+      "expected_row_count": 12,
+      "expected_columns": ["employee", "quarter", "sales"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Each UNION ALL block targets a single quarter column, returning a literal string for the quarter name and the column value as sales.",
+    "UNION ALL (not UNION) is correct here — all rows are intentionally distinct; UNION would do unnecessary deduplication work."
+  ],
+  "explanation": "There is no single UNPIVOT keyword in standard SQL. Instead, write one SELECT per quarter column with a literal 'Q1', 'Q2' etc. label, then UNION ALL them together. 3 employees × 4 UNIONed blocks = 12 rows. This is the portable way to reshape wide data into long format.",
+  "companies": ["dbt Labs", "Snowflake"],
+  "created_at": "2026-09-24"
+}

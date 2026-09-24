@@ -1,0 +1,26 @@
+{
+  "id": "217",
+  "slug": "weighted-average-price",
+  "title": "Weighted Average Purchase Price Per Product",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "SUM", "weighted average", "arithmetic", "aggregation"],
+  "description": "Calculate the quantity-weighted average unit price for each product across multiple purchase orders at different prices.\n\n**Table: purchase_orders** — `id`, `product_id`, `product_name`, `quantity`, `unit_price`\n\nOutput columns: `product_name`, `total_qty`, `weighted_avg_price`. Order by `product_name`.",
+  "schema_sql": "CREATE TABLE purchase_orders (id INT, product_id INT, product_name VARCHAR, quantity INT, unit_price DECIMAL(10,2)); INSERT INTO purchase_orders VALUES (1,1,'Widget A',100,5.00),(2,1,'Widget A',50,5.50),(3,1,'Widget A',150,4.80),(4,2,'Gadget B',30,25.00),(5,2,'Gadget B',70,24.00),(6,3,'Book C',200,12.00),(7,3,'Book C',100,12.50),(8,4,'Shirt D',60,18.00),(9,4,'Shirt D',40,19.00);",
+  "solution_sql": "SELECT product_name, SUM(quantity) AS total_qty, ROUND(SUM(quantity * unit_price) / SUM(quantity), 2) AS weighted_avg_price FROM purchase_orders GROUP BY product_id, product_name ORDER BY product_name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 products; Widget A had 3 purchases at different prices; weighted avg reflects quantity mix",
+      "expected_row_count": 4,
+      "expected_columns": ["product_name", "total_qty", "weighted_avg_price"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Weighted average = SUM(quantity * unit_price) / SUM(quantity) — multiply each price by its weight (quantity) before averaging.",
+    "A plain AVG(unit_price) would be wrong here because it ignores the different quantities purchased at each price."
+  ],
+  "explanation": "Simple average treats all prices equally regardless of volume. Weighted average accounts for how much was bought at each price. Widget A: (100×5.00 + 50×5.50 + 150×4.80) / 300 = 1495/300 = 4.98. Gadget B: (30×25 + 70×24) / 100 = 2430/100 = 24.30. Book C: (200×12 + 100×12.50) / 300 = 12.17. Shirt D: (60×18 + 40×19) / 100 = 18.40.",
+  "companies": ["Amazon", "Alibaba"],
+  "created_at": "2026-09-24"
+}

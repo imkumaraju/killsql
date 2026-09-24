@@ -1,0 +1,26 @@
+{
+  "id": "208",
+  "slug": "cohort-analysis",
+  "title": "User Cohort Retention by First Purchase Month",
+  "difficulty": "medium",
+  "tags": ["cohort analysis", "CTE", "DATE_TRUNC", "GROUP BY", "COUNT DISTINCT", "datediff"],
+  "description": "Perform a cohort analysis: group users by their first purchase month and count how many from each cohort made purchases in each subsequent month offset.\n\n**Table: user_orders** — `user_id`, `order_date`, `amount`\n\nOutput columns: `cohort_month`, `months_since_first`, `users`. Order by `cohort_month`, `months_since_first`.",
+  "schema_sql": "CREATE TABLE user_orders (user_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO user_orders VALUES (1,'2026-01-10',100.00),(2,'2026-01-15',200.00),(3,'2026-01-20',150.00),(1,'2026-02-05',120.00),(2,'2026-02-12',180.00),(2,'2026-03-08',200.00),(4,'2026-02-18',300.00),(5,'2026-02-25',250.00),(4,'2026-03-15',180.00);",
+  "solution_sql": "WITH first_purchase AS (SELECT user_id, DATE_TRUNC('month', MIN(order_date)) AS cohort_month FROM user_orders GROUP BY user_id), activity AS (SELECT o.user_id, f.cohort_month, DATEDIFF('month', f.cohort_month, DATE_TRUNC('month', o.order_date)) AS months_since_first FROM user_orders o JOIN first_purchase f ON o.user_id = f.user_id) SELECT cohort_month, months_since_first, COUNT(DISTINCT user_id) AS users FROM activity GROUP BY cohort_month, months_since_first ORDER BY cohort_month, months_since_first",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan cohort: month 0=3 users, month 1=2 users, month 2=1 user. Feb cohort: month 0=2 users, month 1=1 user. 5 rows total.",
+      "expected_row_count": 5,
+      "expected_columns": ["cohort_month", "months_since_first", "users"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "First find each user's cohort_month = DATE_TRUNC('month', MIN(order_date)), then join back to all their orders to compute the offset.",
+    "DATEDIFF('month', cohort_month, DATE_TRUNC('month', order_date)) gives how many months after first purchase each order occurred."
+  ],
+  "explanation": "first_purchase CTE assigns each user to their cohort (Jan: users 1,2,3 — Feb: users 4,5). activity CTE computes months_since_first for every order. Users 1 and 2 from the Jan cohort reordered in Feb (offset=1); user 2 also in Mar (offset=2). User 4 from Feb cohort reordered in Mar (offset=1). Grouping by cohort and offset gives 5 rows.",
+  "companies": ["Amplitude", "Mixpanel"],
+  "created_at": "2026-09-24"
+}

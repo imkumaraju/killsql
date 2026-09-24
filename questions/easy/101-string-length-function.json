@@ -1,0 +1,26 @@
+{
+  "id": "101",
+  "slug": "string-length-function",
+  "title": "String Length Function",
+  "difficulty": "easy",
+  "tags": ["SELECT", "LENGTH", "string functions"],
+  "description": "Write a SQL query that returns each product's **name** and the **length of its name** as `name_length`. Order by `name_length` descending.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| description | VARCHAR |\n\nReturn all 7 rows.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, description VARCHAR); INSERT INTO products VALUES (1, 'Laptop', 'High performance laptop'), (2, 'Smartphone', 'Latest Android phone'), (3, 'Headphones', 'Noise cancelling'), (4, 'USB Cable', 'Type-C cable'), (5, 'Mouse', 'Wireless mouse'), (6, 'Keyboard', 'Mechanical keyboard'), (7, 'Monitor', '27 inch 4K display');",
+  "solution_sql": "SELECT name, LENGTH(name) AS name_length FROM products ORDER BY name_length DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns all 7 products with their name lengths, ordered longest first",
+      "expected_row_count": 7,
+      "expected_columns": ["name", "name_length"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The `LENGTH(column)` function returns the number of characters in a string.",
+    "Use `ORDER BY name_length DESC` (or the expression directly) to sort longest names first."
+  ],
+  "explanation": "`LENGTH(name)` counts the characters in each product name. Aliasing it as `name_length` makes the output readable, and `ORDER BY name_length DESC` puts the longest names at the top.",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-24"
+}

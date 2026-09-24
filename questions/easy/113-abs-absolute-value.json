@@ -1,0 +1,26 @@
+{
+  "id": "113",
+  "slug": "abs-absolute-value",
+  "title": "Find Accounts Far from Target Balance",
+  "difficulty": "easy",
+  "tags": ["SELECT", "ABS", "WHERE", "math functions"],
+  "description": "Write a query to find accounts where the absolute difference between their `balance` and **1000** is greater than **500**. Return `id`, `account_name`, `balance`, and the computed difference as `diff_from_1000`.\n\n**Table: accounts**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| account_name | VARCHAR |\n| balance | DECIMAL |",
+  "schema_sql": "CREATE TABLE accounts (id INT, account_name VARCHAR, balance DECIMAL); INSERT INTO accounts VALUES (1, 'Savings-A', 1500.00), (2, 'Checking-B', 250.00), (3, 'Savings-C', 980.00), (4, 'Checking-D', 3200.00), (5, 'Savings-E', 750.00), (6, 'Investment-F', 50.00);",
+  "solution_sql": "SELECT id, account_name, balance, ABS(balance - 1000) AS diff_from_1000 FROM accounts WHERE ABS(balance - 1000) > 500",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 3 accounts whose balance differs from 1000 by more than 500",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "account_name", "balance", "diff_from_1000"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`ABS(expression)` returns the absolute (non-negative) value, making it useful for measuring distance regardless of direction.",
+    "You can use the same expression in both `SELECT` and `WHERE`, or use a subquery/CTE to avoid repetition."
+  ],
+  "explanation": "`ABS(balance - 1000) > 500` filters accounts more than 500 units away from the target balance of 1000, whether above (Checking-D: 2200) or below (Checking-B: 750, Investment-F: 950).",
+  "companies": ["JPMorgan", "Goldman Sachs"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "132",
+  "slug": "min-on-strings",
+  "title": "First Product Name Alphabetically per Category",
+  "difficulty": "easy",
+  "tags": ["SELECT", "MIN", "GROUP BY", "aggregates", "string functions"],
+  "description": "Write a query to find the **first product name alphabetically** in each category. Return `category` and `first_alphabetically`.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| category | VARCHAR |\n| price | DECIMAL |",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL); INSERT INTO products VALUES (1, 'Laptop', 'Electronics', 999.99), (2, 'Zebra Print Shirt', 'Clothing', 39.99), (3, 'Tablet', 'Electronics', 449.99), (4, 'Apple Watch', 'Electronics', 399.99), (5, 'Blue Jeans', 'Clothing', 59.99), (6, 'Desktop PC', 'Electronics', 799.99), (7, 'Ankle Boots', 'Clothing', 89.99);",
+  "solution_sql": "SELECT category, MIN(name) AS first_alphabetically FROM products GROUP BY category",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 2 rows: Electronics -> 'Apple Watch', Clothing -> 'Ankle Boots'",
+      "expected_row_count": 2,
+      "expected_columns": ["category", "first_alphabetically"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`MIN()` on a VARCHAR column returns the alphabetically smallest string (using ASCII/Unicode ordering).",
+    "In Electronics: Apple Watch < Desktop PC < Laptop < Tablet. In Clothing: Ankle Boots < Blue Jeans < Zebra Print Shirt."
+  ],
+  "explanation": "`MIN(name)` applies lexicographic (alphabetical) comparison. 'Apple Watch' comes before 'Desktop PC', 'Laptop', and 'Tablet'. 'Ankle Boots' comes before 'Blue Jeans' and 'Zebra Print Shirt'.",
+  "companies": ["Amazon", "Etsy"],
+  "created_at": "2026-09-24"
+}

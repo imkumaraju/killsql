@@ -1,0 +1,26 @@
+{
+  "id": "165",
+  "slug": "lead-next-event-date",
+  "title": "Time Until Next Customer Event Using LEAD",
+  "difficulty": "medium",
+  "tags": ["window functions", "LEAD", "PARTITION BY", "ORDER BY", "date arithmetic"],
+  "description": "For each customer event show the next event date and the number of days until that next event (within the same customer).\n\n**Table: customer_events** — `customer_id`, `event_date`, `event_type`\n\nOutput columns: `customer_id`, `event_date`, `event_type`, `next_event_date`, `days_until_next`. Order by `customer_id`, `event_date`.",
+  "schema_sql": "CREATE TABLE customer_events (customer_id INT, event_date DATE, event_type VARCHAR); INSERT INTO customer_events VALUES (1,'2026-01-05','login'),(1,'2026-01-12','purchase'),(1,'2026-02-01','login'),(1,'2026-02-15','review'),(2,'2026-01-08','login'),(2,'2026-01-20','purchase'),(2,'2026-02-10','login');",
+  "solution_sql": "SELECT customer_id, event_date, event_type, LEAD(event_date) OVER (PARTITION BY customer_id ORDER BY event_date) AS next_event_date, LEAD(event_date) OVER (PARTITION BY customer_id ORDER BY event_date) - event_date AS days_until_next FROM customer_events ORDER BY customer_id, event_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "7 events for 2 customers; last event per customer has NULL next_event_date",
+      "expected_row_count": 7,
+      "expected_columns": ["customer_id", "event_date", "event_type", "next_event_date", "days_until_next"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "LEAD(event_date) OVER (PARTITION BY customer_id ORDER BY event_date) gets the next event date within the same customer's history.",
+    "The last event per customer returns NULL for next_event_date since there is no following row in the partition."
+  ],
+  "explanation": "LEAD() is the forward-looking counterpart to LAG(). PARTITION BY customer_id ensures we only look ahead within the same customer's events. Subtracting dates gives the interval in days. Customer 1: login→purchase (7 days), purchase→login (20 days), login→review (14 days), review→NULL. Customer 2: login→purchase (12 days), purchase→login (21 days), login→NULL.",
+  "companies": ["HubSpot", "Amplitude"],
+  "created_at": "2026-09-24"
+}

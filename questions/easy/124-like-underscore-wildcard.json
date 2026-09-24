@@ -1,0 +1,26 @@
+{
+  "id": "124",
+  "slug": "like-underscore-wildcard",
+  "title": "Match Employee Codes with _ Wildcard",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "LIKE", "string functions", "filtering"],
+  "description": "Write a query to find employees whose `employee_code` matches the pattern `'EMP-_0_'` — meaning it starts with `EMP-`, followed by any single character, then `0`, then any single character. Return `id`, `name`, and `employee_code`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| employee_code | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, employee_code VARCHAR); INSERT INTO employees VALUES (1, 'Alice', 'EMP-101'), (2, 'Bob', 'EMP-201'), (3, 'Carol', 'CTR-101'), (4, 'Diana', 'EMP-301'), (5, 'Evan', 'MNG-101'), (6, 'Frank', 'EMP-401'), (7, 'Grace', 'CTR-201');",
+  "solution_sql": "SELECT id, name, employee_code FROM employees WHERE employee_code LIKE 'EMP-_0_'",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 employees with codes matching EMP-_0_ pattern (EMP-101, EMP-201, EMP-301, EMP-401)",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "name", "employee_code"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The `_` wildcard matches exactly **one** character, unlike `%` which matches any number.",
+    "`'EMP-_0_'` matches EMP- then any single char, then the digit 0, then any single char — so EMP-101, EMP-201, EMP-301, EMP-401 all match."
+  ],
+  "explanation": "Each `_` in the pattern matches exactly one character. `'EMP-_0_'` matches 7-character codes starting with `EMP-` where the 6th character is `0`. All four EMP codes (101, 201, 301, 401) satisfy this.",
+  "companies": ["Workday", "SAP"],
+  "created_at": "2026-09-24"
+}

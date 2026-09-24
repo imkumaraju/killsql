@@ -1,0 +1,26 @@
+{
+  "id": "135",
+  "slug": "case-when-value-mapping",
+  "title": "Map Status Codes to Labels with CASE WHEN",
+  "difficulty": "easy",
+  "tags": ["SELECT", "CASE WHEN", "conditional logic"],
+  "description": "Orders are stored with single-character status codes. Write a query that returns `id`, `amount`, and a human-readable `status_label` by mapping each code:\n- `P` → `'Processing'`\n- `S` → `'Shipped'`\n- `D` → `'Delivered'`\n- `C` → `'Cancelled'`\n- `R` → `'Returned'`\n- Anything else → `'Unknown'`\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| status | VARCHAR |\n| amount | DECIMAL |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, status VARCHAR, amount DECIMAL); INSERT INTO orders VALUES (1, 1, 'P', 150.00), (2, 2, 'S', 200.00), (3, 3, 'D', 75.50), (4, 4, 'C', 300.00), (5, 5, 'R', 125.00), (6, 6, 'P', 220.00), (7, 7, 'S', 95.00);",
+  "solution_sql": "SELECT id, amount, CASE status WHEN 'P' THEN 'Processing' WHEN 'S' THEN 'Shipped' WHEN 'D' THEN 'Delivered' WHEN 'C' THEN 'Cancelled' WHEN 'R' THEN 'Returned' ELSE 'Unknown' END AS status_label FROM orders",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 7 rows with each status code translated to a full label",
+      "expected_row_count": 7,
+      "expected_columns": ["id", "amount", "status_label"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The simple `CASE column WHEN val1 THEN result1 ...` form compares the column against each value directly.",
+    "Always include an `ELSE` clause to handle unexpected values gracefully."
+  ],
+  "explanation": "`CASE status WHEN 'P' THEN 'Processing' ...` is the 'simple CASE' form. It checks the `status` column against each listed value and returns the matching label. The `ELSE 'Unknown'` handles any unmapped codes.",
+  "companies": ["Amazon", "FedEx"],
+  "created_at": "2026-09-24"
+}

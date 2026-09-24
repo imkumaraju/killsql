@@ -1,0 +1,26 @@
+{
+  "id": "202",
+  "slug": "left-join-orphan-customers",
+  "title": "Find Customers Who Have Never Placed an Order",
+  "difficulty": "medium",
+  "tags": ["LEFT JOIN", "NULL check", "IS NULL", "SELECT", "anti-join"],
+  "description": "Find all customers who have **never** placed any order by using a LEFT JOIN and checking for NULL on the right side.\n\n**Table: customers** — `id`, `name`, `email`\n\n**Table: orders** — `id`, `customer_id`, `amount`\n\nOutput columns: `name`, `email`. Order by `name`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR); INSERT INTO customers VALUES (1,'Alice','alice@x.com'),(2,'Bob','bob@x.com'),(3,'Carol','carol@x.com'),(4,'Dave','dave@x.com'),(5,'Eve','eve@x.com'),(6,'Frank','frank@x.com'),(7,'Grace','grace@x.com'),(8,'Henry','henry@x.com'); CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,100.00),(2,2,200.00),(3,2,150.00),(4,4,80.00),(5,6,300.00),(6,8,90.00);",
+  "solution_sql": "SELECT c.name, c.email FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.customer_id IS NULL ORDER BY c.name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 customers; customers 1,2,4,6,8 have orders; customers 3 (Carol), 5 (Eve), 7 (Grace) have none — 3 rows",
+      "expected_row_count": 3,
+      "expected_columns": ["name", "email"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "LEFT JOIN keeps all customers regardless of whether they have orders; the order columns will be NULL for customers with no match.",
+    "WHERE o.customer_id IS NULL filters to only those unmatched customers — the anti-join pattern."
+  ],
+  "explanation": "LEFT JOIN returns all 8 customers. For customers who have orders (1,2,4,6,8) the orders columns are populated. For customers 3, 5, and 7 there are no matching orders, so all order columns are NULL. WHERE o.customer_id IS NULL keeps only these NULL rows — 3 unmatched customers. This is the standard anti-join pattern.",
+  "companies": ["Shopify", "WooCommerce"],
+  "created_at": "2026-09-24"
+}

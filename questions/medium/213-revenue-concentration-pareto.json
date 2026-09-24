@@ -1,0 +1,26 @@
+{
+  "id": "213",
+  "slug": "revenue-concentration-pareto",
+  "title": "Revenue Concentration — Cumulative % Per Customer",
+  "difficulty": "medium",
+  "tags": ["window functions", "SUM OVER", "cumulative", "Pareto", "ORDER BY"],
+  "description": "Show each customer's revenue and cumulative revenue percentage (sorted highest to lowest) to illustrate the Pareto 80/20 principle.\n\n**Table: customer_revenue** — `customer_id`, `name`, `revenue`\n\nOutput columns: `name`, `revenue`, `cumulative_pct`. Order by `revenue` DESC.",
+  "schema_sql": "CREATE TABLE customer_revenue (customer_id INT, name VARCHAR, revenue INT); INSERT INTO customer_revenue VALUES (1,'Alice',45000),(2,'Bob',38000),(3,'Carol',12000),(4,'Dave',8000),(5,'Eve',5000),(6,'Frank',3000),(7,'Grace',2000),(8,'Henry',1000);",
+  "solution_sql": "SELECT name, revenue, ROUND(100.0 * SUM(revenue) OVER (ORDER BY revenue DESC) / SUM(revenue) OVER (), 2) AS cumulative_pct FROM customer_revenue ORDER BY revenue DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 customers; Alice and Bob together represent ~71% of revenue; top 3 exceed 80%; last row cumulative_pct = 100.00",
+      "expected_row_count": 8,
+      "expected_columns": ["name", "revenue", "cumulative_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "SUM(revenue) OVER (ORDER BY revenue DESC) computes a running total in descending order; divide by the grand total for the percentage.",
+    "The last row in the result will always have cumulative_pct = 100.00 since it includes all revenue."
+  ],
+  "explanation": "Total revenue = 114000. Alice: 45000/114000 = 39.47%. Alice+Bob: 83000/114000 = 72.81%. Top 3 (add Carol): 95000/114000 = 83.33% — already over 80% of revenue is concentrated in 3 of 8 customers (37.5%), demonstrating the Pareto principle. The cumulative_pct reaches 100% at the last row.",
+  "companies": ["McKinsey", "Boston Consulting Group"],
+  "created_at": "2026-09-24"
+}

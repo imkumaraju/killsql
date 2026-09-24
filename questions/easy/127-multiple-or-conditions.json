@@ -1,0 +1,26 @@
+{
+  "id": "127",
+  "slug": "multiple-or-conditions",
+  "title": "Filter with Multiple OR Conditions",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "OR", "filtering"],
+  "description": "Write a query to return products that are either in the **'Electronics'** category **or** have a price **below 20**. Return `id`, `name`, `category`, and `price`.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| category | VARCHAR |\n| price | DECIMAL |",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL); INSERT INTO products VALUES (1, 'Laptop', 'Electronics', 999.99), (2, 'T-Shirt', 'Clothing', 15.99), (3, 'Smartphone', 'Electronics', 699.99), (4, 'Pen', 'Stationery', 1.99), (5, 'Headphones', 'Electronics', 199.99), (6, 'Notebook', 'Stationery', 4.99), (7, 'Jeans', 'Clothing', 49.99), (8, 'USB Cable', 'Accessories', 8.99);",
+  "solution_sql": "SELECT id, name, category, price FROM products WHERE category = 'Electronics' OR price < 20",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 7 rows: 3 Electronics plus 4 low-price items under 20",
+      "expected_row_count": 7,
+      "expected_columns": ["id", "name", "category", "price"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "With `OR`, a row is returned if **at least one** condition is true.",
+    "Jeans ($49.99, Clothing) is the only row excluded — it is not Electronics and costs more than $20."
+  ],
+  "explanation": "`OR` returns a row when either condition holds. Electronics: Laptop, Smartphone, Headphones (3 rows). Price < 20: T-Shirt, Pen, Notebook, USB Cable (4 rows). Jeans fails both conditions and is excluded. Total: 7 rows.",
+  "companies": ["Shopify", "Etsy"],
+  "created_at": "2026-09-24"
+}

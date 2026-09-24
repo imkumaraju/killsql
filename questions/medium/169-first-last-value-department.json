@@ -1,0 +1,26 @@
+{
+  "id": "169",
+  "slug": "first-last-value-department",
+  "title": "Department Max and Min Salary Using FIRST_VALUE and LAST_VALUE",
+  "difficulty": "medium",
+  "tags": ["window functions", "FIRST_VALUE", "LAST_VALUE", "PARTITION BY", "ROWS BETWEEN"],
+  "description": "For each employee show the highest and lowest salary in their department using FIRST_VALUE and LAST_VALUE window functions.\n\n**Table: employees** — `id`, `name`, `department`, `salary`\n\nOutput columns: `name`, `department`, `salary`, `dept_max_salary`, `dept_min_salary`. Order by `department`, `salary` DESC.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',88000),(3,'Carol','Engineering',72000),(4,'Dave','Marketing',68000),(5,'Eve','Marketing',75000),(6,'Frank','Marketing',62000),(7,'Grace','HR',55000),(8,'Henry','HR',60000);",
+  "solution_sql": "SELECT name, department, salary, FIRST_VALUE(salary) OVER (PARTITION BY department ORDER BY salary DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS dept_max_salary, LAST_VALUE(salary) OVER (PARTITION BY department ORDER BY salary DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS dept_min_salary FROM employees ORDER BY department, salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 employees in 3 departments; each row shows their department's max and min salary",
+      "expected_row_count": 8,
+      "expected_columns": ["name", "department", "salary", "dept_max_salary", "dept_min_salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "FIRST_VALUE() returns the first row in the window frame; with ORDER BY salary DESC it returns the maximum.",
+    "LAST_VALUE() requires ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING — the default frame only reaches the current row, not the partition end."
+  ],
+  "explanation": "FIRST_VALUE(salary) with ORDER BY salary DESC naturally returns the maximum salary since the first row in descending order is the highest. LAST_VALUE() needs an explicit full-partition frame (UNBOUNDED PRECEDING TO UNBOUNDED FOLLOWING) because the default frame is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW, which would return the current row's salary instead of the partition minimum.",
+  "companies": ["Google", "Meta"],
+  "created_at": "2026-09-24"
+}

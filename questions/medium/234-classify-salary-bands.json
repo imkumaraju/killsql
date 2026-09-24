@@ -1,0 +1,26 @@
+{
+  "id": "234",
+  "slug": "classify-salary-bands",
+  "title": "Classify Employees into Salary Bands Using CASE",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CASE", "GROUP BY", "COUNT", "salary classification", "pivot"],
+  "description": "Classify each employee into a salary band and count how many fall into each band:\n- **Entry**: salary < 60,000\n- **Mid**: 60,000 ≤ salary < 100,000\n- **Senior**: 100,000 ≤ salary < 150,000\n- **Executive**: salary ≥ 150,000\n\nReturn the band name and employee count, ordered from Entry to Executive.",
+  "schema_sql": "CREATE TABLE employees (emp_id INT, name VARCHAR(100), department VARCHAR(50), salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',120000),(2,'Bob','Engineering',85000),(3,'Carol','Sales',45000),(4,'Dave','Sales',58000),(5,'Eve','Marketing',62000),(6,'Frank','Finance',155000),(7,'Grace','Engineering',98000),(8,'Hank','HR',52000),(9,'Ivy','Finance',175000),(10,'Jack','Marketing',75000),(11,'Kim','Engineering',145000),(12,'Leo','Sales',33000);",
+  "solution_sql": "SELECT CASE WHEN salary < 60000 THEN 'Entry' WHEN salary < 100000 THEN 'Mid' WHEN salary < 150000 THEN 'Senior' ELSE 'Executive' END AS salary_band, COUNT(*) AS employee_count FROM employees GROUP BY CASE WHEN salary < 60000 THEN 'Entry' WHEN salary < 100000 THEN 'Mid' WHEN salary < 150000 THEN 'Senior' ELSE 'Executive' END ORDER BY MIN(salary)",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 bands: Entry=4 (Carol,Dave,Hank,Leo), Mid=4 (Bob,Eve,Grace,Jack), Senior=2 (Alice,Kim), Executive=2 (Frank,Ivy)",
+      "expected_row_count": 4,
+      "expected_columns": ["salary_band", "employee_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use a CASE expression in the SELECT list to assign each employee to a band, then repeat the identical CASE expression in the GROUP BY clause.",
+    "CASE evaluates conditions top-to-bottom — since the first condition excludes <60k, the second condition 'salary < 100000' implicitly covers the 60k–99999 range."
+  ],
+  "explanation": "The CASE expression maps salary ranges to band labels. Grouping by the same expression produces a count per band. Conditions are evaluated in order: the first matching WHEN wins. Entry(<60k): Carol(45k), Dave(58k), Hank(52k), Leo(33k)=4. Mid(60-99k): Bob(85k), Eve(62k), Grace(98k), Jack(75k)=4. Senior(100-149k): Alice(120k), Kim(145k)=2. Executive(≥150k): Frank(155k), Ivy(175k)=2.",
+  "companies": ["LinkedIn", "Workday"],
+  "created_at": "2026-09-24"
+}

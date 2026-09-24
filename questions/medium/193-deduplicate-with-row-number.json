@@ -1,0 +1,26 @@
+{
+  "id": "193",
+  "slug": "deduplicate-with-row-number",
+  "title": "Deduplicate Orders Keeping the Latest Entry",
+  "difficulty": "medium",
+  "tags": ["deduplication", "ROW_NUMBER", "CTE", "PARTITION BY", "data cleaning"],
+  "description": "The raw orders table has duplicate rows for the same `(customer_id, order_date)` pair due to an ingestion bug. Keep only the row with the highest `id` (the latest ingested) and discard the rest.\n\n**Table: raw_orders** — `id`, `customer_id`, `order_date`, `amount`\n\nOutput columns: `id`, `customer_id`, `order_date`, `amount`. Order by `id`.",
+  "schema_sql": "CREATE TABLE raw_orders (id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO raw_orders VALUES (1,101,'2026-01-10',250.00),(2,101,'2026-01-10',250.00),(3,102,'2026-01-12',180.00),(4,103,'2026-01-15',320.00),(5,103,'2026-01-15',320.00),(6,103,'2026-01-15',320.00),(7,104,'2026-01-18',90.00),(8,102,'2026-01-20',450.00),(9,105,'2026-01-22',110.00),(10,105,'2026-01-22',110.00);",
+  "solution_sql": "WITH ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY customer_id, order_date ORDER BY id DESC) AS rn FROM raw_orders) SELECT id, customer_id, order_date, amount FROM ranked WHERE rn = 1 ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 raw rows with duplicates; after dedup keeping highest id per (customer_id, order_date): 6 unique orders remain",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "customer_id", "order_date", "amount"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "ROW_NUMBER() OVER (PARTITION BY customer_id, order_date ORDER BY id DESC) assigns rank 1 to the row with the highest id in each duplicate group.",
+    "Wrap in a CTE and filter WHERE rn = 1 to keep only the canonical row per group."
+  ],
+  "explanation": "The CTE assigns ROW_NUMBER partitioned by the duplicate key (customer_id, order_date) ordered by id DESC so the latest row gets rn=1. Customer 101 has 2 rows for Jan 10: ids 1 and 2 — id=2 survives. Customer 103 has 3 rows for Jan 15: ids 4,5,6 — id=6 survives. Customer 105 has 2 rows: id=10 survives. Total after dedup: 6 rows.",
+  "companies": ["Databricks", "dbt Labs"],
+  "created_at": "2026-09-24"
+}

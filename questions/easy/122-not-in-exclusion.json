@@ -1,0 +1,26 @@
+{
+  "id": "122",
+  "slug": "not-in-exclusion",
+  "title": "Exclude Cancelled and Returned Orders",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "NOT IN", "filtering"],
+  "description": "Write a query to return all orders whose `status` is **not** `'cancelled'` or `'returned'`. Return `id`, `customer_id`, `status`, and `amount`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| status | VARCHAR |\n| amount | DECIMAL |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, status VARCHAR, amount DECIMAL); INSERT INTO orders VALUES (1, 1, 'delivered', 150.00), (2, 2, 'cancelled', 89.99), (3, 3, 'shipped', 320.00), (4, 4, 'returned', 45.50), (5, 5, 'delivered', 210.00), (6, 6, 'cancelled', 75.00), (7, 7, 'processing', 180.00), (8, 8, 'shipped', 95.00);",
+  "solution_sql": "SELECT id, customer_id, status, amount FROM orders WHERE status NOT IN ('cancelled', 'returned')",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 5 active orders excluding cancelled and returned statuses",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "customer_id", "status", "amount"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`NOT IN ('val1', 'val2')` excludes rows that match any value in the list.",
+    "Be careful: if the column can contain NULL, `NOT IN` may unexpectedly exclude NULL rows too. Use `IS NOT NULL` alongside if needed."
+  ],
+  "explanation": "`NOT IN ('cancelled', 'returned')` keeps the 5 orders with statuses 'delivered', 'shipped', or 'processing', excluding the 2 cancelled and 1 returned order.",
+  "companies": ["Shopify", "DoorDash"],
+  "created_at": "2026-09-24"
+}

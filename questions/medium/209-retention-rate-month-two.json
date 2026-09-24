@@ -1,0 +1,26 @@
+{
+  "id": "209",
+  "slug": "retention-rate-month-two",
+  "title": "Month-2 Retention Rate Calculation",
+  "difficulty": "medium",
+  "tags": ["CTE", "COUNT DISTINCT", "LEFT JOIN", "retention", "metrics"],
+  "description": "Calculate the retention rate: what percentage of users who were active in January 2026 also returned in February 2026?\n\n**Table: user_sessions** — `user_id`, `session_month`\n\nOutput columns: `month1_users`, `month2_retained`, `retention_rate_pct`.",
+  "schema_sql": "CREATE TABLE user_sessions (user_id INT, session_month VARCHAR); INSERT INTO user_sessions VALUES (1,'2026-01'),(2,'2026-01'),(3,'2026-01'),(4,'2026-01'),(5,'2026-01'),(1,'2026-02'),(2,'2026-02'),(3,'2026-02'),(6,'2026-02');",
+  "solution_sql": "WITH month1_users AS (SELECT DISTINCT user_id FROM user_sessions WHERE session_month = '2026-01'), month2_users AS (SELECT DISTINCT user_id FROM user_sessions WHERE session_month = '2026-02') SELECT COUNT(DISTINCT m1.user_id) AS month1_users, COUNT(DISTINCT m2.user_id) AS month2_retained, ROUND(100.0 * COUNT(DISTINCT m2.user_id) / COUNT(DISTINCT m1.user_id), 2) AS retention_rate_pct FROM month1_users m1 LEFT JOIN month2_users m2 ON m1.user_id = m2.user_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 users active in Jan; users 1,2,3 also active in Feb; retention = 3/5 = 60.00% — 1 row",
+      "expected_row_count": 1,
+      "expected_columns": ["month1_users", "month2_retained", "retention_rate_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use two CTEs to isolate Jan users and Feb users separately, then LEFT JOIN on user_id and count non-NULL matches.",
+    "User 6 was active in Feb but not Jan — they do not affect the denominator since we start from the Jan cohort."
+  ],
+  "explanation": "month1_users CTE finds 5 distinct users active in Jan. month2_users finds 4 in Feb (users 1,2,3,6). LEFT JOIN m1 ON m2.user_id keeps all 5 Jan users and matches those who returned. Users 1,2,3 match (retained=3). Users 4 and 5 did not return. User 6 is irrelevant — they weren't in Jan. Retention = 3/5 = 60.00%.",
+  "companies": ["Amplitude", "Mixpanel"],
+  "created_at": "2026-09-24"
+}

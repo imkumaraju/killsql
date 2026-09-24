@@ -1,0 +1,26 @@
+{
+  "id": "206",
+  "slug": "year-over-year-lag",
+  "title": "Year-over-Year Revenue Growth Using LAG",
+  "difficulty": "medium",
+  "tags": ["window functions", "LAG", "ORDER BY", "year-over-year", "arithmetic"],
+  "description": "Calculate year-over-year revenue growth amount and percentage for each year using the LAG window function.\n\n**Table: annual_revenue** — `year`, `revenue`\n\nOutput columns: `year`, `revenue`, `prev_year_revenue`, `yoy_change`, `yoy_growth_pct`. Order by `year`.",
+  "schema_sql": "CREATE TABLE annual_revenue (year INT, revenue DECIMAL(12,2)); INSERT INTO annual_revenue VALUES (2022,1200000.00),(2023,1450000.00),(2024,1380000.00),(2025,1620000.00),(2026,1890000.00);",
+  "solution_sql": "SELECT year, revenue, LAG(revenue) OVER (ORDER BY year) AS prev_year_revenue, revenue - LAG(revenue) OVER (ORDER BY year) AS yoy_change, ROUND(100.0 * (revenue - LAG(revenue) OVER (ORDER BY year)) / LAG(revenue) OVER (ORDER BY year), 2) AS yoy_growth_pct FROM annual_revenue ORDER BY year",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 years; 2022 has NULL for all prior-year columns; 2023-2026 have computed growth metrics",
+      "expected_row_count": 5,
+      "expected_columns": ["year", "revenue", "prev_year_revenue", "yoy_change", "yoy_growth_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "LAG(revenue) OVER (ORDER BY year) fetches the previous year's revenue; the 2022 row (first year) returns NULL.",
+    "yoy_growth_pct = 100 * (current - previous) / previous; a negative value means revenue declined year over year."
+  ],
+  "explanation": "LAG(revenue) OVER (ORDER BY year) looks back one row in chronological order. 2022: no prior year → NULL. 2023: 1450000-1200000=+250000, +20.83%. 2024: 1380000-1450000=-70000, -4.83% (decline). 2025: +240000, +17.39%. 2026: +270000, +16.67%. All 5 rows are returned with NULL metrics for the base year.",
+  "companies": ["Goldman Sachs", "JPMorgan"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "153",
+  "slug": "date-trunc-to-month",
+  "title": "Group Orders by Month Using DATE_TRUNC",
+  "difficulty": "easy",
+  "tags": ["SELECT", "DATE_TRUNC", "GROUP BY", "date functions", "aggregates"],
+  "description": "Write a query to count orders and total revenue **per calendar month**. Use `DATE_TRUNC('month', order_date)` to truncate each date to its month. Return `month`, `order_count`, and `total_amount`, ordered by `month`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| amount | DECIMAL |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, amount DECIMAL); INSERT INTO orders VALUES (1, 1, '2026-07-05', 150.00), (2, 2, '2026-07-15', 200.00), (3, 3, '2026-08-10', 300.00), (4, 4, '2026-08-20', 250.00), (5, 5, '2026-08-25', 175.00), (6, 6, '2026-09-03', 400.00), (7, 7, '2026-09-15', 125.00), (8, 8, '2026-09-22', 350.00);",
+  "solution_sql": "SELECT DATE_TRUNC('month', order_date) AS month, COUNT(*) AS order_count, SUM(amount) AS total_amount FROM orders GROUP BY DATE_TRUNC('month', order_date) ORDER BY month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 3 rows: July (2 orders), August (3 orders), September (3 orders)",
+      "expected_row_count": 3,
+      "expected_columns": ["month", "order_count", "total_amount"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "`DATE_TRUNC('month', date)` rounds a date down to the first day of its month (e.g., 2026-07-15 → 2026-07-01).",
+    "This is a PostgreSQL function. In MySQL use `DATE_FORMAT(order_date, '%Y-%m-01')` for the same effect."
+  ],
+  "explanation": "`DATE_TRUNC('month', order_date)` normalises dates to month start. Grouping on this expression creates 3 month buckets: July (2 orders, $350), August (3 orders, $725), September (3 orders, $875).",
+  "companies": ["Snowflake", "Databricks"],
+  "created_at": "2026-09-24"
+}

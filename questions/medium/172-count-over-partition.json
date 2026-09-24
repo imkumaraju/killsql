@@ -1,0 +1,26 @@
+{
+  "id": "172",
+  "slug": "count-over-partition",
+  "title": "Count Orders Per Customer Without GROUP BY",
+  "difficulty": "medium",
+  "tags": ["window functions", "COUNT OVER", "PARTITION BY"],
+  "description": "Show each order along with the total number of orders that customer has placed — without collapsing rows using GROUP BY.\n\n**Table: orders** — `order_id`, `customer_id`, `order_date`, `amount`\n\nOutput columns: `order_id`, `customer_id`, `order_date`, `amount`, `customer_order_count`. Order by `customer_id`, `order_date`.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,101,'2026-01-05',250.00),(2,101,'2026-01-15',180.00),(3,101,'2026-02-01',320.00),(4,102,'2026-01-10',150.00),(5,102,'2026-01-25',200.00),(6,103,'2026-01-08',450.00),(7,103,'2026-02-05',125.00),(8,103,'2026-02-20',300.00),(9,103,'2026-03-01',175.00);",
+  "solution_sql": "SELECT order_id, customer_id, order_date, amount, COUNT(*) OVER (PARTITION BY customer_id) AS customer_order_count FROM orders ORDER BY customer_id, order_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "9 orders for 3 customers: customer 101 has 3 orders, 102 has 2, 103 has 4",
+      "expected_row_count": 9,
+      "expected_columns": ["order_id", "customer_id", "order_date", "amount", "customer_order_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "COUNT(*) OVER (PARTITION BY customer_id) counts all rows in the partition without ORDER BY, giving the total per customer for every row.",
+    "This keeps all individual rows (unlike GROUP BY) while still showing the aggregate count alongside each order."
+  ],
+  "explanation": "COUNT(*) OVER (PARTITION BY customer_id) is a non-aggregating aggregate — it returns the count for each partition without collapsing rows. Customer 101 has 3 orders so all 3 of their rows show customer_order_count=3. Customer 102 shows 2 on both rows. Customer 103 shows 4 on all four rows. This is invaluable when row-level detail and partition-level aggregates are needed in one query.",
+  "companies": ["Amazon", "Walmart"],
+  "created_at": "2026-09-24"
+}

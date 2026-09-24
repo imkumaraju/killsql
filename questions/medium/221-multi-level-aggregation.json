@@ -1,0 +1,26 @@
+{
+  "id": "221",
+  "slug": "multi-level-aggregation",
+  "title": "Multi-Level Aggregation (Aggregate of Aggregates)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "subquery", "AVG", "COUNT", "DATE_TRUNC"],
+  "description": "Find the **average number of orders placed per customer per month** across all customer-month combinations. You cannot use AVG(COUNT(*)) directly — use a two-level aggregation: first count orders per customer per month in a subquery, then average those counts in the outer query.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2026-01-05',100.00),(2,1,'2026-01-15',200.00),(3,1,'2026-02-10',150.00),(4,2,'2026-01-20',300.00),(5,2,'2026-01-25',250.00),(6,2,'2026-02-05',180.00),(7,2,'2026-02-20',220.00),(8,3,'2026-01-12',90.00),(9,3,'2026-03-08',110.00),(10,3,'2026-03-22',130.00);",
+  "solution_sql": "SELECT ROUND(AVG(monthly_count), 2) AS avg_orders_per_customer_month FROM (SELECT customer_id, DATE_TRUNC('month', order_date) AS order_month, COUNT(*) AS monthly_count FROM orders GROUP BY customer_id, DATE_TRUNC('month', order_date)) sub",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "6 customer-month combos: C1(Jan=2,Feb=1), C2(Jan=2,Feb=2), C3(Jan=1,Mar=2). Average = 10/6 ≈ 1.67",
+      "expected_row_count": 1,
+      "expected_columns": ["avg_orders_per_customer_month"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use a subquery (or CTE) to first compute COUNT(*) per customer per month using GROUP BY customer_id, DATE_TRUNC('month', order_date).",
+    "Then wrap it in an outer SELECT and apply AVG() to the monthly_count column — you cannot nest aggregate functions like AVG(COUNT(*)) directly."
+  ],
+  "explanation": "Direct AVG(COUNT(*)) is not allowed in standard SQL because you cannot nest aggregate functions. The solution uses a two-level aggregation: the inner query groups by customer and month to produce a monthly_count per row, then the outer query averages those counts. This pattern — aggregate of aggregates — always requires a subquery or CTE as an intermediate step.",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-24"
+}

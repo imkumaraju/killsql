@@ -1,0 +1,26 @@
+{
+  "id": "154",
+  "slug": "current-date-interval",
+  "title": "Find Active Subscriptions After a Date",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "CURRENT_DATE", "date functions"],
+  "description": "Write a query to find all subscriptions that are **still active** — i.e., their `end_date` is after **September 24, 2026**. Return `id`, `user_id`, `plan`, and `end_date`.\n\nIn production, replace `'2026-09-24'` with `CURRENT_DATE` to always reflect today.\n\n**Table: subscriptions**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| user_id | INT |\n| plan | VARCHAR |\n| start_date | DATE |\n| end_date | DATE |",
+  "schema_sql": "CREATE TABLE subscriptions (id INT, user_id INT, plan VARCHAR, start_date DATE, end_date DATE); INSERT INTO subscriptions VALUES (1, 1, 'premium', '2026-01-01', '2026-12-31'), (2, 2, 'basic', '2025-06-01', '2026-06-01'), (3, 3, 'premium', '2026-03-01', '2027-03-01'), (4, 4, 'basic', '2025-01-01', '2026-01-01'), (5, 5, 'pro', '2026-07-01', '2027-07-01'), (6, 6, 'basic', '2025-09-01', '2026-09-01');",
+  "solution_sql": "SELECT id, user_id, plan, end_date FROM subscriptions WHERE end_date > '2026-09-24'",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 3 active subscriptions with end_date after 2026-09-24",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "user_id", "plan", "end_date"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use `CURRENT_DATE` in production to compare against today's date dynamically: `WHERE end_date > CURRENT_DATE`.",
+    "Subscriptions with end_date on or before the comparison date (rows 2, 4, 6) are expired and excluded."
+  ],
+  "explanation": "`WHERE end_date > '2026-09-24'` keeps subscriptions 1 (ends Dec 2026), 3 (ends Mar 2027), and 5 (ends Jul 2027). Subscriptions 2, 4, and 6 have already expired.",
+  "companies": ["Stripe", "Zuora"],
+  "created_at": "2026-09-24"
+}

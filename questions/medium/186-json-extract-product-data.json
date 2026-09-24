@@ -1,0 +1,26 @@
+{
+  "id": "186",
+  "slug": "json-extract-product-data",
+  "title": "Extract Fields from a JSON Attributes Column",
+  "difficulty": "medium",
+  "tags": ["JSON", "json_extract_string", "WHERE", "CAST", "semi-structured"],
+  "description": "Products have a JSON `attributes` column. Extract the `color` and `weight_kg` fields, and filter to only products that are currently in stock.\n\n**Table: products** — `id`, `name`, `attributes` (JSON string)\n\nOutput columns: `id`, `name`, `color`, `weight_kg`. Order by `id`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, attributes VARCHAR); INSERT INTO products VALUES (1,'Widget A','{\"color\":\"red\",\"weight_kg\":2,\"in_stock\":true}'),(2,'Widget B','{\"color\":\"blue\",\"weight_kg\":5,\"in_stock\":true}'),(3,'Gadget X','{\"color\":\"black\",\"weight_kg\":1,\"in_stock\":false}'),(4,'Gadget Y','{\"color\":\"green\",\"weight_kg\":3,\"in_stock\":true}'),(5,'Gizmo Z','{\"color\":\"white\",\"weight_kg\":4,\"in_stock\":false}'),(6,'Device Q','{\"color\":\"silver\",\"weight_kg\":6,\"in_stock\":true}');",
+  "solution_sql": "SELECT id, name, json_extract_string(attributes, '$.color') AS color, CAST(json_extract_string(attributes, '$.weight_kg') AS INT) AS weight_kg FROM products WHERE json_extract_string(attributes, '$.in_stock') = 'true' ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "6 products; products 3 (Gadget X) and 5 (Gizmo Z) have in_stock=false; 4 rows returned",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "name", "color", "weight_kg"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "json_extract_string(col, '$.field') extracts a JSON field as a plain string in DuckDB — for numbers use CAST on the result.",
+    "Filter in the WHERE clause using json_extract_string as well; boolean JSON values are returned as the string 'true' or 'false'."
+  ],
+  "explanation": "json_extract_string navigates the JSON structure using path syntax ($.field). It returns strings, so numeric and boolean fields need CAST. Products 1, 2, 4, 6 have in_stock=true so 4 rows are returned. Their color and weight_kg fields are extracted and the weight is cast to INT.",
+  "companies": ["MongoDB", "Snowflake"],
+  "created_at": "2026-09-24"
+}

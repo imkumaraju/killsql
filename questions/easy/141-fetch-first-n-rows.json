@@ -1,0 +1,26 @@
+{
+  "id": "141",
+  "slug": "fetch-first-n-rows",
+  "title": "Top 5 Orders by Amount Using FETCH FIRST",
+  "difficulty": "easy",
+  "tags": ["SELECT", "FETCH FIRST", "ORDER BY", "sorting", "limiting"],
+  "description": "Write a query to return the **top 5 orders** by `amount` descending. Use the `FETCH FIRST n ROWS ONLY` syntax. Return `id`, `customer_id`, and `amount`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| amount | DECIMAL |\n| order_date | DATE |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL, order_date DATE); INSERT INTO orders VALUES (1, 1, 1500.00, '2026-09-01'), (2, 2, 250.00, '2026-09-02'), (3, 3, 875.00, '2026-09-03'), (4, 4, 3200.00, '2026-09-04'), (5, 5, 125.00, '2026-09-05'), (6, 6, 980.00, '2026-09-06'), (7, 7, 2100.00, '2026-09-07'), (8, 8, 450.00, '2026-09-08'), (9, 9, 760.00, '2026-09-09'), (10, 10, 1890.00, '2026-09-10');",
+  "solution_sql": "SELECT id, customer_id, amount FROM orders ORDER BY amount DESC FETCH FIRST 5 ROWS ONLY",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns top 5 orders by amount: 3200, 2100, 1890, 1500, 980",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "customer_id", "amount"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "`FETCH FIRST n ROWS ONLY` is ANSI SQL standard syntax, supported by Oracle, PostgreSQL, and DB2.",
+    "In MySQL and SQLite, the equivalent is `LIMIT n`. Both achieve the same result."
+  ],
+  "explanation": "`ORDER BY amount DESC FETCH FIRST 5 ROWS ONLY` sorts all orders largest-first, then keeps only the top 5: orders 4 (3200), 7 (2100), 10 (1890), 1 (1500), and 6 (980).",
+  "companies": ["Oracle", "IBM"],
+  "created_at": "2026-09-24"
+}

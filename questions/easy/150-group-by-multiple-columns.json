@@ -1,0 +1,26 @@
+{
+  "id": "150",
+  "slug": "group-by-multiple-columns",
+  "title": "Total Revenue by Department and Quarter",
+  "difficulty": "easy",
+  "tags": ["SELECT", "GROUP BY", "SUM", "aggregates"],
+  "description": "Write a query to find the **total revenue per department per quarter**. Return `department`, `quarter`, and `total_revenue`, ordered by `department` and `quarter`.\n\n**Table: sales**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| department | VARCHAR |\n| quarter | VARCHAR |\n| revenue | DECIMAL |",
+  "schema_sql": "CREATE TABLE sales (id INT, department VARCHAR, quarter VARCHAR, revenue DECIMAL); INSERT INTO sales VALUES (1, 'Electronics', 'Q1', 50000), (2, 'Clothing', 'Q1', 30000), (3, 'Electronics', 'Q2', 60000), (4, 'Clothing', 'Q2', 35000), (5, 'Electronics', 'Q1', 45000), (6, 'Clothing', 'Q2', 28000), (7, 'Furniture', 'Q1', 20000), (8, 'Furniture', 'Q2', 25000);",
+  "solution_sql": "SELECT department, quarter, SUM(revenue) AS total_revenue FROM sales GROUP BY department, quarter ORDER BY department, quarter",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 rows: one per department-quarter combination with summed revenue",
+      "expected_row_count": 6,
+      "expected_columns": ["department", "quarter", "total_revenue"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "When grouping by multiple columns, each unique **combination** forms its own group.",
+    "Electronics-Q1 has two rows (50000 + 45000 = 95000). Clothing-Q2 also has two rows (35000 + 28000 = 63000)."
+  ],
+  "explanation": "`GROUP BY department, quarter` creates 6 distinct groups (3 departments × 2 quarters). `SUM(revenue)` totals each group: Electronics-Q1=95k, Electronics-Q2=60k, Clothing-Q1=30k, Clothing-Q2=63k, Furniture-Q1=20k, Furniture-Q2=25k.",
+  "companies": ["Tableau", "Snowflake"],
+  "created_at": "2026-09-24"
+}

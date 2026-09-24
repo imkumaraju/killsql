@@ -1,0 +1,26 @@
+{
+  "id": "128",
+  "slug": "mixed-and-or-parentheses",
+  "title": "Mix AND and OR with Parentheses",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "AND", "OR", "filtering"],
+  "description": "Write a query to find orders that are either `'shipped'` or `'delivered'` **AND** have an `amount` greater than **100**. Use parentheses to group the OR conditions correctly. Return `id`, `customer_id`, `status`, and `amount`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| status | VARCHAR |\n| amount | DECIMAL |\n| country | VARCHAR |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, status VARCHAR, amount DECIMAL, country VARCHAR); INSERT INTO orders VALUES (1, 1, 'delivered', 250.00, 'USA'), (2, 2, 'shipped', 80.00, 'UK'), (3, 3, 'processing', 150.00, 'USA'), (4, 4, 'delivered', 320.00, 'Canada'), (5, 5, 'shipped', 120.00, 'USA'), (6, 6, 'cancelled', 200.00, 'UK'), (7, 7, 'delivered', 75.00, 'USA'), (8, 8, 'shipped', 450.00, 'Canada');",
+  "solution_sql": "SELECT id, customer_id, status, amount FROM orders WHERE (status = 'shipped' OR status = 'delivered') AND amount > 100",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 orders that are shipped/delivered and over $100",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "customer_id", "status", "amount"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Without parentheses, `AND` has higher precedence than `OR`. Always group `OR` conditions in parentheses to enforce the right logic.",
+    "Order 2 (shipped, $80) and Order 7 (delivered, $75) fail the amount condition; Order 3 (processing) and Order 6 (cancelled) fail the status condition."
+  ],
+  "explanation": "Parentheses force the `OR` to evaluate first: `(status = 'shipped' OR status = 'delivered')` picks 6 orders, then `AND amount > 100` narrows it to 4: orders 1, 4, 5, and 8.",
+  "companies": ["Amazon", "FedEx"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,48 @@
+{
+  "id": "284",
+  "slug": "fibonacci-sequence-cte",
+  "title": "Fibonacci Sequence via Recursive CTE",
+  "difficulty": "hard",
+  "tags": ["recursive CTE", "sequence generation", "BIGINT"],
+  "description": "Using **only a recursive CTE** (no procedural code), generate the first 20 numbers of the Fibonacci sequence. The sequence starts with F(1) = 0, F(2) = 1, F(3) = 1, F(4) = 2, …\n\nOutput columns: `position` (1-based index), `fibonacci_number`. Order by `position` ascending.\n\n*Note: No base table is required — pure SQL generation.*",
+  "schema_sql": "CREATE TABLE fib_params (max_terms INT); INSERT INTO fib_params VALUES (20);",
+  "solution_sql": "WITH RECURSIVE fib(n, fib_value, next_value) AS (SELECT 1, 0::BIGINT, 1::BIGINT UNION ALL SELECT n + 1, next_value, fib_value + next_value FROM fib WHERE n < 20) SELECT n AS position, fib_value AS fibonacci_number FROM fib ORDER BY n",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "First 20 Fibonacci numbers",
+      "expected_row_count": 20,
+      "expected_columns": ["position", "fibonacci_number"],
+      "expected_rows": [
+        { "position": 1, "fibonacci_number": 0 },
+        { "position": 2, "fibonacci_number": 1 },
+        { "position": 3, "fibonacci_number": 1 },
+        { "position": 4, "fibonacci_number": 2 },
+        { "position": 5, "fibonacci_number": 3 },
+        { "position": 6, "fibonacci_number": 5 },
+        { "position": 7, "fibonacci_number": 8 },
+        { "position": 8, "fibonacci_number": 13 },
+        { "position": 9, "fibonacci_number": 21 },
+        { "position": 10, "fibonacci_number": 34 },
+        { "position": 11, "fibonacci_number": 55 },
+        { "position": 12, "fibonacci_number": 89 },
+        { "position": 13, "fibonacci_number": 144 },
+        { "position": 14, "fibonacci_number": 233 },
+        { "position": 15, "fibonacci_number": 377 },
+        { "position": 16, "fibonacci_number": 610 },
+        { "position": 17, "fibonacci_number": 987 },
+        { "position": 18, "fibonacci_number": 1597 },
+        { "position": 19, "fibonacci_number": 2584 },
+        { "position": 20, "fibonacci_number": 4181 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "A single recursive CTE row needs to carry three columns: the current position (n), the current Fibonacci value (fib_value), and the next value (next_value). In the recursive step, swap: new fib_value = old next_value, new next_value = old fib_value + old next_value.",
+    "Use BIGINT for the Fibonacci values to avoid integer overflow. The termination condition is n < 20 in the WHERE clause of the recursive term."
+  ],
+  "explanation": "The recursive CTE anchors at position 1 with fib_value = 0 and next_value = 1. Each subsequent row shifts the pair forward: the new current value becomes the old next_value, and the new next_value is their sum. The WHERE n < 20 guard stops recursion after 20 iterations. Casting to BIGINT prevents overflow (the 20th Fibonacci number is 4,181, well within range, but for longer sequences BIGINT is essential). This pattern demonstrates that recursive CTEs can generate arbitrary mathematical sequences without any base tables.",
+  "companies": ["Google", "Jane Street", "Two Sigma"],
+  "created_at": "2026-09-24"
+}

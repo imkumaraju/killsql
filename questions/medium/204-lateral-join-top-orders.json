@@ -1,0 +1,26 @@
+{
+  "id": "204",
+  "slug": "lateral-join-top-orders",
+  "title": "Most Recent Order Per Customer Using LATERAL JOIN",
+  "difficulty": "medium",
+  "tags": ["LATERAL", "CROSS JOIN LATERAL", "correlated subquery", "LIMIT", "JOIN"],
+  "description": "For each customer retrieve only their single most recent order using a LATERAL (correlated) join.\n\n**Table: customers** — `id`, `name`\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `amount`\n\nOutput columns: `customer_name`, `order_date`, `amount`. Order by `customer_name`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR); INSERT INTO customers VALUES (1,'Alice'),(2,'Bob'),(3,'Carol'),(4,'Dave'),(5,'Eve'); CREATE TABLE orders (id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2026-01-05',250.00),(2,1,'2026-01-15',180.00),(3,1,'2026-02-01',320.00),(4,2,'2026-01-08',150.00),(5,2,'2026-01-20',200.00),(6,3,'2026-02-05',450.00),(7,4,'2026-01-12',90.00),(8,4,'2026-02-10',310.00),(9,5,'2026-03-01',175.00);",
+  "solution_sql": "SELECT c.name AS customer_name, recent.order_date, recent.amount FROM customers c CROSS JOIN LATERAL (SELECT order_date, amount FROM orders WHERE customer_id = c.id ORDER BY order_date DESC LIMIT 1) AS recent ORDER BY c.name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 customers each with at least one order; most recent order per customer — 5 rows",
+      "expected_row_count": 5,
+      "expected_columns": ["customer_name", "order_date", "amount"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The LATERAL subquery can reference the outer table (customers) and runs once per outer row — use LIMIT 1 to get only the top result.",
+    "CROSS JOIN LATERAL behaves like INNER JOIN when the lateral subquery always returns a row; use LEFT JOIN LATERAL if some customers may have no orders."
+  ],
+  "explanation": "The LATERAL subquery SELECT ... FROM orders WHERE customer_id = c.id ORDER BY order_date DESC LIMIT 1 runs once per customer row, fetching only their latest order. Alice's latest: 2026-02-01 (320.00). Bob's latest: 2026-01-20. Carol: 2026-02-05. Dave: 2026-02-10. Eve: 2026-03-01. Total: 5 rows. Without LATERAL this would require window functions or a correlated subquery in the WHERE clause.",
+  "companies": ["PostgreSQL", "DuckDB"],
+  "created_at": "2026-09-24"
+}

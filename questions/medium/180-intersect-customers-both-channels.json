@@ -1,0 +1,26 @@
+{
+  "id": "180",
+  "slug": "intersect-customers-both-channels",
+  "title": "Customers Who Bought Both Online and In-Store",
+  "difficulty": "medium",
+  "tags": ["INTERSECT", "SET operations", "SELECT"],
+  "description": "Find customers who have made purchases through **both** the online channel and the in-store channel using INTERSECT.\n\n**Table: online_purchases** — `customer_id`, `amount`\n\n**Table: instore_purchases** — `customer_id`, `amount`\n\nOutput column: `customer_id`. Order by `customer_id`.",
+  "schema_sql": "CREATE TABLE online_purchases (customer_id INT, amount DECIMAL(10,2)); INSERT INTO online_purchases VALUES (101,50.00),(102,120.00),(103,85.00),(104,200.00),(105,60.00); CREATE TABLE instore_purchases (customer_id INT, amount DECIMAL(10,2)); INSERT INTO instore_purchases VALUES (102,45.00),(103,300.00),(106,90.00),(107,150.00),(104,75.00);",
+  "solution_sql": "SELECT customer_id FROM online_purchases INTERSECT SELECT customer_id FROM instore_purchases ORDER BY customer_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Customers 102, 103, and 104 appear in both tables; 3 rows returned",
+      "expected_row_count": 3,
+      "expected_columns": ["customer_id"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "INTERSECT returns only rows that appear in BOTH queries — it automatically deduplicates the result.",
+    "Both SELECT statements must have the same number of columns with compatible data types."
+  ],
+  "explanation": "INTERSECT returns customer_ids present in both online_purchases and instore_purchases. Online customers: 101, 102, 103, 104, 105. In-store customers: 102, 103, 104, 106, 107. Intersection: 102, 103, 104 — 3 rows. Customers 101 and 105 only bought online; 106 and 107 only bought in-store.",
+  "companies": ["Walmart", "Target"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "211",
+  "slug": "abc-inventory-classification",
+  "title": "ABC Inventory Classification by Cumulative Revenue",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "SUM OVER", "CASE WHEN", "cumulative", "ABC analysis"],
+  "description": "Classify products into ABC tiers based on cumulative revenue contribution: **A** = top 80%, **B** = 80-95%, **C** = remaining.\n\n**Table: inventory_sales** — `product_id`, `product_name`, `total_revenue`\n\nOutput columns: `product_name`, `total_revenue`, `cumulative_pct`, `abc_class`. Order by `total_revenue` DESC.",
+  "schema_sql": "CREATE TABLE inventory_sales (product_id INT, product_name VARCHAR, total_revenue INT); INSERT INTO inventory_sales VALUES (1,'Widget Pro',42000),(2,'Widget Basic',35000),(3,'Gadget X',10000),(4,'Gadget Y',6000),(5,'Device Z',4000),(6,'Component A',1500),(7,'Part B',1000),(8,'Spare C',500);",
+  "solution_sql": "WITH ranked AS (SELECT product_id, product_name, total_revenue, ROUND(100.0 * SUM(total_revenue) OVER (ORDER BY total_revenue DESC) / SUM(total_revenue) OVER (), 2) AS cumulative_pct FROM inventory_sales) SELECT product_name, total_revenue, cumulative_pct, CASE WHEN cumulative_pct <= 80 THEN 'A' WHEN cumulative_pct <= 95 THEN 'B' ELSE 'C' END AS abc_class FROM ranked ORDER BY total_revenue DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 products; Widget Pro and Widget Basic are class A (cumul 42%, 77%); Gadget X and Gadget Y are class B (87%, 93%); remaining 4 are class C",
+      "expected_row_count": 8,
+      "expected_columns": ["product_name", "total_revenue", "cumulative_pct", "abc_class"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use SUM(total_revenue) OVER (ORDER BY total_revenue DESC) for the running total and divide by SUM(total_revenue) OVER () (the grand total) for the cumulative percentage.",
+    "Products where cumulative_pct <= 80 are class A; 80 < cumulative_pct <= 95 are class B; above 95 are class C."
+  ],
+  "explanation": "Total revenue = 100000. Cumulative: Widget Pro 42% (A), Widget Basic 77% (A), Gadget X 87% (B), Gadget Y 93% (B), Device Z 97% (C), Component A 98.5% (C), Part B 99.5% (C), Spare C 100% (C). The CASE statement assigns tiers based on cumulative percentage thresholds. This Pareto-based classification prioritises inventory attention.",
+  "companies": ["SAP", "Oracle"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "177",
+  "slug": "multiple-ctes-chained",
+  "title": "Chained CTEs for Layered Sales Analysis",
+  "difficulty": "medium",
+  "tags": ["CTE", "WITH", "GROUP BY", "RANK", "window functions"],
+  "description": "Use multiple chained CTEs to: (1) compute total revenue per customer, (2) rank customers by revenue, and (3) return only the top 5 customers with their rank.\n\n**Table: orders** — `id`, `customer_id`, `amount`\n\nOutput columns: `customer_id`, `total_revenue`, `revenue_rank`. Order by `revenue_rank`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,101,250.00),(2,102,180.00),(3,101,320.00),(4,103,450.00),(5,104,90.00),(6,102,210.00),(7,105,380.00),(8,103,120.00),(9,106,600.00),(10,107,75.00),(11,105,220.00),(12,108,50.00);",
+  "solution_sql": "WITH customer_totals AS (SELECT customer_id, SUM(amount) AS total_revenue FROM orders GROUP BY customer_id), ranked_customers AS (SELECT customer_id, total_revenue, RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank FROM customer_totals) SELECT customer_id, total_revenue, revenue_rank FROM ranked_customers WHERE revenue_rank <= 5 ORDER BY revenue_rank",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 customers; top 5 by total revenue are returned; no ties for rank 5",
+      "expected_row_count": 5,
+      "expected_columns": ["customer_id", "total_revenue", "revenue_rank"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Define cte1 to aggregate totals, then reference cte1 inside cte2 — CTEs in one WITH clause are separated by commas.",
+    "You cannot use a window function alias in a WHERE clause, so wrap it in another CTE or subquery to filter by rank."
+  ],
+  "explanation": "CTE 1 (customer_totals) groups orders by customer_id and sums amounts. Customer totals: 101=570, 102=390, 103=570, 104=90, 105=600, 106=600, 107=75, 108=50. CTE 2 (ranked_customers) applies RANK() OVER (ORDER BY total_revenue DESC) to those totals. The final SELECT filters WHERE revenue_rank <= 5 to return the top 5 customers.",
+  "companies": ["Salesforce", "HubSpot"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "147",
+  "slug": "distinct-single-column",
+  "title": "List All Unique Order Statuses",
+  "difficulty": "easy",
+  "tags": ["SELECT", "DISTINCT", "filtering"],
+  "description": "Write a query to return a list of all **unique order statuses** in use. Return a single column `status`, sorted alphabetically.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| product_id | INT |\n| status | VARCHAR |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, product_id INT, status VARCHAR); INSERT INTO orders VALUES (1, 1, 101, 'delivered'), (2, 2, 102, 'shipped'), (3, 3, 103, 'delivered'), (4, 4, 101, 'processing'), (5, 5, 104, 'cancelled'), (6, 6, 102, 'delivered'), (7, 7, 105, 'shipped'), (8, 8, 103, 'returned'), (9, 9, 101, 'processing');",
+  "solution_sql": "SELECT DISTINCT status FROM orders ORDER BY status",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 5 unique statuses: cancelled, delivered, processing, returned, shipped",
+      "expected_row_count": 5,
+      "expected_columns": ["status"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "`SELECT DISTINCT column` returns only unique values, removing duplicates from the result.",
+    "Although 9 orders exist, there are only 5 distinct status values — DISTINCT collapses the duplicates."
+  ],
+  "explanation": "`SELECT DISTINCT status` deduplicates the status column. Even though 'delivered' appears 3 times and others appear multiple times, only 5 distinct values are returned: cancelled, delivered, processing, returned, shipped.",
+  "companies": ["Amazon", "DoorDash"],
+  "created_at": "2026-09-24"
+}

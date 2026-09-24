@@ -1,0 +1,26 @@
+{
+  "id": "102",
+  "slug": "upper-and-lower",
+  "title": "UPPER and LOWER String Functions",
+  "difficulty": "easy",
+  "tags": ["SELECT", "UPPER", "LOWER", "string functions"],
+  "description": "Some employee names and emails are stored with inconsistent casing. Write a query that returns `id`, the employee's `name` converted to **UPPER** case as `name_upper`, and the `email` converted to **LOWER** case as `email_lower`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| email | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, email VARCHAR); INSERT INTO employees VALUES (1, 'Alice Johnson', 'ALICE@COMPANY.COM'), (2, 'Bob Smith', 'BOB@COMPANY.COM'), (3, 'carol davis', 'carol@company.com'), (4, 'DIANA PRINCE', 'DIANA@COMPANY.COM'), (5, 'evan brown', 'EVAN@COMPANY.COM');",
+  "solution_sql": "SELECT id, UPPER(name) AS name_upper, LOWER(email) AS email_lower FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 5 rows with name in upper case and email in lower case",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "name_upper", "email_lower"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`UPPER(column)` converts all characters to uppercase; `LOWER(column)` converts to lowercase.",
+    "Use the `AS` keyword to rename the result columns to `name_upper` and `email_lower`."
+  ],
+  "explanation": "`UPPER(name)` transforms the name to all capitals regardless of its original casing, while `LOWER(email)` normalizes emails to all lowercase — useful for consistent storage or comparison.",
+  "companies": ["Microsoft", "Salesforce"],
+  "created_at": "2026-09-24"
+}

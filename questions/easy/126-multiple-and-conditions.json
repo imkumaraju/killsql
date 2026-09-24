@@ -1,0 +1,26 @@
+{
+  "id": "126",
+  "slug": "multiple-and-conditions",
+  "title": "Filter with Multiple AND Conditions",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "AND", "filtering"],
+  "description": "Write a query to find employees who are in the **'Engineering'** department, earn **more than 80,000**, and have **more than 3 years of experience**. Return `id`, `name`, `department`, and `salary`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| department | VARCHAR |\n| salary | INT |\n| years_exp | INT |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT, years_exp INT); INSERT INTO employees VALUES (1, 'Alice', 'Engineering', 95000, 5), (2, 'Bob', 'Marketing', 75000, 7), (3, 'Carol', 'Engineering', 85000, 4), (4, 'Diana', 'Engineering', 70000, 2), (5, 'Evan', 'Sales', 65000, 3), (6, 'Frank', 'Engineering', 90000, 6), (7, 'Grace', 'Marketing', 80000, 5), (8, 'Henry', 'Engineering', 78000, 1);",
+  "solution_sql": "SELECT id, name, department, salary FROM employees WHERE department = 'Engineering' AND salary > 80000 AND years_exp > 3",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 3 engineers with salary > 80000 and years_exp > 3 (Alice, Carol, Frank)",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "name", "department", "salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Chain multiple conditions with `AND` — all conditions must be true for a row to be returned.",
+    "Diana is in Engineering but earns 70k (< 80k), and Henry has only 1 year of experience — both are excluded."
+  ],
+  "explanation": "Three conditions are combined with `AND`: department must be Engineering, salary must exceed 80k, and experience must be more than 3 years. Only Alice (95k, 5y), Carol (85k, 4y), and Frank (90k, 6y) pass all three.",
+  "companies": ["Google", "Apple"],
+  "created_at": "2026-09-24"
+}

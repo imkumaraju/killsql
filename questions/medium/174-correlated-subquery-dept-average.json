@@ -1,0 +1,26 @@
+{
+  "id": "174",
+  "slug": "correlated-subquery-dept-average",
+  "title": "Employees Earning Above Their Department Average",
+  "difficulty": "medium",
+  "tags": ["correlated subquery", "SELECT", "WHERE", "AVG", "subquery"],
+  "description": "Find all employees whose salary is strictly above the average salary of their own department.\n\n**Table: employees** — `id`, `name`, `department`, `salary`\n\nOutput columns: `name`, `department`, `salary`. Order by `department`, `salary` DESC.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',88000),(3,'Carol','Engineering',92000),(4,'Dave','Marketing',72000),(5,'Eve','Marketing',68000),(6,'Frank','Marketing',75000),(7,'Grace','HR',60000),(8,'Henry','HR',58000);",
+  "solution_sql": "SELECT name, department, salary FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees e2 WHERE e2.department = e.department) ORDER BY department, salary DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Engineering avg=91667: Alice(95k) and Carol(92k) qualify. Marketing avg=71667: Frank(75k) and Dave(72k) qualify. HR avg=59000: Grace(60k) qualifies. Total 5 rows.",
+      "expected_row_count": 5,
+      "expected_columns": ["name", "department", "salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The correlated subquery references the outer query's row (e.department) so it re-executes once for each outer row.",
+    "Use a table alias to distinguish the outer employees (e) from the inner employees (e2) in the subquery."
+  ],
+  "explanation": "For each outer row the subquery computes AVG(salary) WHERE department = e.department — that is, the average for that specific employee's department. Engineering avg = (95000+88000+92000)/3 ≈ 91667: Alice and Carol qualify. Marketing avg ≈ 71667: Frank and Dave qualify. HR avg = 59000: only Grace qualifies. Total: 5 employees.",
+  "companies": ["Google", "Twitter"],
+  "created_at": "2026-09-24"
+}

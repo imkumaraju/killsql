@@ -1,0 +1,26 @@
+{
+  "id": "233",
+  "slug": "days-until-next-event-lead",
+  "title": "Days Until Next Event Using LEAD",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "LEAD", "date arithmetic", "ORDER BY"],
+  "description": "For each scheduled event, show the event name, its date, the **next event's date** (using LEAD), and the **number of days until the next event**. The last event in the sequence should show NULL for both columns.",
+  "schema_sql": "CREATE TABLE events (event_id INT, event_name VARCHAR(100), event_date DATE, venue VARCHAR(100)); INSERT INTO events VALUES (1,'Q1 All-Hands','2026-01-15','Main Hall'),(2,'Product Launch','2026-02-03','Auditorium'),(3,'Board Meeting','2026-02-20','Conference Room A'),(4,'Q2 Planning','2026-03-10','Main Hall'),(5,'Tech Summit','2026-03-28','Convention Center'),(6,'Mid-Year Review','2026-06-15','Conference Room B'),(7,'Q3 All-Hands','2026-07-20','Main Hall'),(8,'Annual Gala','2026-11-05','Grand Ballroom');",
+  "solution_sql": "SELECT event_name, event_date, LEAD(event_date) OVER (ORDER BY event_date) AS next_event_date, LEAD(event_date) OVER (ORDER BY event_date) - event_date AS days_until_next FROM events ORDER BY event_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 events each with next_event_date and days_until_next. Annual Gala (last) shows NULL for both.",
+      "expected_row_count": 8,
+      "expected_columns": ["event_name", "event_date", "next_event_date", "days_until_next"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "LEAD(event_date) OVER (ORDER BY event_date) returns the event_date from the very next row in the ordered sequence — no partitioning needed here.",
+    "Subtracting two DATE values in PostgreSQL returns an integer number of days; the last event has no next row so LEAD returns NULL."
+  ],
+  "explanation": "LEAD() is the forward-looking complement to LAG() — it peeks at the next row's value. Without a PARTITION BY, it operates across all rows ordered by event_date globally. Subtracting dates in PostgreSQL yields days directly. Q1 All-Hands to Product Launch = 19 days. Annual Gala is last, so LEAD returns NULL for both next_event_date and days_until_next.",
+  "companies": ["Eventbrite", "Salesforce"],
+  "created_at": "2026-09-24"
+}

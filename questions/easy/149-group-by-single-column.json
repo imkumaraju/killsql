@@ -1,0 +1,26 @@
+{
+  "id": "149",
+  "slug": "group-by-single-column",
+  "title": "Count Orders by Status",
+  "difficulty": "easy",
+  "tags": ["SELECT", "GROUP BY", "COUNT", "aggregates"],
+  "description": "Write a query to count the **number of orders per status**. Return `status` and `order_count`, ordered by `order_count` descending.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| status | VARCHAR |\n| amount | DECIMAL |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, status VARCHAR, amount DECIMAL); INSERT INTO orders VALUES (1, 1, 'delivered', 150.00), (2, 2, 'shipped', 200.00), (3, 3, 'delivered', 75.00), (4, 4, 'cancelled', 300.00), (5, 5, 'delivered', 125.00), (6, 6, 'shipped', 220.00), (7, 7, 'processing', 95.00), (8, 8, 'delivered', 180.00), (9, 9, 'cancelled', 160.00);",
+  "solution_sql": "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY order_count DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 rows: delivered=4, shipped=2, cancelled=2, processing=1",
+      "expected_row_count": 4,
+      "expected_columns": ["status", "order_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`GROUP BY column` collapses all rows with the same value into a single group for aggregation.",
+    "`COUNT(*)` within each group counts how many orders share that status."
+  ],
+  "explanation": "`GROUP BY status` creates 4 groups: 'delivered' (4 orders), 'shipped' (2), 'cancelled' (2), 'processing' (1). `COUNT(*)` tallies each group, and `ORDER BY order_count DESC` shows the most common status first.",
+  "companies": ["Shopify", "Amazon"],
+  "created_at": "2026-09-24"
+}

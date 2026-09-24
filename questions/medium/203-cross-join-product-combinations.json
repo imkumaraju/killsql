@@ -1,0 +1,26 @@
+{
+  "id": "203",
+  "slug": "cross-join-product-combinations",
+  "title": "All Product Color and Size Combinations Using CROSS JOIN",
+  "difficulty": "medium",
+  "tags": ["CROSS JOIN", "Cartesian product", "SELECT"],
+  "description": "Generate every possible combination of product color and size to create a full product variant catalog.\n\n**Table: colors** — `color_name`\n\n**Table: sizes** — `size_name`\n\nOutput columns: `color_name`, `size_name`. Order by `color_name`, `size_name`.",
+  "schema_sql": "CREATE TABLE colors (color_name VARCHAR); INSERT INTO colors VALUES ('Red'),('Blue'),('Green'); CREATE TABLE sizes (size_name VARCHAR); INSERT INTO sizes VALUES ('Small'),('Medium'),('Large');",
+  "solution_sql": "SELECT c.color_name, s.size_name FROM colors c CROSS JOIN sizes s ORDER BY c.color_name, s.size_name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 colors × 3 sizes = 9 total combinations",
+      "expected_row_count": 9,
+      "expected_columns": ["color_name", "size_name"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "CROSS JOIN produces the Cartesian product — every row from the left table paired with every row from the right table.",
+    "No ON clause is needed for CROSS JOIN since every combination is intentional."
+  ],
+  "explanation": "CROSS JOIN creates every possible pairing of rows: Red-Small, Red-Medium, Red-Large, Blue-Small, Blue-Medium, Blue-Large, Green-Small, Green-Medium, Green-Large. With 3 colors and 3 sizes the result is 3 × 3 = 9 rows. This pattern is used for product variant generation, date–salesperson matrices, and combinatorial reports.",
+  "companies": ["Shopify", "Printful"],
+  "created_at": "2026-09-24"
+}

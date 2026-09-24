@@ -1,0 +1,26 @@
+{
+  "id": "163",
+  "slug": "dense-rank-leaderboard",
+  "title": "Game Leaderboard with Dense Rank",
+  "difficulty": "medium",
+  "tags": ["window functions", "DENSE_RANK", "PARTITION BY", "ORDER BY"],
+  "description": "Build a leaderboard for players ranked by score within each game. Use DENSE_RANK so tied players share a rank with no gaps before the next rank.\n\n**Table: game_scores** — `player_id`, `player_name`, `game`, `score`\n\nOutput columns: `player_name`, `game`, `score`, `dense_rank`. Order by `game`, `dense_rank`.",
+  "schema_sql": "CREATE TABLE game_scores (player_id INT, player_name VARCHAR, game VARCHAR, score INT); INSERT INTO game_scores VALUES (1,'Alice','Chess',1500),(2,'Bob','Chess',1500),(3,'Carol','Chess',1400),(4,'Dave','Chess',1300),(5,'Eve','Poker',900),(6,'Frank','Poker',850),(7,'Grace','Poker',850),(8,'Henry','Poker',800);",
+  "solution_sql": "SELECT player_name, game, score, DENSE_RANK() OVER (PARTITION BY game ORDER BY score DESC) AS dense_rank FROM game_scores ORDER BY game, dense_rank",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 rows: Chess ranks 1,1,2,3 (no gap after tie); Poker ranks 1,2,2,3",
+      "expected_row_count": 8,
+      "expected_columns": ["player_name", "game", "score", "dense_rank"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "DENSE_RANK() does not leave gaps after ties — after two players share rank 1, the next rank is 2 not 3.",
+    "PARTITION BY game creates a separate ranking for each game so ranks restart per game."
+  ],
+  "explanation": "DENSE_RANK() OVER (PARTITION BY game ORDER BY score DESC): In Chess, Alice and Bob both score 1500 → dense_rank=1, Carol 1400 → dense_rank=2, Dave 1300 → dense_rank=3. In Poker, Eve 900 → rank 1, Frank and Grace both 850 → rank 2, Henry 800 → rank 3. No gaps unlike RANK().",
+  "companies": ["Riot Games", "Zynga"],
+  "created_at": "2026-09-24"
+}

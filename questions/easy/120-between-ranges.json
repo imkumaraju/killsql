@@ -1,0 +1,26 @@
+{
+  "id": "120",
+  "slug": "between-ranges",
+  "title": "Filter Employees by Salary Range",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "BETWEEN", "filtering"],
+  "description": "Write a query to return all employees with a `salary` **between 60,000 and 90,000** (inclusive). Return `id`, `name`, and `salary`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| salary | INT |\n| department | VARCHAR |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, salary INT, department VARCHAR); INSERT INTO employees VALUES (1, 'Alice', 120000, 'Engineering'), (2, 'Bob', 75000, 'Marketing'), (3, 'Carol', 85000, 'Engineering'), (4, 'Diana', 60000, 'HR'), (5, 'Evan', 90000, 'Sales'), (6, 'Frank', 55000, 'Marketing'), (7, 'Grace', 105000, 'Engineering');",
+  "solution_sql": "SELECT id, name, salary FROM employees WHERE salary BETWEEN 60000 AND 90000",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 employees with salary between 60000 and 90000 inclusive",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "name", "salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`BETWEEN low AND high` is inclusive on both ends — equivalent to `salary >= 60000 AND salary <= 90000`.",
+    "Alice (120k), Frank (55k), and Grace (105k) fall outside the range and are excluded."
+  ],
+  "explanation": "`BETWEEN 60000 AND 90000` selects Bob (75k), Carol (85k), Diana (60k), and Evan (90k). The boundary values 60,000 and 90,000 are included.",
+  "companies": ["LinkedIn", "Indeed"],
+  "created_at": "2026-09-24"
+}

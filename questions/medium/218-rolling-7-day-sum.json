@@ -1,0 +1,26 @@
+{
+  "id": "218",
+  "slug": "rolling-7-day-sum",
+  "title": "Rolling 7-Day Revenue Sum",
+  "difficulty": "medium",
+  "tags": ["window functions", "SUM OVER", "ROWS BETWEEN", "rolling window", "date"],
+  "description": "Calculate the rolling 7-day total revenue for each day (current day plus the 6 preceding days).\n\n**Table: daily_revenue** — `revenue_date`, `amount`\n\nOutput columns: `revenue_date`, `amount`, `rolling_7d_sum`. Order by `revenue_date`.",
+  "schema_sql": "CREATE TABLE daily_revenue (revenue_date DATE, amount INT); INSERT INTO daily_revenue VALUES ('2026-01-01',1100),('2026-01-02',950),('2026-01-03',1300),('2026-01-04',800),('2026-01-05',1500),('2026-01-06',1200),('2026-01-07',900),('2026-01-08',1400),('2026-01-09',1100),('2026-01-10',1600),('2026-01-11',1250),('2026-01-12',1800),('2026-01-13',950),('2026-01-14',1350);",
+  "solution_sql": "SELECT revenue_date, amount, SUM(amount) OVER (ORDER BY revenue_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS rolling_7d_sum FROM daily_revenue ORDER BY revenue_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "14 days; first 6 rows have partial windows (fewer than 7 days); from day 7 onward the window is exactly 7 days",
+      "expected_row_count": 14,
+      "expected_columns": ["revenue_date", "amount", "rolling_7d_sum"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "ROWS BETWEEN 6 PRECEDING AND CURRENT ROW creates a sliding window that includes the current row and up to 6 rows before it.",
+    "Days 1-6 will have rolling sums over fewer than 7 days; the first full 7-day window appears at day 7."
+  ],
+  "explanation": "ROWS BETWEEN 6 PRECEDING AND CURRENT ROW slides a window of up to 7 rows. Day 1: sum of just day 1 = 1100. Day 7: sum of days 1-7 = 7750. Day 8: sum of days 2-8 (days 1-7 drops off) = 8150. This 7-day rolling sum is a standard technique for smoothing weekly seasonality in time-series data.",
+  "companies": ["Tableau", "Grafana"],
+  "created_at": "2026-09-24"
+}

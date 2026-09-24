@@ -1,0 +1,40 @@
+{
+  "id": "285",
+  "slug": "sliding-30day-revenue-window",
+  "title": "Sliding 30-Day Revenue Window per Customer",
+  "difficulty": "hard",
+  "tags": ["window functions", "RANGE BETWEEN", "interval arithmetic", "partitioning"],
+  "description": "An `orders` table holds customer purchases by date. For each order, compute the **rolling 30-day sum of that customer's order amounts** — including the current order and all prior orders within the past 30 days — using a window function with a `RANGE BETWEEN INTERVAL` frame.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| order_id | INT |\n| customer_id | INT |\n| order_date | DATE |\n| amount | NUMERIC(10,2) |\n\nOutput columns: `order_id`, `customer_id`, `order_date`, `amount`, `rolling_30day_sum`. Order by `customer_id`, `order_date`.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE, amount NUMERIC(10,2)); INSERT INTO orders VALUES (1,1,'2024-01-01',100.00),(2,1,'2024-01-10',200.00),(3,1,'2024-01-25',150.00),(4,1,'2024-02-05',300.00),(5,1,'2024-02-15',250.00),(6,2,'2024-01-05',80.00),(7,2,'2024-01-20',120.00),(8,2,'2024-02-10',90.00),(9,2,'2024-02-28',200.00),(10,1,'2024-03-05',175.00),(11,2,'2024-03-01',150.00),(12,1,'2024-01-15',50.00);",
+  "solution_sql": "SELECT order_id, customer_id, order_date, amount, SUM(amount) OVER (PARTITION BY customer_id ORDER BY order_date RANGE BETWEEN INTERVAL '30 days' PRECEDING AND CURRENT ROW) AS rolling_30day_sum FROM orders ORDER BY customer_id, order_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Rolling 30-day sums per customer ordered chronologically",
+      "expected_row_count": 12,
+      "expected_columns": ["order_id", "customer_id", "order_date", "amount", "rolling_30day_sum"],
+      "expected_rows": [
+        { "order_id": 1, "customer_id": 1, "order_date": "2024-01-01", "amount": 100.00, "rolling_30day_sum": 100.00 },
+        { "order_id": 2, "customer_id": 1, "order_date": "2024-01-10", "amount": 200.00, "rolling_30day_sum": 300.00 },
+        { "order_id": 12, "customer_id": 1, "order_date": "2024-01-15", "amount": 50.00, "rolling_30day_sum": 350.00 },
+        { "order_id": 3, "customer_id": 1, "order_date": "2024-01-25", "amount": 150.00, "rolling_30day_sum": 500.00 },
+        { "order_id": 4, "customer_id": 1, "order_date": "2024-02-05", "amount": 300.00, "rolling_30day_sum": 700.00 },
+        { "order_id": 5, "customer_id": 1, "order_date": "2024-02-15", "amount": 250.00, "rolling_30day_sum": 700.00 },
+        { "order_id": 10, "customer_id": 1, "order_date": "2024-03-05", "amount": 175.00, "rolling_30day_sum": 725.00 },
+        { "order_id": 6, "customer_id": 2, "order_date": "2024-01-05", "amount": 80.00, "rolling_30day_sum": 80.00 },
+        { "order_id": 7, "customer_id": 2, "order_date": "2024-01-20", "amount": 120.00, "rolling_30day_sum": 200.00 },
+        { "order_id": 8, "customer_id": 2, "order_date": "2024-02-10", "amount": 90.00, "rolling_30day_sum": 210.00 },
+        { "order_id": 9, "customer_id": 2, "order_date": "2024-02-28", "amount": 200.00, "rolling_30day_sum": 290.00 },
+        { "order_id": 11, "customer_id": 2, "order_date": "2024-03-01", "amount": 150.00, "rolling_30day_sum": 440.00 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use PARTITION BY customer_id so each customer's window is independent. The RANGE BETWEEN INTERVAL '30 days' PRECEDING AND CURRENT ROW frame requires the ORDER BY column to be a DATE or TIMESTAMP type — this is different from the ROWS frame which counts physical rows.",
+    "RANGE-based frames include ALL rows whose ORDER BY value falls within the specified interval, not just the N nearest rows. For example, at 2024-02-05 the window covers all orders from 2024-01-06 onward for that customer."
+  ],
+  "explanation": "Unlike ROWS BETWEEN N PRECEDING, the RANGE BETWEEN INTERVAL frame is value-based: for each row, it includes all rows in the partition where the ORDER BY column is within the specified distance. This means that multiple orders on the same date are all included together. For customer 1 at 2024-02-15, the 30-day lookback window starts at 2024-01-16, including orders on Jan 25 (150), Feb 5 (300), and Feb 15 (250) = 700. At 2024-03-05, Jan 15 and Jan 25 fall outside the 30-day window, leaving only Feb 5 (300), Feb 15 (250), and Mar 5 (175) = 725. This technique is heavily used in e-commerce rolling KPIs and financial risk dashboards.",
+  "companies": ["Stripe", "Shopify", "Amazon"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "215",
+  "slug": "mode-most-frequent-value",
+  "title": "Find the Most Frequently Occurring Rating (Mode)",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "COUNT", "RANK", "CTE", "mode", "ORDER BY"],
+  "description": "Find the most frequently occurring product rating (the mode). If multiple ratings tie for most frequent, return all of them.\n\n**Table: product_ratings** — `id`, `product_id`, `rating`\n\nOutput columns: `rating`, `frequency`. Order by `rating`.",
+  "schema_sql": "CREATE TABLE product_ratings (id INT, product_id INT, rating INT); INSERT INTO product_ratings VALUES (1,1,4),(2,2,5),(3,3,4),(4,4,3),(5,5,4),(6,6,5),(7,7,4),(8,8,2),(9,9,4),(10,10,3),(11,11,5),(12,12,4);",
+  "solution_sql": "WITH rating_counts AS (SELECT rating, COUNT(*) AS frequency FROM product_ratings GROUP BY rating), ranked AS (SELECT rating, frequency, RANK() OVER (ORDER BY frequency DESC) AS rnk FROM rating_counts) SELECT rating, frequency FROM ranked WHERE rnk = 1 ORDER BY rating",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "12 ratings: rating 4 appears 6 times (most frequent); rating 5 appears 3 times; rating 3 appears 2 times; rating 2 appears once. Mode = rating 4. 1 row.",
+      "expected_row_count": 1,
+      "expected_columns": ["rating", "frequency"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "First GROUP BY rating to count occurrences, then use RANK() OVER (ORDER BY frequency DESC) to find the top frequency.",
+    "Using RANK() instead of LIMIT 1 ensures all tied modes are returned if multiple ratings share the highest count."
+  ],
+  "explanation": "rating_counts CTE groups by rating: rating 2→1, rating 3→2, rating 4→6, rating 5→3. ranked CTE assigns RANK() by frequency DESC: rating 4 gets rank 1 (frequency=6). No other rating matches 6, so only 1 row is returned. If two ratings both had 6 occurrences, both would be returned by WHERE rnk = 1.",
+  "companies": ["Amazon", "Yelp"],
+  "created_at": "2026-09-24"
+}

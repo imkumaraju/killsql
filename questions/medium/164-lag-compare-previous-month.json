@@ -1,0 +1,26 @@
+{
+  "id": "164",
+  "slug": "lag-compare-previous-month",
+  "title": "Month-over-Month Revenue Change Using LAG",
+  "difficulty": "medium",
+  "tags": ["window functions", "LAG", "ORDER BY", "arithmetic"],
+  "description": "Calculate the revenue change compared to the previous month for each month in the dataset.\n\n**Table: monthly_revenue** — `month`, `revenue`\n\nOutput columns: `month`, `revenue`, `prev_revenue`, `change`. Order by `month`.",
+  "schema_sql": "CREATE TABLE monthly_revenue (month VARCHAR, revenue INT); INSERT INTO monthly_revenue VALUES ('2026-01',50000),('2026-02',55000),('2026-03',48000),('2026-04',62000),('2026-05',70000),('2026-06',65000),('2026-07',72000),('2026-08',80000);",
+  "solution_sql": "SELECT month, revenue, LAG(revenue) OVER (ORDER BY month) AS prev_revenue, revenue - LAG(revenue) OVER (ORDER BY month) AS change FROM monthly_revenue ORDER BY month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 months; first row has NULL prev_revenue; 7 rows show a meaningful change value",
+      "expected_row_count": 8,
+      "expected_columns": ["month", "revenue", "prev_revenue", "change"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "LAG(revenue) OVER (ORDER BY month) returns the revenue value from the preceding row in the ordered window.",
+    "The first row will have NULL for prev_revenue and change since there is no prior period."
+  ],
+  "explanation": "LAG(col) looks at the previous row value. For Jan: prev_revenue=NULL, change=NULL. For Feb: prev_revenue=50000, change=+5000. For Mar: prev_revenue=55000, change=-7000. This pattern enables period-over-period comparisons without a self-join.",
+  "companies": ["Stripe", "Square"],
+  "created_at": "2026-09-24"
+}

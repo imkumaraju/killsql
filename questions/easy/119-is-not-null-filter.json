@@ -1,0 +1,26 @@
+{
+  "id": "119",
+  "slug": "is-not-null-filter",
+  "title": "Find Products with a Description",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "IS NOT NULL", "NULL handling"],
+  "description": "Write a query to return only products that have a **non-NULL description**. Return `id`, `name`, `description`, and `price`.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| description | VARCHAR |\n| price | DECIMAL |",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, description VARCHAR, price DECIMAL); INSERT INTO products VALUES (1, 'Laptop', 'High performance laptop', 999.99), (2, 'Phone', NULL, 699.99), (3, 'Tablet', 'Portable touch screen device', 449.99), (4, 'Watch', NULL, 299.99), (5, 'Earbuds', 'True wireless earbuds', 149.99), (6, 'Charger', 'Fast charging adapter', 29.99), (7, 'Cable', NULL, 9.99);",
+  "solution_sql": "SELECT id, name, description, price FROM products WHERE description IS NOT NULL",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 products that have a description (Laptop, Tablet, Earbuds, Charger)",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "name", "description", "price"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use `IS NOT NULL` to keep rows where the column has a real value, filtering out NULLs.",
+    "Three products (Phone, Watch, Cable) have a NULL description and will be excluded."
+  ],
+  "explanation": "`WHERE description IS NOT NULL` keeps only the 4 products that have a description filled in. The 3 products with NULL descriptions (Phone, Watch, Cable) are excluded.",
+  "companies": ["Shopify", "Etsy"],
+  "created_at": "2026-09-24"
+}

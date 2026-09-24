@@ -1,0 +1,26 @@
+{
+  "id": "103",
+  "slug": "trim-whitespace",
+  "title": "Trim Leading and Trailing Whitespace",
+  "difficulty": "easy",
+  "tags": ["SELECT", "TRIM", "LTRIM", "RTRIM", "string functions"],
+  "description": "Some customer usernames were entered with extra spaces on one or both sides. Write a query that returns `id` and the **trimmed** username as `clean_username`.\n\n**Table: customers**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| username | VARCHAR |\n\nReturn all 5 rows.",
+  "schema_sql": "CREATE TABLE customers (id INT, username VARCHAR); INSERT INTO customers VALUES (1, '  alice  '), (2, 'bob  '), (3, '  carol'), (4, 'diana'), (5, '  evan  ');",
+  "solution_sql": "SELECT id, TRIM(username) AS clean_username FROM customers",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 5 rows with whitespace removed from both sides of the username",
+      "expected_row_count": 5,
+      "expected_columns": ["id", "clean_username"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`TRIM(column)` removes both leading and trailing spaces. Use `LTRIM` for left only, `RTRIM` for right only.",
+    "The result alias `clean_username` is added with `AS clean_username`."
+  ],
+  "explanation": "`TRIM(username)` strips any whitespace characters from the beginning and end of the string. `LTRIM` and `RTRIM` are useful when you only need one side cleaned.",
+  "companies": ["Stripe", "Twilio"],
+  "created_at": "2026-09-24"
+}

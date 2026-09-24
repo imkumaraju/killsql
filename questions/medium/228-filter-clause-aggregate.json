@@ -1,0 +1,26 @@
+{
+  "id": "228",
+  "slug": "filter-clause-aggregate",
+  "title": "FILTER Clause with Aggregate Functions",
+  "difficulty": "medium",
+  "tags": ["SELECT", "FILTER", "GROUP BY", "COUNT", "SUM", "conditional aggregation"],
+  "description": "For each customer, compute the **count and total amount** of orders in each status category ('completed', 'pending', 'cancelled') — all in a single row — using the SQL `FILTER` clause attached to aggregate functions.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, status VARCHAR(20), amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'completed',200.00),(2,1,'completed',150.00),(3,1,'pending',300.00),(4,2,'completed',500.00),(5,2,'cancelled',100.00),(6,2,'pending',250.00),(7,3,'cancelled',80.00),(8,3,'cancelled',120.00),(9,3,'completed',400.00),(10,4,'pending',175.00),(11,4,'completed',225.00),(12,4,'completed',325.00);",
+  "solution_sql": "SELECT customer_id, COUNT(*) FILTER (WHERE status = 'completed') AS completed_count, SUM(amount) FILTER (WHERE status = 'completed') AS completed_total, COUNT(*) FILTER (WHERE status = 'pending') AS pending_count, COUNT(*) FILTER (WHERE status = 'cancelled') AS cancelled_count FROM orders GROUP BY customer_id ORDER BY customer_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 customers each with per-status counts and completed totals in a single pivoted row",
+      "expected_row_count": 4,
+      "expected_columns": ["customer_id", "completed_count", "completed_total", "pending_count", "cancelled_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Attach FILTER (WHERE status = 'completed') directly after the aggregate function: COUNT(*) FILTER (WHERE status = 'completed') counts only completed rows per group.",
+    "This is functionally equivalent to COUNT(CASE WHEN status='completed' THEN 1 END) but is more readable and expressive."
+  ],
+  "explanation": "The FILTER clause (SQL:2003, supported in PostgreSQL and SQLite) restricts which rows are included in an aggregate without affecting other aggregates in the same GROUP BY. Customer 1: completed=2 (total=350), pending=1, cancelled=0. Customer 2: completed=1 (total=500), pending=1, cancelled=1. Each customer's row contains all status breakdowns simultaneously.",
+  "companies": ["Stripe", "PayPal"],
+  "created_at": "2026-09-24"
+}

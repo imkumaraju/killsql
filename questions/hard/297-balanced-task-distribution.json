@@ -1,0 +1,31 @@
+{
+  "id": "297",
+  "slug": "balanced-task-distribution",
+  "title": "Balanced Task Distribution with NTILE",
+  "difficulty": "hard",
+  "tags": ["NTILE", "window functions", "CTE", "STRING_AGG", "GROUP BY", "partitioning"],
+  "description": "A `tasks` table lists work items with priority and estimated hours. A `workers` table has 3 available workers. **Distribute all 12 tasks across 3 workers as evenly as possible** using `NTILE(3)`, ordered by priority (1 = highest) then task_id. Report each worker's assigned task count, total estimated hours, and a comma-separated list of their task names.\n\n**Tables: tasks, workers**\n\n| Column | Type |\n|--------|------|\n| task_id | INT |\n| task_name | VARCHAR |\n| priority | INT |\n| estimated_hours | NUMERIC(5,2) |\n\n| Column | Type |\n|--------|------|\n| worker_id | INT |\n| worker_name | VARCHAR |\n\nOutput columns: `worker_name`, `task_count`, `total_hours`, `assigned_tasks`. Order by `worker_id`.",
+  "schema_sql": "CREATE TABLE tasks (task_id INT, task_name VARCHAR, priority INT, estimated_hours NUMERIC(5,2)); INSERT INTO tasks VALUES (1,'Task Alpha',1,8.0),(2,'Task Beta',2,4.0),(3,'Task Gamma',1,6.0),(4,'Task Delta',3,2.0),(5,'Task Epsilon',2,5.0),(6,'Task Zeta',1,7.0),(7,'Task Eta',3,3.0),(8,'Task Theta',2,4.5),(9,'Task Iota',1,9.0),(10,'Task Kappa',3,1.5),(11,'Task Lambda',2,6.5),(12,'Task Mu',3,2.5); CREATE TABLE workers (worker_id INT, worker_name VARCHAR); INSERT INTO workers VALUES (1,'Alice'),(2,'Bob'),(3,'Carol');",
+  "solution_sql": "WITH task_assignments AS (SELECT task_id, task_name, priority, estimated_hours, NTILE(3) OVER (ORDER BY priority, task_id) AS worker_id FROM tasks) SELECT w.worker_name, COUNT(ta.task_id) AS task_count, SUM(ta.estimated_hours) AS total_hours, STRING_AGG(ta.task_name, ', ' ORDER BY ta.priority, ta.task_id) AS assigned_tasks FROM task_assignments ta JOIN workers w ON w.worker_id = ta.worker_id GROUP BY w.worker_id, w.worker_name ORDER BY w.worker_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Tasks distributed evenly across 3 workers by priority",
+      "expected_row_count": 3,
+      "expected_columns": ["worker_name", "task_count", "total_hours", "assigned_tasks"],
+      "expected_rows": [
+        { "worker_name": "Alice", "task_count": 4, "total_hours": 30.0, "assigned_tasks": "Task Alpha, Task Gamma, Task Zeta, Task Iota" },
+        { "worker_name": "Bob", "task_count": 4, "total_hours": 20.0, "assigned_tasks": "Task Beta, Task Epsilon, Task Theta, Task Lambda" },
+        { "worker_name": "Carol", "task_count": 4, "total_hours": 9.0, "assigned_tasks": "Task Delta, Task Eta, Task Kappa, Task Mu" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "NTILE(3) OVER (ORDER BY priority, task_id) divides the sorted task list into 3 roughly equal buckets and assigns each row a bucket number (1, 2, or 3). With 12 tasks and 3 workers, each gets exactly 4 tasks.",
+    "After assigning worker_id via NTILE, JOIN to the workers table and GROUP BY worker_id + worker_name to aggregate task_count, total_hours, and STRING_AGG for the task list. Note that NTILE sorts by priority first, so Alice gets all priority-1 tasks (highest urgency), Bob gets all priority-2 tasks, and Carol gets all priority-3 tasks."
+  ],
+  "explanation": "NTILE(N) divides the result set into N ranked buckets as evenly as possible, assigning each row a bucket number 1 through N. When ordered by priority ASC then task_id ASC, Alice's bucket (1) contains all four priority-1 tasks (8+6+7+9=30 hours), Bob's bucket (2) has all four priority-2 tasks (4+5+4.5+6.5=20 hours), and Carol's bucket (3) gets all four priority-3 tasks (2+3+1.5+2.5=9 hours). This illustrates both the power and limitation of NTILE: row-count balance is guaranteed, but workload balance (by hours) is not — Alice carries 3.3× Carol's hours. For hour-balanced assignment, a greedy or min-heap approach is needed. STRING_AGG with ORDER BY produces a deterministic comma-separated task list.",
+  "companies": ["Google", "Palantir", "Two Sigma"],
+  "created_at": "2026-09-24"
+}

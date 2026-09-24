@@ -1,0 +1,26 @@
+{
+  "id": "117",
+  "slug": "nullif-division-by-zero",
+  "title": "Avoid Division by Zero with NULLIF",
+  "difficulty": "easy",
+  "tags": ["SELECT", "NULLIF", "NULL handling", "arithmetic"],
+  "description": "Write a query to calculate the **average revenue per unit sold** (`total_revenue / units_sold`) for each product. Use `NULLIF` to avoid a division-by-zero error when `units_sold` is 0. Return `id`, `product_name`, and `avg_revenue_per_unit`.\n\n**Table: sales**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| product_name | VARCHAR |\n| total_revenue | DECIMAL |\n| units_sold | INT |",
+  "schema_sql": "CREATE TABLE sales (id INT, product_name VARCHAR, total_revenue DECIMAL, units_sold INT); INSERT INTO sales VALUES (1, 'Laptop', 50000.00, 50), (2, 'Phone', 30000.00, 0), (3, 'Tablet', 15000.00, 30), (4, 'Watch', 0.00, 0), (5, 'Earbuds', 8000.00, 80), (6, 'Charger', 2000.00, 200);",
+  "solution_sql": "SELECT id, product_name, total_revenue / NULLIF(units_sold, 0) AS avg_revenue_per_unit FROM sales",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 rows; Phone and Watch return NULL for avg_revenue_per_unit instead of an error",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "product_name", "avg_revenue_per_unit"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`NULLIF(a, b)` returns NULL when `a = b`, otherwise returns `a`. Use it as the denominator to prevent division-by-zero errors.",
+    "Dividing any number by NULL in SQL returns NULL (not an error), which is a safe outcome."
+  ],
+  "explanation": "`NULLIF(units_sold, 0)` converts 0 to NULL before the division. Since `x / NULL = NULL`, rows with zero units safely return NULL instead of raising a divide-by-zero error.",
+  "companies": ["Snowflake", "Databricks"],
+  "created_at": "2026-09-24"
+}

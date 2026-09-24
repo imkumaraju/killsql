@@ -1,0 +1,26 @@
+{
+  "id": "232",
+  "slug": "detect-price-changes-lag",
+  "title": "Detect Price Changes Using LAG",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "LAG", "PARTITION BY", "CASE", "price tracking"],
+  "description": "For each product price record, show the **previous price** (using LAG), the **change amount**, and whether the price **Increased**, **Decreased**, **Unchanged**, or is the **First Entry** (no prior record).",
+  "schema_sql": "CREATE TABLE product_prices (price_id INT, product_id INT, product_name VARCHAR(100), price DECIMAL(10,2), effective_date DATE); INSERT INTO product_prices VALUES (1,1,'Laptop',999.99,'2026-01-01'),(2,1,'Laptop',1049.99,'2026-02-01'),(3,1,'Laptop',999.99,'2026-03-01'),(4,2,'Phone',699.99,'2026-01-01'),(5,2,'Phone',649.99,'2026-02-01'),(6,2,'Phone',699.99,'2026-03-01'),(7,3,'Tablet',499.99,'2026-01-01'),(8,3,'Tablet',499.99,'2026-02-01'),(9,3,'Tablet',529.99,'2026-03-01');",
+  "solution_sql": "SELECT product_name, effective_date, price, LAG(price) OVER (PARTITION BY product_id ORDER BY effective_date) AS prev_price, price - LAG(price) OVER (PARTITION BY product_id ORDER BY effective_date) AS price_change, CASE WHEN LAG(price) OVER (PARTITION BY product_id ORDER BY effective_date) IS NULL THEN 'First Entry' WHEN price > LAG(price) OVER (PARTITION BY product_id ORDER BY effective_date) THEN 'Increased' WHEN price < LAG(price) OVER (PARTITION BY product_id ORDER BY effective_date) THEN 'Decreased' ELSE 'Unchanged' END AS change_direction FROM product_prices ORDER BY product_name, effective_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "9 price records showing previous price and change direction. Each product's first entry has NULL prev_price.",
+      "expected_row_count": 9,
+      "expected_columns": ["product_name", "effective_date", "price", "prev_price", "price_change", "change_direction"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "LAG(price) OVER (PARTITION BY product_id ORDER BY effective_date) fetches the price from the immediately preceding row within the same product.",
+    "The first record per product has no preceding row, so LAG returns NULL — check for NULL first in the CASE expression and label it 'First Entry'."
+  ],
+  "explanation": "LAG() accesses the previous row's value within a partition ordered by date. Partitioning by product_id ensures comparisons stay within the same product. Laptop: 999.99→1049.99(+50=Increased), 1049.99→999.99(-50=Decreased). Phone: 699.99→649.99(Decreased), 649.99→699.99(Increased). Tablet: 499.99→499.99(Unchanged), 499.99→529.99(Increased). The first entry per product always yields NULL from LAG.",
+  "companies": ["Amazon", "Walmart"],
+  "created_at": "2026-09-24"
+}

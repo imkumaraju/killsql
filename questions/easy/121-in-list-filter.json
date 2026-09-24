@@ -1,0 +1,26 @@
+{
+  "id": "121",
+  "slug": "in-list-filter",
+  "title": "Filter Products by Category Using IN",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "IN", "filtering"],
+  "description": "Write a query to return all products that belong to the **'Electronics'** or **'Furniture'** category. Return `id`, `name`, and `category`.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| category | VARCHAR |\n| price | DECIMAL |",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL); INSERT INTO products VALUES (1, 'Laptop', 'Electronics', 999.99), (2, 'T-Shirt', 'Clothing', 29.99), (3, 'Smartphone', 'Electronics', 699.99), (4, 'Chair', 'Furniture', 249.99), (5, 'Headphones', 'Electronics', 199.99), (6, 'Desk', 'Furniture', 399.99), (7, 'Jeans', 'Clothing', 59.99), (8, 'Tablet', 'Electronics', 449.99);",
+  "solution_sql": "SELECT id, name, category FROM products WHERE category IN ('Electronics', 'Furniture')",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 6 products in Electronics or Furniture categories",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "name", "category"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`IN ('val1', 'val2', ...)` checks whether a column's value matches any item in the list — a concise alternative to multiple `OR` conditions.",
+    "Clothing products (T-Shirt and Jeans) are not in the list and will be excluded."
+  ],
+  "explanation": "`WHERE category IN ('Electronics', 'Furniture')` returns 6 products: 4 Electronics (Laptop, Smartphone, Headphones, Tablet) and 2 Furniture items (Chair, Desk).",
+  "companies": ["Amazon", "Walmart"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "220",
+  "slug": "pivot-monthly-revenue-jan-dec",
+  "title": "Pivot Monthly Revenue into Jan–Dec Columns",
+  "difficulty": "medium",
+  "tags": ["PIVOT", "CASE WHEN", "GROUP BY", "SUM", "conditional aggregation"],
+  "description": "Pivot a row-per-month revenue table into a wide format with one column per calendar month (Jan through Dec).\n\n**Table: monthly_sales** — `year`, `month_num`, `revenue`\n\nOutput columns: `year`, `Jan`, `Feb`, `Mar`, `Apr`, `May`, `Jun`, `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`. Order by `year`.",
+  "schema_sql": "CREATE TABLE monthly_sales (year INT, month_num INT, revenue INT); INSERT INTO monthly_sales VALUES (2025,1,75000),(2025,2,82000),(2025,3,78000),(2025,4,90000),(2025,5,98000),(2025,6,95000),(2025,7,105000),(2025,8,115000),(2025,9,110000),(2025,10,120000),(2025,11,135000),(2025,12,148000),(2026,1,80000),(2026,2,88000),(2026,3,82000),(2026,4,95000),(2026,5,110000),(2026,6,105000),(2026,7,118000),(2026,8,130000),(2026,9,122000),(2026,10,140000),(2026,11,155000),(2026,12,170000);",
+  "solution_sql": "SELECT year, SUM(CASE WHEN month_num = 1 THEN revenue ELSE 0 END) AS Jan, SUM(CASE WHEN month_num = 2 THEN revenue ELSE 0 END) AS Feb, SUM(CASE WHEN month_num = 3 THEN revenue ELSE 0 END) AS Mar, SUM(CASE WHEN month_num = 4 THEN revenue ELSE 0 END) AS Apr, SUM(CASE WHEN month_num = 5 THEN revenue ELSE 0 END) AS May, SUM(CASE WHEN month_num = 6 THEN revenue ELSE 0 END) AS Jun, SUM(CASE WHEN month_num = 7 THEN revenue ELSE 0 END) AS Jul, SUM(CASE WHEN month_num = 8 THEN revenue ELSE 0 END) AS Aug, SUM(CASE WHEN month_num = 9 THEN revenue ELSE 0 END) AS Sep, SUM(CASE WHEN month_num = 10 THEN revenue ELSE 0 END) AS Oct, SUM(CASE WHEN month_num = 11 THEN revenue ELSE 0 END) AS Nov, SUM(CASE WHEN month_num = 12 THEN revenue ELSE 0 END) AS Dec FROM monthly_sales GROUP BY year ORDER BY year",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "24 monthly rows (12 per year × 2 years) pivoted into 2 wide rows, one per year",
+      "expected_row_count": 2,
+      "expected_columns": ["year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Write one SUM(CASE WHEN month_num = N THEN revenue ELSE 0 END) expression for each of the 12 months.",
+    "GROUP BY year collapses all 12 monthly rows per year into a single wide row; ELSE 0 avoids NULL in the output."
+  ],
+  "explanation": "This is the standard conditional aggregation pivot pattern applied across all 12 months. For each column the CASE expression acts as a filter — only the matching month's revenue is summed; all other months contribute 0. GROUP BY year collapses 12 rows into 1 row per year. 2025 row: Jan=75000, …, Dec=148000. 2026 row: Jan=80000, …, Dec=170000. Total: 2 output rows.",
+  "companies": ["Tableau", "Power BI"],
+  "created_at": "2026-09-24"
+}

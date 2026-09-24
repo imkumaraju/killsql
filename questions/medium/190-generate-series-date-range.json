@@ -1,0 +1,26 @@
+{
+  "id": "190",
+  "slug": "generate-series-date-range",
+  "title": "Fill Date Gaps Using GENERATE_SERIES",
+  "difficulty": "medium",
+  "tags": ["GENERATE_SERIES", "LEFT JOIN", "date functions", "gaps", "COALESCE"],
+  "description": "Generate every day in the week 2026-01-01 through 2026-01-07 and show total sales for each day (0 if there were no sales that day).\n\n**Table: daily_sales** — `sale_date`, `amount`\n\nOutput columns: `day_date`, `total_sales`. Order by `day_date`.",
+  "schema_sql": "CREATE TABLE daily_sales (sale_date DATE, amount INT); INSERT INTO daily_sales VALUES ('2026-01-01',1200),('2026-01-02',850),('2026-01-04',1500),('2026-01-05',920),('2026-01-07',1100);",
+  "solution_sql": "SELECT t.day_date, COALESCE(SUM(s.amount), 0) AS total_sales FROM generate_series(DATE '2026-01-01', DATE '2026-01-07', INTERVAL '1 day') AS t(day_date) LEFT JOIN daily_sales s ON s.sale_date = t.day_date GROUP BY t.day_date ORDER BY t.day_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "7 days generated; Jan 3 and Jan 6 have no sales so total_sales=0 for those days",
+      "expected_row_count": 7,
+      "expected_columns": ["day_date", "total_sales"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "generate_series(start, stop, step) creates a virtual table of dates — LEFT JOIN it with your data table to fill gaps.",
+    "Wrap the sum in COALESCE(..., 0) so that days with no matching sales rows show 0 instead of NULL."
+  ],
+  "explanation": "generate_series produces all 7 dates. LEFT JOIN daily_sales keeps all 7 rows even when there is no matching sale. Jan 1, 2, 4, 5, 7 have sales; Jan 3 and Jan 6 get NULL from the LEFT JOIN which COALESCE converts to 0. GROUP BY day_date collapses any multi-row days (none here) and SUM aggregates them.",
+  "companies": ["Redshift", "BigQuery"],
+  "created_at": "2026-09-24"
+}

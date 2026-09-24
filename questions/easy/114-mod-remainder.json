@@ -1,0 +1,26 @@
+{
+  "id": "114",
+  "slug": "mod-remainder",
+  "title": "Find Products with Quantity Divisible by 3",
+  "difficulty": "easy",
+  "tags": ["SELECT", "MOD", "WHERE", "math functions"],
+  "description": "Write a query to find products whose `quantity` is **evenly divisible by 3** (no remainder). Return `id`, `name`, and `quantity`.\n\n**Table: products**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| quantity | INT |",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, quantity INT); INSERT INTO products VALUES (1, 'Laptop', 15), (2, 'Phone', 22), (3, 'Tablet', 9), (4, 'Watch', 14), (5, 'Earbuds', 30), (6, 'Charger', 7), (7, 'Cable', 18);",
+  "solution_sql": "SELECT id, name, quantity FROM products WHERE MOD(quantity, 3) = 0",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 products with quantity divisible by 3 (15, 9, 30, 18)",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "name", "quantity"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`MOD(x, y)` returns the remainder after dividing x by y. If the remainder is 0, x is divisible by y.",
+    "You can also write `quantity % 3 = 0` in many SQL dialects as an alternative."
+  ],
+  "explanation": "`MOD(quantity, 3) = 0` returns rows where the remainder of `quantity ÷ 3` is zero. The qualifying products are Laptop (15), Tablet (9), Earbuds (30), and Cable (18).",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-24"
+}

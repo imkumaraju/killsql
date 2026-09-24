@@ -1,0 +1,26 @@
+{
+  "id": "162",
+  "slug": "rank-with-ties-sales",
+  "title": "Rank Sales Representatives with Ties",
+  "difficulty": "medium",
+  "tags": ["window functions", "RANK", "ORDER BY", "ties"],
+  "description": "Rank all sales representatives by their total sales amount. When two reps have the same sales they share the same rank, with a gap after the tie.\n\n**Table: sales_reps** — `id`, `name`, `total_sales`\n\nOutput columns: `name`, `total_sales`, `sales_rank`. Order by `sales_rank`.",
+  "schema_sql": "CREATE TABLE sales_reps (id INT, name VARCHAR, total_sales INT); INSERT INTO sales_reps VALUES (1,'Alice',85000),(2,'Bob',92000),(3,'Carol',85000),(4,'Dave',78000),(5,'Eve',92000),(6,'Frank',65000),(7,'Grace',78000);",
+  "solution_sql": "SELECT name, total_sales, RANK() OVER (ORDER BY total_sales DESC) AS sales_rank FROM sales_reps ORDER BY sales_rank",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "7 reps with ties: 2 at 92000 (rank 1), 2 at 85000 (rank 3), 2 at 78000 (rank 5), 1 at 65000 (rank 7)",
+      "expected_row_count": 7,
+      "expected_columns": ["name", "total_sales", "sales_rank"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "RANK() assigns the same rank to equal values but leaves gaps — if two people share rank 1, the next rank is 3.",
+    "Use ORDER BY total_sales DESC inside the window so the highest earner gets rank 1."
+  ],
+  "explanation": "RANK() OVER (ORDER BY total_sales DESC) assigns equal ranks to ties but skips subsequent ranks. Bob and Eve both have 92000 → rank 1. Alice and Carol both have 85000 → rank 3 (rank 2 is skipped). Dave and Grace have 78000 → rank 5. Frank has 65000 → rank 7. This gap behaviour distinguishes RANK() from DENSE_RANK().",
+  "companies": ["Salesforce", "Oracle"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "108",
+  "slug": "extract-year",
+  "title": "Extract Year from Hire Date",
+  "difficulty": "easy",
+  "tags": ["SELECT", "EXTRACT", "date functions"],
+  "description": "Write a query to find all employees hired in the year **2020**. Return `id`, `name`, and `hire_date`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| hire_date | DATE |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, hire_date DATE); INSERT INTO employees VALUES (1, 'Alice', '2020-03-15'), (2, 'Bob', '2019-07-22'), (3, 'Carol', '2021-01-10'), (4, 'Diana', '2020-11-05'), (5, 'Evan', '2018-06-30'), (6, 'Frank', '2022-09-14');",
+  "solution_sql": "SELECT id, name, hire_date FROM employees WHERE EXTRACT(YEAR FROM hire_date) = 2020",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 2 employees hired in 2020 (Alice and Diana)",
+      "expected_row_count": 2,
+      "expected_columns": ["id", "name", "hire_date"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`EXTRACT(YEAR FROM date_column)` returns the year part as an integer you can compare with `=`.",
+    "You can also use `YEAR(hire_date)` in MySQL or `DATE_PART('year', hire_date)` in PostgreSQL."
+  ],
+  "explanation": "`EXTRACT(YEAR FROM hire_date) = 2020` pulls the year from each date and keeps only rows where it equals 2020, returning Alice (hired March 2020) and Diana (hired November 2020).",
+  "companies": ["LinkedIn", "Workday"],
+  "created_at": "2026-09-24"
+}

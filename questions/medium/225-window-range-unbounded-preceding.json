@@ -1,0 +1,26 @@
+{
+  "id": "225",
+  "slug": "window-range-unbounded-preceding",
+  "title": "Running Maximum with RANGE BETWEEN UNBOUNDED PRECEDING",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "MAX OVER", "RANGE BETWEEN", "UNBOUNDED PRECEDING", "PARTITION BY"],
+  "description": "For each stock price record, compute the **all-time high price** from the very first recorded date up to and including the current date for each ticker. Use `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` explicitly.",
+  "schema_sql": "CREATE TABLE stock_prices (ticker VARCHAR(10), price_date DATE, price DECIMAL(10,2)); INSERT INTO stock_prices VALUES ('AAPL','2026-01-02',185.00),('AAPL','2026-01-03',182.00),('AAPL','2026-01-04',190.00),('AAPL','2026-01-05',188.00),('AAPL','2026-01-06',195.00),('GOOG','2026-01-02',140.00),('GOOG','2026-01-03',145.00),('GOOG','2026-01-04',142.00),('GOOG','2026-01-05',148.00),('GOOG','2026-01-06',146.00);",
+  "solution_sql": "SELECT ticker, price_date, price, MAX(price) OVER (PARTITION BY ticker ORDER BY price_date RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_max FROM stock_prices ORDER BY ticker, price_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 rows showing running max per ticker. AAPL: 185,185,190,190,195. GOOG: 140,145,145,148,148.",
+      "expected_row_count": 10,
+      "expected_columns": ["ticker", "price_date", "price", "running_max"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "PARTITION BY ticker separates the window for each stock, ORDER BY price_date establishes chronological order within each partition.",
+    "RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW covers all rows from the start of the partition through the current price_date value — this is the default for ordered windows, but being explicit clarifies intent."
+  ],
+  "explanation": "RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW includes every row from partition start up through rows sharing the current ORDER BY value. MAX() over this range produces the running historical high. For AAPL: Jan 2=185 (new high), Jan 3=182 (still 185), Jan 4=190 (new high), Jan 5=188 (still 190), Jan 6=195 (new high). This pattern is useful for tracking all-time highs, peak values, and cumulative maximums.",
+  "companies": ["Bloomberg", "Goldman Sachs"],
+  "created_at": "2026-09-24"
+}

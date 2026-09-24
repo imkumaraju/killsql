@@ -1,0 +1,26 @@
+{
+  "id": "189",
+  "slug": "date-interval-arithmetic",
+  "title": "Subscription Expiry and Days Remaining",
+  "difficulty": "medium",
+  "tags": ["date arithmetic", "INTERVAL", "CURRENT_DATE", "date functions"],
+  "description": "For each subscription calculate the expiry date (start date + 30 days) and how many days remain until expiry as of `2026-09-24`.\n\n**Table: subscriptions** — `id`, `customer_id`, `plan`, `start_date`\n\nOutput columns: `customer_id`, `plan`, `start_date`, `expiry_date`, `days_remaining`. Order by `expiry_date`.",
+  "schema_sql": "CREATE TABLE subscriptions (id INT, customer_id INT, plan VARCHAR, start_date DATE); INSERT INTO subscriptions VALUES (1,101,'Basic','2026-09-10'),(2,102,'Pro','2026-09-05'),(3,103,'Basic','2026-09-15'),(4,104,'Enterprise','2026-09-01'),(5,105,'Pro','2026-09-18'),(6,106,'Basic','2026-09-20'),(7,107,'Enterprise','2026-09-12'),(8,108,'Pro','2026-09-22');",
+  "solution_sql": "SELECT customer_id, plan, start_date, start_date + INTERVAL '30 days' AS expiry_date, (start_date + INTERVAL '30 days') - DATE '2026-09-24' AS days_remaining FROM subscriptions ORDER BY expiry_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 subscriptions each with a computed expiry_date and days_remaining (may be negative for expired ones)",
+      "expected_row_count": 8,
+      "expected_columns": ["customer_id", "plan", "start_date", "expiry_date", "days_remaining"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Add INTERVAL '30 days' to a DATE column to get the expiry date.",
+    "Subtract two DATE values to get the number of days between them; negative results mean the subscription has already expired."
+  ],
+  "explanation": "start_date + INTERVAL '30 days' shifts each date forward by 30 days. Subtracting a reference date (2026-09-24) from expiry_date gives days remaining. Customer 104 started 2026-09-01 → expires 2026-10-01 → 7 days remaining. Customer 101 started 2026-09-10 → expires 2026-10-10 → 16 days remaining. Negative values indicate expired subscriptions.",
+  "companies": ["Stripe", "Chargebee"],
+  "created_at": "2026-09-24"
+}

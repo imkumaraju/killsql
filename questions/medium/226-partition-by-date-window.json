@@ -1,0 +1,26 @@
+{
+  "id": "226",
+  "slug": "partition-by-date-window",
+  "title": "Monthly Session Counts with Date-Based Partition",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "COUNT OVER", "PARTITION BY", "DATE_TRUNC", "ROWS BETWEEN"],
+  "description": "For each user session, show the session details alongside two window metrics: the **total number of sessions in that calendar month** (across all users), and the **user's cumulative session count** up to and including that session.",
+  "schema_sql": "CREATE TABLE sessions (session_id INT, user_id INT, session_start TIMESTAMP, duration_mins INT); INSERT INTO sessions VALUES (1,101,'2026-01-05 10:00:00',30),(2,102,'2026-01-10 14:00:00',45),(3,101,'2026-01-15 09:00:00',20),(4,103,'2026-01-20 16:00:00',60),(5,101,'2026-02-03 11:00:00',35),(6,102,'2026-02-08 13:00:00',25),(7,104,'2026-02-12 15:00:00',50),(8,103,'2026-02-20 10:00:00',40),(9,101,'2026-03-01 09:00:00',45),(10,102,'2026-03-10 14:00:00',30);",
+  "solution_sql": "SELECT session_id, user_id, DATE_TRUNC('month', session_start) AS session_month, duration_mins, COUNT(*) OVER (PARTITION BY DATE_TRUNC('month', session_start)) AS monthly_session_count, COUNT(*) OVER (PARTITION BY user_id ORDER BY session_start ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS user_cumulative_sessions FROM sessions ORDER BY session_start",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 sessions: Jan=4, Feb=4, Mar=2 monthly counts; each user shows running session tally",
+      "expected_row_count": 10,
+      "expected_columns": ["session_id", "user_id", "session_month", "duration_mins", "monthly_session_count", "user_cumulative_sessions"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use DATE_TRUNC('month', session_start) as the partition key to bucket all sessions in the same calendar month — without ORDER BY, COUNT(*) sums the full partition.",
+    "For cumulative user sessions, add ORDER BY session_start with ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW inside a separate PARTITION BY user_id window."
+  ],
+  "explanation": "Two independent window functions run on the same rows. The first partitions by month (no ORDER BY), so COUNT(*) returns the total sessions for that month on every row in the month — Jan=4, Feb=4, Mar=2. The second partitions by user_id with ORDER BY, giving a running count: user 101 shows 1,2,3,4 as their sessions progress chronologically.",
+  "companies": ["Spotify", "Netflix"],
+  "created_at": "2026-09-24"
+}

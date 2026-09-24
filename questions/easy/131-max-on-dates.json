@@ -1,0 +1,26 @@
+{
+  "id": "131",
+  "slug": "max-on-dates",
+  "title": "Most Recent Hire Date per Department",
+  "difficulty": "easy",
+  "tags": ["SELECT", "MAX", "GROUP BY", "date functions", "aggregates"],
+  "description": "Write a query to find the **most recent hire date** in each department. Return `department` and `latest_hire`.\n\n**Table: employees**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| department | VARCHAR |\n| hire_date | DATE |",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, hire_date DATE); INSERT INTO employees VALUES (1, 'Alice', 'Engineering', '2018-03-15'), (2, 'Bob', 'Marketing', '2020-07-22'), (3, 'Carol', 'Engineering', '2019-01-10'), (4, 'Diana', 'HR', '2021-11-05'), (5, 'Evan', 'Sales', '2017-06-30'), (6, 'Frank', 'Engineering', '2022-09-14');",
+  "solution_sql": "SELECT department, MAX(hire_date) AS latest_hire FROM employees GROUP BY department",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 4 rows with the most recent hire date per department",
+      "expected_row_count": 4,
+      "expected_columns": ["department", "latest_hire"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "`MAX()` works on DATE columns as well as numbers — it returns the chronologically latest date.",
+    "There are 4 departments (Engineering, Marketing, HR, Sales), so the result has 4 rows."
+  ],
+  "explanation": "`MAX(hire_date)` with `GROUP BY department` finds the most recent hire in each department. For Engineering, that is Frank (2022-09-14); for HR, Diana (2021-11-05); Marketing: Bob; Sales: Evan.",
+  "companies": ["Workday", "LinkedIn"],
+  "created_at": "2026-09-24"
+}

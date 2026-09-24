@@ -1,0 +1,26 @@
+{
+  "id": "152",
+  "slug": "having-count-greater-than-n",
+  "title": "Products Ordered by More Than 2 Customers",
+  "difficulty": "easy",
+  "tags": ["SELECT", "HAVING", "COUNT", "DISTINCT", "GROUP BY", "aggregates"],
+  "description": "Write a query to find products that have been ordered by **more than 2 distinct customers**. Return `product_id` and `unique_customers`.\n\n**Table: orders**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| customer_id | INT |\n| product_id | INT |\n| quantity | INT |",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, product_id INT, quantity INT); INSERT INTO orders VALUES (1, 1, 101, 2), (2, 2, 101, 1), (3, 3, 102, 3), (4, 1, 103, 1), (5, 4, 101, 2), (6, 2, 103, 1), (7, 5, 102, 1), (8, 3, 104, 2), (9, 1, 102, 1);",
+  "solution_sql": "SELECT product_id, COUNT(DISTINCT customer_id) AS unique_customers FROM orders GROUP BY product_id HAVING COUNT(DISTINCT customer_id) > 2",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Returns 2 products: 101 (3 customers) and 102 (3 customers)",
+      "expected_row_count": 2,
+      "expected_columns": ["product_id", "unique_customers"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Combine `COUNT(DISTINCT customer_id)` with `HAVING` to filter groups by distinct-customer threshold.",
+    "Product 103 has 2 distinct customers (1, 2) and product 104 has 1 — both are excluded by `> 2`."
+  ],
+  "explanation": "`COUNT(DISTINCT customer_id)` per product: product 101 = customers 1,2,4 (3 ✓); product 102 = customers 3,5,1 (3 ✓); product 103 = customers 1,2 (2 ✗); product 104 = customer 3 (1 ✗). `HAVING > 2` keeps only 101 and 102.",
+  "companies": ["Amazon", "Walmart"],
+  "created_at": "2026-09-24"
+}

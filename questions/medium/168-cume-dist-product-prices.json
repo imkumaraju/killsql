@@ -1,0 +1,26 @@
+{
+  "id": "168",
+  "slug": "cume-dist-product-prices",
+  "title": "Cumulative Distribution of Product Prices",
+  "difficulty": "medium",
+  "tags": ["window functions", "CUME_DIST", "ORDER BY"],
+  "description": "For each product calculate the cumulative distribution of its price — the fraction of products priced at or below this product's price.\n\n**Table: products** — `id`, `name`, `price`\n\nOutput columns: `name`, `price`, `cume_dist`. Order by `price`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, price DECIMAL(10,2)); INSERT INTO products VALUES (1,'Widget A',9.99),(2,'Gadget B',24.99),(3,'Doohickey C',14.99),(4,'Thingamajig D',49.99),(5,'Gizmo E',24.99),(6,'Contraption F',99.99),(7,'Device G',39.99),(8,'Apparatus H',14.99),(9,'Mechanism I',74.99),(10,'Component J',9.99);",
+  "solution_sql": "SELECT name, price, ROUND(CUME_DIST() OVER (ORDER BY price), 2) AS cume_dist FROM products ORDER BY price",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 products with some ties; most expensive product has cume_dist=1.0",
+      "expected_row_count": 10,
+      "expected_columns": ["name", "price", "cume_dist"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "CUME_DIST() = count of rows with value <= current value / total rows; it always ranges from > 0 to 1.0.",
+    "Unlike PERCENT_RANK(), CUME_DIST() never returns 0 — the minimum value still counts itself in the numerator."
+  ],
+  "explanation": "CUME_DIST() computes the proportion of rows with a value <= the current row's value. With 10 products: 2 at 9.99 → 2/10=0.20; 2 at 14.99 → 4/10=0.40; 2 at 24.99 → 6/10=0.60; 1 at 39.99 → 7/10=0.70; 1 at 49.99 → 8/10=0.80; 1 at 74.99 → 0.90; 1 at 99.99 → 1.00.",
+  "companies": ["Shopify", "eBay"],
+  "created_at": "2026-09-24"
+}
