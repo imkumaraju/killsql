@@ -1,0 +1,26 @@
+{
+  "id": "261",
+  "slug": "remove-duplicates-keep-recent",
+  "title": "Remove Duplicates Keeping the Most Recent Record",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "ROW_NUMBER", "PARTITION BY", "deduplication", "subquery"],
+  "description": "The user_events table has duplicate (user_id, event_type) combinations. Keep only the **most recent event** for each (user_id, event_type) pair — deduplicate by retaining the row with the latest event_date.",
+  "schema_sql": "CREATE TABLE user_events (event_id INT, user_id INT, event_type VARCHAR(50), event_date DATE); INSERT INTO user_events VALUES (1,1,'login','2026-01-05'),(2,1,'login','2026-01-10'),(3,1,'login','2026-02-15'),(4,2,'login','2026-01-08'),(5,2,'login','2026-01-20'),(6,1,'purchase','2026-01-12'),(7,1,'purchase','2026-02-20'),(8,2,'purchase','2026-01-15'),(9,3,'login','2026-01-25'),(10,3,'purchase','2026-02-10');",
+  "solution_sql": "SELECT user_id, event_type, event_date FROM (SELECT user_id, event_type, event_date, ROW_NUMBER() OVER (PARTITION BY user_id, event_type ORDER BY event_date DESC) AS rn FROM user_events) ranked WHERE rn = 1 ORDER BY user_id, event_type",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "6 unique (user, event_type) pairs after deduplication. User 1 login→Feb 15, User 1 purchase→Feb 20, User 2 login→Jan 20, User 2 purchase→Jan 15, User 3 login→Jan 25, User 3 purchase→Feb 10.",
+      "expected_row_count": 6,
+      "expected_columns": ["user_id", "event_type", "event_date"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use ROW_NUMBER() OVER (PARTITION BY user_id, event_type ORDER BY event_date DESC) to number rows within each (user, event_type) group — the latest event gets rn=1.",
+    "Wrap in a subquery and filter WHERE rn = 1 to keep only the most recent event per (user_id, event_type) combination."
+  ],
+  "explanation": "ROW_NUMBER() partitioned by (user_id, event_type) and ordered by event_date DESC assigns rn=1 to the most recent row within each group. Filtering WHERE rn = 1 retains only the latest record. User 1 has 3 login events — only Feb 15 (most recent) survives. User 2 has 2 login events — Jan 20 survives. Six distinct (user, event_type) pairs remain after deduplication.",
+  "companies": ["Google", "Meta"],
+  "created_at": "2026-09-24"
+}

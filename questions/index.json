@@ -3948,6 +3948,536 @@
     ]
   },
   {
+    "id": "245",
+    "slug": "phone-format-validation",
+    "title": "Phone Number Format Validation with SIMILAR TO",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "SIMILAR TO",
+      "LIKE",
+      "string validation",
+      "pattern matching",
+      "data quality"
+    ],
+    "companies": [
+      "Salesforce",
+      "HubSpot"
+    ]
+  },
+  {
+    "id": "246",
+    "slug": "longest-gap-between-orders",
+    "title": "Longest Gap Between Consecutive Orders per Customer",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "LAG",
+      "PARTITION BY",
+      "MAX",
+      "date arithmetic",
+      "CTE"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "247",
+    "slug": "days-since-last-order",
+    "title": "Days Since Last Order per Customer",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "MAX",
+      "date arithmetic",
+      "CURRENT_DATE",
+      "recency"
+    ],
+    "companies": [
+      "Klaviyo",
+      "Braze"
+    ]
+  },
+  {
+    "id": "248",
+    "slug": "new-vs-returning-customers",
+    "title": "New vs Returning Customers per Month",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "GROUP BY",
+      "COUNT DISTINCT",
+      "DATE_TRUNC",
+      "CASE",
+      "cohort",
+      "MIN"
+    ],
+    "companies": [
+      "Amplitude",
+      "Mixpanel"
+    ]
+  },
+  {
+    "id": "249",
+    "slug": "repeat-purchase-rate",
+    "title": "Repeat Purchase Rate Calculation",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "subquery",
+      "COUNT",
+      "CASE",
+      "percentage",
+      "retention",
+      "repeat buyers"
+    ],
+    "companies": [
+      "Shopify",
+      "Klaviyo"
+    ]
+  },
+  {
+    "id": "250",
+    "slug": "purchase-frequency-distribution",
+    "title": "Customer Purchase Frequency Distribution",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "COUNT",
+      "subquery",
+      "histogram",
+      "distribution",
+      "frequency"
+    ],
+    "companies": [
+      "Amplitude",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "251",
+    "slug": "rfm-analysis",
+    "title": "RFM Analysis — Recency, Frequency, Monetary Buckets",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "window functions",
+      "NTILE",
+      "GROUP BY",
+      "CONCAT",
+      "date arithmetic",
+      "marketing analytics"
+    ],
+    "companies": [
+      "Klaviyo",
+      "Salesforce Marketing Cloud"
+    ]
+  },
+  {
+    "id": "252",
+    "slug": "product-co-purchase-analysis",
+    "title": "Product Co-Purchase Analysis",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "self join",
+      "GROUP BY",
+      "HAVING",
+      "COUNT",
+      "market basket analysis"
+    ],
+    "companies": [
+      "Amazon",
+      "Netflix"
+    ]
+  },
+  {
+    "id": "253",
+    "slug": "sales-velocity",
+    "title": "Sales Velocity — Units Sold per Day per Product",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "SUM",
+      "MIN",
+      "MAX",
+      "date arithmetic",
+      "NULLIF",
+      "velocity metrics"
+    ],
+    "companies": [
+      "Walmart",
+      "Target"
+    ]
+  },
+  {
+    "id": "254",
+    "slug": "inventory-days-remaining",
+    "title": "Inventory Days Remaining Calculation",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "JOIN",
+      "ROUND",
+      "NULLIF",
+      "division",
+      "inventory management"
+    ],
+    "companies": [
+      "Amazon",
+      "Target"
+    ]
+  },
+  {
+    "id": "255",
+    "slug": "supplier-lead-time-analysis",
+    "title": "Supplier Lead Time Analysis",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "AVG",
+      "MAX",
+      "MIN",
+      "COUNT",
+      "date arithmetic",
+      "supply chain"
+    ],
+    "companies": [
+      "SAP",
+      "Oracle"
+    ]
+  },
+  {
+    "id": "256",
+    "slug": "avg-order-value-by-channel",
+    "title": "Average Order Value by Acquisition Channel",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "AVG",
+      "COUNT",
+      "SUM",
+      "ROUND",
+      "channel analysis",
+      "marketing"
+    ],
+    "companies": [
+      "Google Ads",
+      "HubSpot"
+    ]
+  },
+  {
+    "id": "257",
+    "slug": "revenue-per-employee-department",
+    "title": "Revenue per Employee by Department",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "JOIN",
+      "GROUP BY",
+      "SUM",
+      "COUNT DISTINCT",
+      "ROUND",
+      "multi-table join",
+      "HR analytics"
+    ],
+    "companies": [
+      "Salesforce",
+      "SAP"
+    ]
+  },
+  {
+    "id": "258",
+    "slug": "budget-vs-actual",
+    "title": "Budget vs Actual Spend Comparison",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "JOIN",
+      "COALESCE",
+      "ROUND",
+      "variance",
+      "financial analysis",
+      "multi-table join"
+    ],
+    "companies": [
+      "SAP",
+      "Oracle",
+      "Anaplan"
+    ]
+  },
+  {
+    "id": "259",
+    "slug": "composite-key-join",
+    "title": "Join on Multiple Columns (Composite Key)",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "JOIN",
+      "composite key",
+      "multi-column join",
+      "data reconciliation"
+    ],
+    "companies": [
+      "Amazon",
+      "FedEx"
+    ]
+  },
+  {
+    "id": "260",
+    "slug": "finding-duplicate-records",
+    "title": "Finding Duplicate Records Across Columns",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "GROUP BY",
+      "HAVING",
+      "COUNT",
+      "duplicates",
+      "data quality"
+    ],
+    "companies": [
+      "Salesforce",
+      "HubSpot"
+    ]
+  },
+  {
+    "id": "261",
+    "slug": "remove-duplicates-keep-recent",
+    "title": "Remove Duplicates Keeping the Most Recent Record",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "ROW_NUMBER",
+      "PARTITION BY",
+      "deduplication",
+      "subquery"
+    ],
+    "companies": [
+      "Google",
+      "Meta"
+    ]
+  },
+  {
+    "id": "262",
+    "slug": "full-outer-join-comparison",
+    "title": "Comparing Two Datasets with FULL OUTER JOIN",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "FULL OUTER JOIN",
+      "COALESCE",
+      "data comparison",
+      "period-over-period"
+    ],
+    "companies": [
+      "Microsoft",
+      "Tableau"
+    ]
+  },
+  {
+    "id": "263",
+    "slug": "anomaly-detection-zscore",
+    "title": "Detecting Anomalies Using Z-Score Approach",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "JOIN",
+      "AVG",
+      "STDDEV",
+      "z-score",
+      "anomaly detection",
+      "NULLIF"
+    ],
+    "companies": [
+      "Stripe",
+      "Visa"
+    ]
+  },
+  {
+    "id": "264",
+    "slug": "rolling-30-day-customer-count",
+    "title": "Rolling 30-Day Distinct Customer Count",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "self join",
+      "GROUP BY",
+      "COUNT DISTINCT",
+      "date arithmetic",
+      "rolling window",
+      "DAU/MAU"
+    ],
+    "companies": [
+      "Amplitude",
+      "Mixpanel"
+    ]
+  },
+  {
+    "id": "265",
+    "slug": "month-end-date-calculation",
+    "title": "Month-End Date Calculation",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "DATE_TRUNC",
+      "INTERVAL",
+      "date arithmetic",
+      "date functions",
+      "billing"
+    ],
+    "companies": [
+      "Stripe",
+      "Recurly"
+    ]
+  },
+  {
+    "id": "266",
+    "slug": "fiscal-year-quarters",
+    "title": "Assign Sales to Fiscal Year Quarters",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CASE",
+      "EXTRACT",
+      "GROUP BY",
+      "SUM",
+      "COUNT",
+      "fiscal year",
+      "date classification"
+    ],
+    "companies": [
+      "Workday",
+      "Oracle"
+    ]
+  },
+  {
+    "id": "267",
+    "slug": "business-day-calculation",
+    "title": "Count Business Days Between Two Dates",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "generate_series",
+      "EXTRACT",
+      "ISODOW",
+      "LATERAL",
+      "COUNT",
+      "date functions",
+      "business days"
+    ],
+    "companies": [
+      "Jira",
+      "Monday.com"
+    ]
+  },
+  {
+    "id": "268",
+    "slug": "age-from-birthdate",
+    "title": "Calculate Age in Years from Birthdate",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "AGE",
+      "EXTRACT",
+      "CASE",
+      "GROUP BY",
+      "COUNT",
+      "date functions",
+      "demographics"
+    ],
+    "companies": [
+      "Facebook",
+      "TikTok"
+    ]
+  },
+  {
+    "id": "269",
+    "slug": "timestamp-to-date-grouping",
+    "title": "Timestamp to Date Conversion and Daily Grouping",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "DATE_TRUNC",
+      "CAST",
+      "GROUP BY",
+      "COUNT",
+      "timestamp functions",
+      "date grouping"
+    ],
+    "companies": [
+      "Google Analytics",
+      "Amplitude"
+    ]
+  },
+  {
+    "id": "270",
+    "slug": "date-range-overlap-detection",
+    "title": "Detect Overlapping Date Ranges",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "self join",
+      "date ranges",
+      "overlap detection",
+      "booking conflicts"
+    ],
+    "companies": [
+      "Airbnb",
+      "Booking.com"
+    ]
+  },
+  {
+    "id": "271",
+    "slug": "assign-row-numbers-to-groups",
+    "title": "Assign Row Numbers Within Department Groups",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "ROW_NUMBER",
+      "PARTITION BY",
+      "ORDER BY",
+      "seniority ranking"
+    ],
+    "companies": [
+      "Workday",
+      "SAP"
+    ]
+  },
+  {
+    "id": "272",
+    "slug": "split-comma-separated-values",
+    "title": "Split Comma-Separated Tags and Count Frequency",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "STRING_TO_ARRAY",
+      "UNNEST",
+      "LATERAL",
+      "GROUP BY",
+      "COUNT",
+      "string splitting",
+      "array functions"
+    ],
+    "companies": [
+      "Pinterest",
+      "Etsy"
+    ]
+  },
+  {
     "id": "281",
     "slug": "recursive-bom-explosion",
     "title": "Recursive Bill of Materials Explosion",

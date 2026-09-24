@@ -1,0 +1,26 @@
+{
+  "id": "278",
+  "slug": "transactions-above-3-std-devs",
+  "title": "Transactions More Than 3 Standard Deviations Above Mean",
+  "difficulty": "medium",
+  "tags": ["SELECT", "subquery", "AVG", "STDDEV", "NULLIF", "ABS", "z-score", "fraud detection"],
+  "description": "Detect **extreme outlier transactions** by finding those with a z-score greater than 3 standard deviations above the **global mean** across all transactions. Show the transaction, z-score, and global statistics.",
+  "schema_sql": "CREATE TABLE transactions (transaction_id INT, account_id INT, amount DECIMAL(10,2), tx_date DATE); INSERT INTO transactions VALUES (1,1,100.00,'2026-01-01'),(2,1,102.00,'2026-01-02'),(3,2,98.00,'2026-01-03'),(4,2,101.00,'2026-01-04'),(5,3,99.00,'2026-01-05'),(6,3,103.00,'2026-01-06'),(7,1,97.00,'2026-01-07'),(8,1,104.00,'2026-01-08'),(9,2,100.00,'2026-01-09'),(10,2,101.00,'2026-01-10'),(11,3,99.00,'2026-01-11'),(12,3,102.00,'2026-01-12'),(13,1,98.00,'2026-01-13'),(14,2,100.00,'2026-01-14'),(15,3,101.00,'2026-01-15'),(16,1,9500.00,'2026-01-16');",
+  "solution_sql": "SELECT t.transaction_id, t.account_id, t.amount, ROUND(global_stats.mean_amount, 2) AS global_mean, ROUND(global_stats.std_amount, 2) AS global_std, ROUND((t.amount - global_stats.mean_amount) / NULLIF(global_stats.std_amount, 0), 2) AS z_score FROM transactions t CROSS JOIN (SELECT AVG(amount) AS mean_amount, STDDEV(amount) AS std_amount FROM transactions) global_stats WHERE (t.amount - global_stats.mean_amount) / NULLIF(global_stats.std_amount, 0) > 3 ORDER BY z_score DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "1 extreme outlier: transaction_id=16, amount=9500.00 with z-score > 3 against 15 normal transactions clustered around $100.",
+      "expected_row_count": 1,
+      "expected_columns": ["transaction_id", "account_id", "amount", "global_mean", "global_std", "z_score"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Compute global AVG and STDDEV in a subquery and CROSS JOIN it to the transactions table — this attaches global statistics to every row without grouping.",
+    "Z-score = (amount - mean) / std; filter WHERE z_score > 3. Use NULLIF(std, 0) to avoid division by zero if all values are identical."
+  ],
+  "explanation": "The CROSS JOIN broadcasts global statistics (mean≈688, std≈2350 due to the outlier) to every row. The outlier transaction of $9500 on Jan 16 has z = (9500 - 688) / 2350 ≈ 3.75 > 3. The 15 normal transactions around $100 each have z ≈ (100 - 688) / 2350 ≈ -0.25 — well below the threshold. This global approach is simpler than per-account z-scores and effective for detecting egregious outliers.",
+  "companies": ["Stripe", "Mastercard"],
+  "created_at": "2026-09-24"
+}

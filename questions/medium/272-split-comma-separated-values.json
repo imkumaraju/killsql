@@ -1,0 +1,26 @@
+{
+  "id": "272",
+  "slug": "split-comma-separated-values",
+  "title": "Split Comma-Separated Tags and Count Frequency",
+  "difficulty": "medium",
+  "tags": ["SELECT", "STRING_TO_ARRAY", "UNNEST", "LATERAL", "GROUP BY", "COUNT", "string splitting", "array functions"],
+  "description": "Each product has a comma-separated `tags` column. **Split** the tags into individual rows and count how many products are associated with each tag. Show each tag and its product_count, ordered by frequency descending.",
+  "schema_sql": "CREATE TABLE products (product_id INT, name VARCHAR(100), tags TEXT); INSERT INTO products VALUES (1,'Laptop','electronics,computer,portable'),(2,'Phone','electronics,mobile,camera'),(3,'Tablet','electronics,portable,touchscreen'),(4,'Shirt','clothing,casual,cotton'),(5,'Shoes','clothing,footwear,sports');",
+  "solution_sql": "SELECT TRIM(tag) AS tag, COUNT(*) AS product_count FROM products, LATERAL UNNEST(STRING_TO_ARRAY(tags, ',')) AS tag GROUP BY TRIM(tag) ORDER BY product_count DESC, tag",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "11 distinct tags. electronics=3, portable=2, clothing=2. All others appear once. Total 11 rows.",
+      "expected_row_count": 11,
+      "expected_columns": ["tag", "product_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use STRING_TO_ARRAY(tags, ',') to convert the comma-separated string into a PostgreSQL array, then UNNEST to expand each array element into its own row.",
+    "Wrap tag in TRIM() to remove any leading/trailing whitespace before grouping."
+  ],
+  "explanation": "STRING_TO_ARRAY splits the tags string on commas into an array (e.g., '{electronics,computer,portable}'). UNNEST expands this array into individual rows — one row per tag per product. After unnesting, all 5 products contribute 15 total tag rows. Grouping by trimmed tag and counting gives: electronics=3 (products 1,2,3), portable=2 (1,3), clothing=2 (4,5), and 8 other tags each appearing once — 11 distinct tags total.",
+  "companies": ["Pinterest", "Etsy"],
+  "created_at": "2026-09-24"
+}

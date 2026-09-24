@@ -1,0 +1,26 @@
+{
+  "id": "269",
+  "slug": "timestamp-to-date-grouping",
+  "title": "Timestamp to Date Conversion and Daily Grouping",
+  "difficulty": "medium",
+  "tags": ["SELECT", "DATE_TRUNC", "CAST", "GROUP BY", "COUNT", "timestamp functions", "date grouping"],
+  "description": "Group user events by **date** (stripping the time component from timestamps) and **event type**. Show each date, event type, and the event count. Convert timestamps to dates using DATE_TRUNC or CAST.",
+  "schema_sql": "CREATE TABLE events (event_id INT, user_id INT, event_type VARCHAR(50), event_timestamp TIMESTAMP); INSERT INTO events VALUES (1,1,'page_view','2026-01-05 08:15:22'),(2,2,'page_view','2026-01-05 09:30:45'),(3,3,'click','2026-01-05 10:22:10'),(4,1,'purchase','2026-01-05 11:05:33'),(5,4,'page_view','2026-01-06 08:45:00'),(6,2,'click','2026-01-06 09:15:20'),(7,5,'page_view','2026-01-06 10:30:00'),(8,3,'click','2026-01-06 11:00:15'),(9,1,'page_view','2026-01-07 09:00:00'),(10,4,'purchase','2026-01-07 10:45:30'),(11,5,'click','2026-01-07 11:30:00'),(12,2,'purchase','2026-01-07 14:20:00');",
+  "solution_sql": "SELECT DATE_TRUNC('day', event_timestamp)::DATE AS event_date, event_type, COUNT(*) AS event_count FROM events GROUP BY DATE_TRUNC('day', event_timestamp)::DATE, event_type ORDER BY event_date, event_type",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan 5: page_view=2, click=1, purchase=1. Jan 6: page_view=2, click=2. Jan 7: page_view=1, click=1, purchase=2. Total 8 (date, event_type) combinations.",
+      "expected_row_count": 8,
+      "expected_columns": ["event_date", "event_type", "event_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use DATE_TRUNC('day', event_timestamp) to strip the time portion and keep only the date part — cast to DATE for a clean DATE type output.",
+    "Group by both the truncated date and event_type to get counts per day per event type."
+  ],
+  "explanation": "DATE_TRUNC('day', timestamp) sets the time component to midnight (00:00:00), effectively converting a timestamp to its date. Casting to DATE removes the time suffix from the display. Grouping by date and event_type produces 8 combinations. Jan 5 has 4 events across 3 types. Jan 6 has 4 events across 2 types (no purchases). Jan 7 has 4 events across 3 types including 2 purchases.",
+  "companies": ["Google Analytics", "Amplitude"],
+  "created_at": "2026-09-24"
+}

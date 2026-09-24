@@ -1,0 +1,26 @@
+{
+  "id": "268",
+  "slug": "age-from-birthdate",
+  "title": "Calculate Age in Years from Birthdate",
+  "difficulty": "medium",
+  "tags": ["SELECT", "AGE", "EXTRACT", "CASE", "GROUP BY", "COUNT", "date functions", "demographics"],
+  "description": "Calculate each customer's **age in years** as of 2026-09-24, classify them into **age brackets** (Under 18, 18-29, 30-39, 40-49, 50+), and count customers per bracket.",
+  "schema_sql": "CREATE TABLE customers (customer_id INT, name VARCHAR(100), birthdate DATE); INSERT INTO customers VALUES (1,'Alice','1995-03-15'),(2,'Bob','1988-07-22'),(3,'Carol','2005-11-08'),(4,'Dave','1972-01-30'),(5,'Eve','1999-06-14'),(6,'Frank','1965-09-01'),(7,'Grace','2000-04-25'),(8,'Hank','1980-12-10'),(9,'Ivy','1958-02-28'),(10,'Jack','2010-08-19');",
+  "solution_sql": "SELECT CASE WHEN EXTRACT(YEAR FROM AGE('2026-09-24'::DATE, birthdate)) < 18 THEN 'Under 18' WHEN EXTRACT(YEAR FROM AGE('2026-09-24'::DATE, birthdate)) < 30 THEN '18-29' WHEN EXTRACT(YEAR FROM AGE('2026-09-24'::DATE, birthdate)) < 40 THEN '30-39' WHEN EXTRACT(YEAR FROM AGE('2026-09-24'::DATE, birthdate)) < 50 THEN '40-49' ELSE '50+' END AS age_bracket, COUNT(*) AS customer_count FROM customers GROUP BY age_bracket ORDER BY MIN(EXTRACT(YEAR FROM AGE('2026-09-24'::DATE, birthdate)))",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "As of 2026-09-24: Carol(20)&Grace(26)&Eve(27)=18-29, Alice(31)&Bob(38)=30-39, Hank(45)=40-49, Dave(54)&Frank(61)&Ivy(68)=50+, Jack(16)=Under18",
+      "expected_row_count": 5,
+      "expected_columns": ["age_bracket", "customer_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use AGE('2026-09-24'::DATE, birthdate) to get the interval from birthdate to the reference date, then EXTRACT(YEAR FROM ...) to get whole years.",
+    "Use the same CASE expression in GROUP BY, or compute age in a subquery/CTE first to avoid repeating the AGE calculation."
+  ],
+  "explanation": "AGE(reference_date, birthdate) returns an INTERVAL; EXTRACT(YEAR FROM interval) gives whole years elapsed. As of Sep 24, 2026: Jack(2010→16)=Under 18. Eve(1999→27), Carol(2005→20), Grace(2000→26)=18-29. Alice(1995→31), Bob(1988→38)=30-39. Hank(1980→45)=40-49. Dave(1972→54), Frank(1965→61), Ivy(1958→68)=50+. Five age brackets with counts 1, 3, 2, 1, 3.",
+  "companies": ["Facebook", "TikTok"],
+  "created_at": "2026-09-24"
+}

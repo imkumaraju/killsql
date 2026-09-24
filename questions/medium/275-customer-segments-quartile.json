@@ -1,0 +1,26 @@
+{
+  "id": "275",
+  "slug": "customer-segments-quartile",
+  "title": "Customer Segments by Spending Quartile",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CTE", "window functions", "NTILE", "GROUP BY", "SUM", "customer segmentation", "quartile"],
+  "description": "Segment customers into **4 spending tiers** based on their total purchase amount using `NTILE(4)`. Label them: Q1='Low Spender', Q2='Mid Spender', Q3='High Spender', Q4='Top Spender'. Show each customer's total_spent, quartile number, and segment label.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,500.00),(2,1,300.00),(3,1,200.00),(4,2,1500.00),(5,2,2000.00),(6,3,100.00),(7,3,150.00),(8,4,800.00),(9,4,600.00),(10,4,400.00),(11,5,50.00),(12,5,75.00),(13,6,3000.00),(14,6,2500.00),(15,6,1000.00),(16,7,250.00),(17,7,300.00),(18,8,700.00),(19,8,900.00);",
+  "solution_sql": "WITH customer_spending AS (SELECT customer_id, SUM(amount) AS total_spent FROM orders GROUP BY customer_id), segmented AS (SELECT customer_id, total_spent, NTILE(4) OVER (ORDER BY total_spent) AS spending_quartile FROM customer_spending) SELECT customer_id, total_spent, spending_quartile, CASE spending_quartile WHEN 1 THEN 'Low Spender' WHEN 2 THEN 'Mid Spender' WHEN 3 THEN 'High Spender' ELSE 'Top Spender' END AS segment FROM segmented ORDER BY total_spent DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 customers in 4 quartiles of 2 each. Sorted: C6=6500, C2=3500, C4=1800, C8=1600, C1=1000, C7=550, C3=250, C5=125.",
+      "expected_row_count": 8,
+      "expected_columns": ["customer_id", "total_spent", "spending_quartile", "segment"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "First aggregate total spending per customer in a CTE, then apply NTILE(4) OVER (ORDER BY total_spent) in a second CTE to divide customers into 4 equal-sized quartile groups.",
+    "NTILE(4) assigns values 1-4 — use CASE to map 1→'Low Spender', 2→'Mid Spender', 3→'High Spender', 4→'Top Spender'."
+  ],
+  "explanation": "NTILE(4) divides 8 customers into 4 groups of 2. Sorted ascending by total_spent: C5(125)=Q1, C3(250)=Q1 → 'Low Spender'. C7(550)=Q2, C1(1000)=Q2 → 'Mid Spender'. C8(1600)=Q3, C4(1800)=Q3 → 'High Spender'. C2(3500)=Q4, C6(6500)=Q4 → 'Top Spender'. This segmentation drives targeted marketing: discounts for low spenders, loyalty programs for top spenders.",
+  "companies": ["Klaviyo", "Salesforce"],
+  "created_at": "2026-09-24"
+}

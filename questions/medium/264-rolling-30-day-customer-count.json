@@ -1,0 +1,26 @@
+{
+  "id": "264",
+  "slug": "rolling-30-day-customer-count",
+  "title": "Rolling 30-Day Distinct Customer Count",
+  "difficulty": "medium",
+  "tags": ["SELECT", "self join", "GROUP BY", "COUNT DISTINCT", "date arithmetic", "rolling window", "DAU/MAU"],
+  "description": "For each order date in the table, count the number of **distinct customers who placed at least one order in the 30 days up to and including that date**. This simulates a rolling 30-day active user metric.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE); INSERT INTO orders VALUES (1,1,'2026-01-01'),(2,2,'2026-01-05'),(3,3,'2026-01-10'),(4,1,'2026-01-15'),(5,4,'2026-01-20'),(6,2,'2026-01-25'),(7,5,'2026-02-01'),(8,3,'2026-02-05'),(9,6,'2026-02-10'),(10,1,'2026-02-15'),(11,7,'2026-02-20'),(12,4,'2026-02-25');",
+  "solution_sql": "SELECT o1.order_date, COUNT(DISTINCT o2.customer_id) AS rolling_30d_customers FROM (SELECT DISTINCT order_date FROM orders) o1 JOIN orders o2 ON o2.order_date BETWEEN o1.order_date - INTERVAL '29 days' AND o1.order_date GROUP BY o1.order_date ORDER BY o1.order_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "12 distinct order dates, each showing distinct customers active in the prior 30 days up to that date",
+      "expected_row_count": 12,
+      "expected_columns": ["order_date", "rolling_30d_customers"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Self-join orders: for each distinct order_date (o1), join all orders (o2) where o2.order_date falls within a 29-day lookback window ending on o1.order_date.",
+    "Use COUNT(DISTINCT o2.customer_id) to count unique customers in the window — a customer ordering twice in the window is counted once."
+  ],
+  "explanation": "The self-join approach computes rolling windows without requiring window function DISTINCT support. For each unique date in o1, o2 joins all orders within the [date-29 days, date] range. COUNT(DISTINCT customer_id) counts unique customers in that window. Jan 1: only C1 = 1. Jan 25: C1(Jan1,Jan15)+C2(Jan5,Jan25)+C3(Jan10)+C4(Jan20) = 4. This rolling metric is the foundation of Monthly Active Users (MAU) calculations.",
+  "companies": ["Amplitude", "Mixpanel"],
+  "created_at": "2026-09-24"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "277",
+  "slug": "employees-promoted-last-6-months",
+  "title": "Employees Promoted in the Last 6 Months",
+  "difficulty": "medium",
+  "tags": ["SELECT", "JOIN", "WHERE", "date filtering", "history table", "HR analytics", "self join"],
+  "description": "Using an employee role history table, find employees whose **job title changed** (a promotion) with a new title **starting on or after 2026-03-24** (6 months before today). Show the employee name, old title, new title, and promotion date.",
+  "schema_sql": "CREATE TABLE employees (employee_id INT, name VARCHAR(100)); CREATE TABLE employee_history (history_id INT, employee_id INT, title VARCHAR(100), start_date DATE, end_date DATE); INSERT INTO employees VALUES (1,'Alice'),(2,'Bob'),(3,'Carol'),(4,'Dave'),(5,'Eve'); INSERT INTO employee_history VALUES (1,1,'Junior Developer','2024-01-15','2026-05-01'),(2,1,'Senior Developer','2026-05-01',NULL),(3,2,'Product Manager','2023-06-01',NULL),(4,3,'Data Analyst','2024-03-01','2026-07-15'),(5,3,'Senior Data Analyst','2026-07-15',NULL),(6,4,'Junior Developer','2022-01-01','2025-12-01'),(7,4,'Mid Developer','2025-12-01',NULL),(8,5,'Associate Engineer','2024-05-01','2026-08-10'),(9,5,'Engineer','2026-08-10',NULL);",
+  "solution_sql": "SELECT e.name, eh_old.title AS old_title, eh_new.title AS new_title, eh_new.start_date AS promotion_date FROM employees e JOIN employee_history eh_new ON e.employee_id = eh_new.employee_id JOIN employee_history eh_old ON e.employee_id = eh_old.employee_id AND eh_old.end_date = eh_new.start_date WHERE eh_new.start_date >= '2026-03-24' ORDER BY eh_new.start_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 promotions after 2026-03-24: Alice (May 2026), Carol (Jul 2026), Eve (Aug 2026). Dave was promoted Dec 2025 — too early. Bob has no promotion.",
+      "expected_row_count": 3,
+      "expected_columns": ["name", "old_title", "new_title", "promotion_date"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Join employee_history to itself: eh_old.end_date = eh_new.start_date links consecutive role records for the same employee — the end of one role is the start of the next.",
+    "Filter WHERE eh_new.start_date >= '2026-03-24' to keep only title changes (promotions) that occurred in the last 6 months."
+  ],
+  "explanation": "The self-join on employee_history links consecutive role records: eh_old.end_date = eh_new.start_date means the old role ended exactly when the new one began — this signals a title change. Alice: Junior→Senior Dev, May 1, 2026 ≥ Mar 24 ✓. Carol: Data Analyst→Senior, Jul 15 ✓. Eve: Associate→Engineer, Aug 10 ✓. Dave: Junior→Mid, Dec 1, 2025 < Mar 24 2026 ✗ (too early). Bob: no end_date on his current role — no promotion row.",
+  "companies": ["Workday", "LinkedIn"],
+  "created_at": "2026-09-24"
+}

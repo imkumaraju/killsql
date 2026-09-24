@@ -1,0 +1,26 @@
+{
+  "id": "267",
+  "slug": "business-day-calculation",
+  "title": "Count Business Days Between Two Dates",
+  "difficulty": "medium",
+  "tags": ["SELECT", "generate_series", "EXTRACT", "ISODOW", "LATERAL", "COUNT", "date functions", "business days"],
+  "description": "For each task, count the **number of business days** (Monday–Friday, excluding weekends) between the created_date and due_date (exclusive of created_date, inclusive of due_date). Use `generate_series` to enumerate individual days.",
+  "schema_sql": "CREATE TABLE tasks (task_id INT, task_name VARCHAR(100), created_date DATE, due_date DATE); INSERT INTO tasks VALUES (1,'Design Review','2026-01-05','2026-01-12'),(2,'Code Sprint','2026-01-12','2026-01-23'),(3,'QA Testing','2026-01-23','2026-02-02'),(4,'Deploy','2026-02-02','2026-02-06'),(5,'Documentation','2026-01-05','2026-01-07');",
+  "solution_sql": "SELECT t.task_id, t.task_name, t.created_date, t.due_date, COUNT(d.day) AS business_days FROM tasks t CROSS JOIN LATERAL generate_series(t.created_date + 1, t.due_date, '1 day'::INTERVAL) AS d(day) WHERE EXTRACT(ISODOW FROM d.day) NOT IN (6, 7) GROUP BY t.task_id, t.task_name, t.created_date, t.due_date ORDER BY t.task_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 tasks with business day counts. Task 1 (Jan 5 to Jan 12): 5 business days (Jan 6-9=4 weekdays + Jan 12 Mon=5).",
+      "expected_row_count": 5,
+      "expected_columns": ["task_id", "task_name", "created_date", "due_date", "business_days"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use CROSS JOIN LATERAL generate_series(created_date + 1, due_date, '1 day') to generate a row for every calendar day in the range (excluding created_date itself).",
+    "Filter WHERE EXTRACT(ISODOW FROM day) NOT IN (6, 7) to exclude Saturdays(6) and Sundays(7), then COUNT the remaining weekdays."
+  ],
+  "explanation": "generate_series produces one row per calendar day. The LATERAL keyword lets it reference each task's date columns. EXTRACT(ISODOW ...) NOT IN (6,7) excludes weekends. Task 1 (Jan 5→12): generates Jan 6 (Tue), 7 (Wed), 8 (Thu), 9 (Fri), 10 (Sat-skipped), 11 (Sun-skipped), 12 (Mon) = 5 business days. Task 5 (Jan 5→7): Jan 6 (Tue) + Jan 7 (Wed) = 2 business days.",
+  "companies": ["Jira", "Monday.com"],
+  "created_at": "2026-09-24"
+}

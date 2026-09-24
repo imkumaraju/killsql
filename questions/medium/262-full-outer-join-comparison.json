@@ -1,0 +1,26 @@
+{
+  "id": "262",
+  "slug": "full-outer-join-comparison",
+  "title": "Comparing Two Datasets with FULL OUTER JOIN",
+  "difficulty": "medium",
+  "tags": ["SELECT", "FULL OUTER JOIN", "COALESCE", "data comparison", "period-over-period"],
+  "description": "Compare last month's and this month's product sales using a **FULL OUTER JOIN** to capture products that appear in only one period. Show product_id, last_month amount, this_month amount, and the change. Products not in a period show NULL (or 0).",
+  "schema_sql": "CREATE TABLE last_month_sales (product_id INT, product_name VARCHAR(100), amount DECIMAL(10,2)); CREATE TABLE this_month_sales (product_id INT, product_name VARCHAR(100), amount DECIMAL(10,2)); INSERT INTO last_month_sales VALUES (1,'Laptop',5000.00),(2,'Phone',8000.00),(3,'Tablet',3000.00),(4,'Headphones',1500.00),(5,'Keyboard',2000.00); INSERT INTO this_month_sales VALUES (1,'Laptop',5500.00),(2,'Phone',7500.00),(3,'Tablet',3500.00),(6,'Monitor',4000.00),(7,'Webcam',1200.00);",
+  "solution_sql": "SELECT COALESCE(lm.product_id, tm.product_id) AS product_id, COALESCE(lm.product_name, tm.product_name) AS product_name, lm.amount AS last_month, tm.amount AS this_month, COALESCE(tm.amount, 0) - COALESCE(lm.amount, 0) AS change FROM last_month_sales lm FULL OUTER JOIN this_month_sales tm ON lm.product_id = tm.product_id ORDER BY product_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "7 rows: 3 in both months (Laptop,Phone,Tablet), 2 only last month (Headphones,Keyboard with this_month=NULL), 2 only this month (Monitor,Webcam with last_month=NULL)",
+      "expected_row_count": 7,
+      "expected_columns": ["product_id", "product_name", "last_month", "this_month", "change"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "FULL OUTER JOIN returns all rows from both tables — rows with no match on either side get NULL for the other table's columns.",
+    "Use COALESCE(lm.product_id, tm.product_id) to get a non-NULL product_id regardless of which table the row came from."
+  ],
+  "explanation": "FULL OUTER JOIN is the union of LEFT and RIGHT JOINs — it returns rows from both tables regardless of matches. Products 1-3 appear in both (matched rows). Products 4-5 appear only in last_month (right side NULL). Products 6-7 appear only in this_month (left side NULL). COALESCE resolves the NULL product_id from whichever side has data. The change column uses COALESCE(..., 0) to treat NULL amounts as zero for arithmetic.",
+  "companies": ["Microsoft", "Tableau"],
+  "created_at": "2026-09-24"
+}

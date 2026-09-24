@@ -1,0 +1,26 @@
+{
+  "id": "280",
+  "slug": "multi-step-cte-pipeline",
+  "title": "Multi-Step CTE Pipeline for Complex Analytics",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CTE", "JOIN", "GROUP BY", "SUM", "RANK", "window functions", "multi-table", "pipeline", "analytics"],
+  "description": "Build a **4-step CTE pipeline** to rank countries by total revenue from orders:\n1. `order_revenue`: total revenue per order (quantity × unit_price)\n2. `customer_revenue`: total revenue per customer\n3. `country_revenue`: total revenue aggregated by country\n4. `ranked_countries`: rank countries by total revenue\n\nReturn all 4 countries with their rank.",
+  "schema_sql": "CREATE TABLE customers (customer_id INT, name VARCHAR(100), country VARCHAR(50)); CREATE TABLE orders (order_id INT, customer_id INT, order_date DATE); CREATE TABLE order_items (item_id INT, order_id INT, product_id INT, quantity INT, unit_price DECIMAL(10,2)); INSERT INTO customers VALUES (1,'Alice','USA'),(2,'Bob','UK'),(3,'Carol','USA'),(4,'Dave','Germany'),(5,'Eve','UK'),(6,'Frank','USA'),(7,'Grace','Canada'),(8,'Hank','Germany'); INSERT INTO orders VALUES (1,1,'2026-01-10'),(2,1,'2026-02-15'),(3,2,'2026-01-08'),(4,3,'2026-01-20'),(5,3,'2026-02-25'),(6,4,'2026-01-15'),(7,5,'2026-02-10'),(8,6,'2026-01-25'),(9,7,'2026-02-05'),(10,8,'2026-01-30'); INSERT INTO order_items VALUES (1,1,1,1,999.99),(2,1,4,2,49.99),(3,2,2,1,699.99),(4,2,5,1,89.99),(5,3,1,1,999.99),(6,3,3,1,399.99),(7,4,2,2,699.99),(8,4,4,3,49.99),(9,5,1,1,999.99),(10,5,5,2,89.99),(11,6,3,1,399.99),(12,6,2,1,699.99),(13,7,4,5,49.99),(14,7,5,3,89.99),(15,8,1,2,999.99),(16,8,2,1,699.99),(17,9,3,1,399.99),(18,9,4,2,49.99),(19,10,1,1,999.99),(20,10,5,1,89.99);",
+  "solution_sql": "WITH order_revenue AS (SELECT o.order_id, o.customer_id, SUM(oi.quantity * oi.unit_price) AS order_total FROM orders o JOIN order_items oi ON o.order_id = oi.order_id GROUP BY o.order_id, o.customer_id), customer_revenue AS (SELECT customer_id, SUM(order_total) AS total_revenue FROM order_revenue GROUP BY customer_id), country_revenue AS (SELECT c.country, SUM(cr.total_revenue) AS country_total FROM customer_revenue cr JOIN customers c ON cr.customer_id = c.customer_id GROUP BY c.country), ranked_countries AS (SELECT country, country_total, RANK() OVER (ORDER BY country_total DESC) AS revenue_rank FROM country_revenue) SELECT country, ROUND(country_total, 2) AS total_revenue, revenue_rank FROM ranked_countries ORDER BY revenue_rank",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 countries ranked by revenue. USA leads (customers 1,3,6), followed by UK (2,5), Germany (4,8), Canada (7).",
+      "expected_row_count": 4,
+      "expected_columns": ["country", "total_revenue", "revenue_rank"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Build the pipeline incrementally: first aggregate at the order-item level (revenue per order), then roll up to customer, then to country — each CTE consumes the previous one.",
+    "The final CTE adds RANK() OVER (ORDER BY country_total DESC) — window functions can reference prior CTEs, making this the clean final step."
+  ],
+  "explanation": "The 4-step CTE pipeline decomposes a complex join+aggregation into readable stages. Step 1: SUM(quantity×unit_price) per order. Step 2: SUM order totals per customer. Step 3: JOIN with customers to get country and SUM per country. Step 4: RANK countries by revenue. USA has orders from customers 1 (≈1099+790), 3 (≈1549+1180), 6 (≈2700) = highest revenue. CTEs improve readability and allow reuse without subquery nesting.",
+  "companies": ["Snowflake", "Databricks", "dbt"],
+  "created_at": "2026-09-24"
+}

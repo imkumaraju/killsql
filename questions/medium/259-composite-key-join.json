@@ -1,0 +1,26 @@
+{
+  "id": "259",
+  "slug": "composite-key-join",
+  "title": "Join on Multiple Columns (Composite Key)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "JOIN", "composite key", "multi-column join", "data reconciliation"],
+  "description": "Reconcile **shipments** with **order line items** by joining on both `order_id` AND `product_id` (a composite key). For each matched pair, show the ordered quantity vs shipped quantity and compute the difference.",
+  "schema_sql": "CREATE TABLE order_items (item_id INT, order_id INT, product_id INT, quantity INT, price DECIMAL(10,2)); CREATE TABLE shipments (shipment_id INT, order_id INT, product_id INT, quantity INT, ship_date DATE); INSERT INTO order_items VALUES (1,101,1,5,99.99),(2,101,2,2,49.99),(3,102,1,3,99.99),(4,102,3,1,199.99),(5,103,2,4,49.99),(6,103,3,2,199.99),(7,104,1,10,99.99),(8,104,4,3,29.99); INSERT INTO shipments VALUES (1,101,1,5,'2026-01-10'),(2,101,2,2,'2026-01-10'),(3,102,1,3,'2026-01-12'),(4,102,3,1,'2026-01-12'),(5,103,2,3,'2026-01-15'),(6,103,3,2,'2026-01-15'),(7,104,1,10,'2026-01-18'),(8,104,4,3,'2026-01-18');",
+  "solution_sql": "SELECT s.order_id, s.product_id, oi.price, oi.quantity AS ordered_qty, s.quantity AS shipped_qty, s.quantity - oi.quantity AS qty_difference FROM shipments s JOIN order_items oi ON s.order_id = oi.order_id AND s.product_id = oi.product_id ORDER BY s.order_id, s.product_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 order-product pairs. Order 103/product 2: ordered=4, shipped=3 (difference=-1). All others match exactly.",
+      "expected_row_count": 8,
+      "expected_columns": ["order_id", "product_id", "price", "ordered_qty", "shipped_qty", "qty_difference"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "A composite key join uses AND in the ON clause: JOIN ... ON s.order_id = oi.order_id AND s.product_id = oi.product_id — both columns must match.",
+    "Joining on only one column (e.g., just order_id) would produce incorrect cross-matches between different products in the same order."
+  ],
+  "explanation": "Composite key joins are essential when no single column uniquely identifies a row in the join context. Here, order_id alone isn't unique within order_items (one order has multiple products). The AND condition ensures each shipment row matches exactly the correct product within its order. Order 103, product 2 has a discrepancy: 4 ordered vs 3 shipped (difference=-1). All other 7 pairs match perfectly (difference=0).",
+  "companies": ["Amazon", "FedEx"],
+  "created_at": "2026-09-24"
+}

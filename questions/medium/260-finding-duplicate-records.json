@@ -1,0 +1,26 @@
+{
+  "id": "260",
+  "slug": "finding-duplicate-records",
+  "title": "Finding Duplicate Records Across Columns",
+  "difficulty": "medium",
+  "tags": ["SELECT", "GROUP BY", "HAVING", "COUNT", "duplicates", "data quality"],
+  "description": "Find all **duplicate email addresses** in the customers table (emails that appear more than once). Show the email, how many times it appears, and all the customer IDs that share that email.",
+  "schema_sql": "CREATE TABLE customers (customer_id INT, name VARCHAR(100), email VARCHAR(200), phone VARCHAR(20)); INSERT INTO customers VALUES (1,'Alice Smith','alice@email.com','555-1234'),(2,'Alice S.','alice@email.com','555-5678'),(3,'Bob Jones','bob@email.com','555-2345'),(4,'Carol White','carol@email.com','555-3456'),(5,'Carol W.','carol@email.com','555-7890'),(6,'Dave Brown','dave@email.com','555-4567'),(7,'Eve Davis','eve@email.com','555-5678'),(8,'Bob J.','bob@email.com','555-9012');",
+  "solution_sql": "SELECT email, COUNT(*) AS occurrence_count, STRING_AGG(customer_id::TEXT, ', ' ORDER BY customer_id) AS customer_ids FROM customers GROUP BY email HAVING COUNT(*) > 1 ORDER BY occurrence_count DESC, email",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 duplicate emails: alice@email.com(2), bob@email.com(2), carol@email.com(2). dave@email.com and eve@email.com are unique.",
+      "expected_row_count": 3,
+      "expected_columns": ["email", "occurrence_count", "customer_ids"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "GROUP BY email and use HAVING COUNT(*) > 1 to keep only emails that appear more than once.",
+    "Use STRING_AGG(customer_id::TEXT, ', ' ORDER BY customer_id) to list all customer IDs sharing the duplicate email as a comma-separated string."
+  ],
+  "explanation": "Grouping by email and filtering with HAVING COUNT(*) > 1 identifies duplicates. alice@email.com appears for customer IDs 1 and 2. bob@email.com appears for IDs 3 and 8. carol@email.com appears for IDs 4 and 5. dave@email.com and eve@email.com appear only once each — excluded. STRING_AGG lists the affected customer IDs for deduplication review.",
+  "companies": ["Salesforce", "HubSpot"],
+  "created_at": "2026-09-24"
+}

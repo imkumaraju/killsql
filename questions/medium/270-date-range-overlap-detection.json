@@ -1,0 +1,26 @@
+{
+  "id": "270",
+  "slug": "date-range-overlap-detection",
+  "title": "Detect Overlapping Date Ranges",
+  "difficulty": "medium",
+  "tags": ["SELECT", "self join", "date ranges", "overlap detection", "booking conflicts"],
+  "description": "Find all pairs of room bookings for the **same room** that have **overlapping date ranges**. Two bookings overlap if one check-in is before the other's check-out AND vice versa. Show both booking IDs, the room, and the guest names.",
+  "schema_sql": "CREATE TABLE room_bookings (booking_id INT, room_id INT, guest_name VARCHAR(100), check_in DATE, check_out DATE); INSERT INTO room_bookings VALUES (1,101,'Alice','2026-01-10','2026-01-15'),(2,101,'Bob','2026-01-13','2026-01-18'),(3,101,'Carol','2026-01-20','2026-01-25'),(4,102,'Dave','2026-01-08','2026-01-12'),(5,102,'Eve','2026-01-11','2026-01-14'),(6,102,'Frank','2026-01-16','2026-01-20'),(7,103,'Grace','2026-01-05','2026-01-10'),(8,103,'Hank','2026-01-10','2026-01-15');",
+  "solution_sql": "SELECT r1.booking_id AS booking1_id, r2.booking_id AS booking2_id, r1.room_id, r1.guest_name AS guest1, r2.guest_name AS guest2 FROM room_bookings r1 JOIN room_bookings r2 ON r1.room_id = r2.room_id AND r1.booking_id < r2.booking_id AND r1.check_in < r2.check_out AND r2.check_in < r1.check_out ORDER BY r1.room_id, r1.booking_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "2 overlapping pairs: Room 101 Alice+Bob (Jan 10-15 overlaps Jan 13-18), Room 102 Dave+Eve (Jan 8-12 overlaps Jan 11-14). Grace+Hank in Room 103 are adjacent (Jan 10 = Jan 10) but NOT overlapping.",
+      "expected_row_count": 2,
+      "expected_columns": ["booking1_id", "booking2_id", "room_id", "guest1", "guest2"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Two date ranges [A_start, A_end) and [B_start, B_end) overlap when A_start < B_end AND B_start < A_end — this is the standard interval overlap test.",
+    "Use r1.booking_id < r2.booking_id to avoid duplicate pairs (A,B) and (B,A) in the self-join."
+  ],
+  "explanation": "The overlap condition r1.check_in < r2.check_out AND r2.check_in < r1.check_out is the canonical interval intersection test. Room 101: Alice (Jan 10-15) vs Bob (Jan 13-18): 10 < 18 AND 13 < 15 → TRUE (overlap). Room 102: Dave (Jan 8-12) vs Eve (Jan 11-14): 8 < 14 AND 11 < 12 → TRUE. Room 103: Grace (Jan 5-10) vs Hank (Jan 10-15): 5 < 15 AND 10 < 10 → FALSE (touching, not overlapping). Result: 2 conflicts.",
+  "companies": ["Airbnb", "Booking.com"],
+  "created_at": "2026-09-24"
+}

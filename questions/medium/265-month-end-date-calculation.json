@@ -1,0 +1,26 @@
+{
+  "id": "265",
+  "slug": "month-end-date-calculation",
+  "title": "Month-End Date Calculation",
+  "difficulty": "medium",
+  "tags": ["SELECT", "DATE_TRUNC", "INTERVAL", "date arithmetic", "date functions", "billing"],
+  "description": "For each subscription, compute the **last day of the month** in which the subscription started. This is useful for billing cycles, SLA calculations, and reporting. Show start_date, plan, and month_end_date.",
+  "schema_sql": "CREATE TABLE subscriptions (subscription_id INT, customer_id INT, start_date DATE, plan VARCHAR(50)); INSERT INTO subscriptions VALUES (1,1,'2026-01-15','Basic'),(2,2,'2026-01-31','Premium'),(3,3,'2026-02-10','Basic'),(4,4,'2026-02-28','Enterprise'),(5,5,'2026-03-05','Premium'),(6,6,'2026-03-20','Basic'),(7,7,'2026-04-01','Enterprise'),(8,8,'2026-11-15','Premium');",
+  "solution_sql": "SELECT subscription_id, customer_id, start_date, plan, (DATE_TRUNC('month', start_date) + INTERVAL '1 month' - INTERVAL '1 day')::DATE AS month_end_date FROM subscriptions ORDER BY start_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "8 subscriptions each with their start month's last day: Jan→Jan 31, Feb→Feb 28, Mar→Mar 31, Apr→Apr 30, Nov→Nov 30",
+      "expected_row_count": 8,
+      "expected_columns": ["subscription_id", "customer_id", "start_date", "plan", "month_end_date"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "DATE_TRUNC('month', start_date) gives the first day of the month; add 1 month then subtract 1 day to get the last day of that month.",
+    "This formula handles variable month lengths correctly: February → Feb 28 (or Feb 29 in leap years), months with 30 vs 31 days all work automatically."
+  ],
+  "explanation": "The formula DATE_TRUNC('month', date) + INTERVAL '1 month' - INTERVAL '1 day' is the standard PostgreSQL idiom for month-end. For Jan 15: truncate→Jan 1, +1 month→Feb 1, -1 day→Jan 31. For Feb 10: truncate→Feb 1, +1 month→Mar 1, -1 day→Feb 28. For Feb 28, 2026: same calculation → Feb 28. This formula correctly handles all month lengths including leap years automatically.",
+  "companies": ["Stripe", "Recurly"],
+  "created_at": "2026-09-24"
+}

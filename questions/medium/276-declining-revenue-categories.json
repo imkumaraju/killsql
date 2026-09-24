@@ -1,0 +1,26 @@
+{
+  "id": "276",
+  "slug": "declining-revenue-categories",
+  "title": "Product Categories with Month-over-Month Revenue Decline",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CTE", "window functions", "LAG", "PARTITION BY", "DISTINCT", "revenue trend"],
+  "description": "Find all product categories that experienced a **revenue decline in at least one month** compared to the previous month. Use LAG to compare each month's revenue with the prior month's revenue within the same category.",
+  "schema_sql": "CREATE TABLE monthly_sales (id INT, category VARCHAR(50), sale_month DATE, revenue DECIMAL(10,2)); INSERT INTO monthly_sales VALUES (1,'Electronics','2026-01-01',10000.00),(2,'Electronics','2026-02-01',9500.00),(3,'Electronics','2026-03-01',9000.00),(4,'Clothing','2026-01-01',5000.00),(5,'Clothing','2026-02-01',5200.00),(6,'Clothing','2026-03-01',4800.00),(7,'Hardware','2026-01-01',3000.00),(8,'Hardware','2026-02-01',3200.00),(9,'Hardware','2026-03-01',3500.00),(10,'Books','2026-01-01',2000.00),(11,'Books','2026-02-01',1800.00),(12,'Books','2026-03-01',1600.00);",
+  "solution_sql": "WITH lagged AS (SELECT category, sale_month, revenue, LAG(revenue) OVER (PARTITION BY category ORDER BY sale_month) AS prev_revenue FROM monthly_sales) SELECT DISTINCT category FROM lagged WHERE prev_revenue IS NOT NULL AND revenue < prev_revenue ORDER BY category",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 categories had at least one month-over-month decline: Books (both months declined), Clothing (Mar < Feb), Electronics (both months declined). Hardware only increased.",
+      "expected_row_count": 3,
+      "expected_columns": ["category"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use LAG(revenue) OVER (PARTITION BY category ORDER BY sale_month) to retrieve the previous month's revenue within the same category.",
+    "Filter WHERE revenue < prev_revenue (and prev_revenue IS NOT NULL to exclude the first month), then SELECT DISTINCT category to list each declining category only once."
+  ],
+  "explanation": "LAG partitioned by category looks back one month within each category. Electronics: Feb(9500) < Jan(10000) ✓ and Mar(9000) < Feb(9500) ✓ → declining. Clothing: Feb(5200) > Jan ✗ but Mar(4800) < Feb(5200) ✓ → declining. Hardware: always increasing ✗. Books: Feb(1800) < Jan(2000) ✓ and Mar(1600) < Feb ✓ → declining. DISTINCT removes duplicate category names since Electronics and Books each appear twice (two declining months each).",
+  "companies": ["Tableau", "Looker"],
+  "created_at": "2026-09-24"
+}

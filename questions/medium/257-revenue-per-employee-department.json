@@ -1,0 +1,26 @@
+{
+  "id": "257",
+  "slug": "revenue-per-employee-department",
+  "title": "Revenue per Employee by Department",
+  "difficulty": "medium",
+  "tags": ["SELECT", "JOIN", "GROUP BY", "SUM", "COUNT DISTINCT", "ROUND", "multi-table join", "HR analytics"],
+  "description": "For each department, compute the **total sales revenue generated**, the **number of employees**, and the **revenue per employee** (efficiency metric). Join three tables: departments, employees, and sales.",
+  "schema_sql": "CREATE TABLE departments (dept_id INT, name VARCHAR(100)); CREATE TABLE employees (emp_id INT, name VARCHAR(100), department_id INT); CREATE TABLE sales (sale_id INT, employee_id INT, amount DECIMAL(10,2), sale_date DATE); INSERT INTO departments VALUES (1,'Sales'),(2,'Marketing'),(3,'Engineering'); INSERT INTO employees VALUES (1,'Alice',1),(2,'Bob',1),(3,'Carol',1),(4,'Dave',2),(5,'Eve',2),(6,'Frank',3); INSERT INTO sales VALUES (1,1,5000.00,'2026-01-05'),(2,1,3000.00,'2026-01-10'),(3,2,4000.00,'2026-01-08'),(4,2,6000.00,'2026-01-15'),(5,3,2000.00,'2026-01-12'),(6,3,3000.00,'2026-01-20'),(7,4,1500.00,'2026-01-08'),(8,4,2500.00,'2026-01-18'),(9,5,3000.00,'2026-01-15'),(10,5,2000.00,'2026-01-25'),(11,6,500.00,'2026-01-10'),(12,6,800.00,'2026-01-22');",
+  "solution_sql": "SELECT d.name AS department, COUNT(DISTINCT e.emp_id) AS employee_count, SUM(s.amount) AS total_revenue, ROUND(SUM(s.amount) / COUNT(DISTINCT e.emp_id), 2) AS revenue_per_employee FROM departments d JOIN employees e ON d.dept_id = e.department_id JOIN sales s ON e.emp_id = s.employee_id GROUP BY d.dept_id, d.name ORDER BY revenue_per_employee DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 departments: Sales(3 emps, $23000 total, $7666.67/emp), Marketing(2 emps, $9000, $4500/emp), Engineering(1 emp, $1300, $1300/emp)",
+      "expected_row_count": 3,
+      "expected_columns": ["department", "employee_count", "total_revenue", "revenue_per_employee"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "JOIN three tables: departments → employees → sales, linking on dept_id and employee_id respectively.",
+    "Use COUNT(DISTINCT e.emp_id) to count unique employees per department — using COUNT(*) would count each sale as an employee."
+  ],
+  "explanation": "The three-table join connects organizational structure with revenue data. Sales dept: Alice(8k)+Bob(10k)+Carol(5k)=23k total, 3 employees → 7666.67/employee. Marketing: Dave(4k)+Eve(5k)=9k, 2 employees → 4500/employee. Engineering: Frank(1.3k), 1 employee → 1300/employee. COUNT(DISTINCT emp_id) is essential — without DISTINCT, multiple sales per employee would inflate the count.",
+  "companies": ["Salesforce", "SAP"],
+  "created_at": "2026-09-24"
+}

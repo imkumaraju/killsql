@@ -1,0 +1,26 @@
+{
+  "id": "258",
+  "slug": "budget-vs-actual",
+  "title": "Budget vs Actual Spend Comparison",
+  "difficulty": "medium",
+  "tags": ["SELECT", "JOIN", "COALESCE", "ROUND", "variance", "financial analysis", "multi-table join"],
+  "description": "Compare each department's **budgeted amount** to its **actual spend** for 2026. Show the department name, budget, actual, variance (actual - budget), and variance_pct. A positive variance means over-budget.",
+  "schema_sql": "CREATE TABLE departments (department_id INT, department_name VARCHAR(100)); CREATE TABLE budget (budget_id INT, department_id INT, budget_year INT, budget_amount DECIMAL(12,2)); CREATE TABLE actuals (actual_id INT, department_id INT, actual_year INT, actual_amount DECIMAL(12,2)); INSERT INTO departments VALUES (1,'Engineering'),(2,'Marketing'),(3,'Sales'),(4,'HR'),(5,'Finance'); INSERT INTO budget VALUES (1,1,2026,500000.00),(2,2,2026,200000.00),(3,3,2026,350000.00),(4,4,2026,150000.00),(5,5,2026,300000.00); INSERT INTO actuals VALUES (1,1,2026,520000.00),(2,2,2026,185000.00),(3,3,2026,380000.00),(4,4,2026,145000.00),(5,5,2026,310000.00);",
+  "solution_sql": "SELECT d.department_name, b.budget_amount, COALESCE(a.actual_amount, 0) AS actual_amount, COALESCE(a.actual_amount, 0) - b.budget_amount AS variance, ROUND((COALESCE(a.actual_amount, 0) - b.budget_amount) * 100.0 / b.budget_amount, 2) AS variance_pct FROM budget b JOIN departments d ON b.department_id = d.department_id LEFT JOIN actuals a ON b.department_id = a.department_id AND b.budget_year = a.actual_year WHERE b.budget_year = 2026 ORDER BY variance_pct DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 departments: Sales+8.57%, Engineering+4.00%, Finance+3.33%, HR-3.33%, Marketing-7.50%",
+      "expected_row_count": 5,
+      "expected_columns": ["department_name", "budget_amount", "actual_amount", "variance", "variance_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use a LEFT JOIN from budget to actuals — departments with no actuals entry will still appear with COALESCE(actual_amount, 0) defaulting to zero.",
+    "Variance = actual - budget; variance_pct = (variance / budget) * 100. Positive means over-budget, negative means under-budget."
+  ],
+  "explanation": "The LEFT JOIN ensures departments with budgets but no actuals still appear. COALESCE converts NULL actuals to 0. Variances: Engineering +20k(+4%), Marketing -15k(-7.5%), Sales +30k(+8.57%), HR -5k(-3.33%), Finance +10k(+3.33%). Ordering by variance_pct DESC puts the most over-budget departments first — Sales is the biggest budget overrun at +8.57%.",
+  "companies": ["SAP", "Oracle", "Anaplan"],
+  "created_at": "2026-09-24"
+}

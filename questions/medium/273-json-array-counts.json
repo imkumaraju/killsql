@@ -1,0 +1,26 @@
+{
+  "id": "273",
+  "slug": "json-array-counts",
+  "title": "Aggregating JSON Array Element Counts",
+  "difficulty": "medium",
+  "tags": ["SELECT", "json_array_length", "JSON", "CAST", "ORDER BY", "JSON functions"],
+  "description": "Each product has a `json_attributes` column containing a JSON object with arrays for 'colors' and 'sizes'. Extract the **number of color options** and **number of size options** for each product using JSON array length functions.",
+  "schema_sql": "CREATE TABLE products (product_id INT, name VARCHAR(100), json_attributes TEXT); INSERT INTO products VALUES (1,'Laptop','{\"colors\":[\"silver\",\"black\"],\"sizes\":[\"13inch\",\"15inch\",\"17inch\"]}'),(2,'Phone','{\"colors\":[\"black\",\"white\",\"blue\",\"red\"],\"sizes\":[\"standard\",\"plus\"]}'),(3,'Tablet','{\"colors\":[\"gray\"],\"sizes\":[\"10inch\",\"12inch\"]}'),(4,'Shirt','{\"colors\":[\"red\",\"blue\",\"green\",\"white\",\"black\"],\"sizes\":[\"XS\",\"S\",\"M\",\"L\",\"XL\"]}'),(5,'Hat','{\"colors\":[\"black\",\"brown\"],\"sizes\":[\"one-size\"]}');",
+  "solution_sql": "SELECT product_id, name, json_array_length(json_attributes::json -> 'colors') AS color_options, json_array_length(json_attributes::json -> 'sizes') AS size_options FROM products ORDER BY color_options DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 products with color and size option counts. Shirt: 5 colors, 5 sizes. Phone: 4 colors, 2 sizes. Laptop: 2 colors, 3 sizes. Hat: 2 colors, 1 size. Tablet: 1 color, 2 sizes.",
+      "expected_row_count": 5,
+      "expected_columns": ["product_id", "name", "color_options", "size_options"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Cast the text column to JSON using ::json, then use the -> operator to extract a specific key: json_attributes::json -> 'colors' returns the colors array.",
+    "json_array_length(array_json) returns the number of elements in a JSON array — apply it once for 'colors' and once for 'sizes'."
+  ],
+  "explanation": "The ::json cast converts the TEXT column to a JSON type. The -> operator extracts a JSON key value (returns JSON). json_array_length() counts elements in the resulting JSON array. Shirt has 5 colors ['red','blue','green','white','black'] and 5 sizes → 5+5. Phone: 4 colors, 2 sizes. Laptop: 2 colors, 3 sizes. Hat: 2 colors, 1 size. Tablet: 1 color, 2 sizes. This pattern is useful for products with variant configurations stored as JSON.",
+  "companies": ["Shopify", "Etsy"],
+  "created_at": "2026-09-24"
+}

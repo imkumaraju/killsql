@@ -1,0 +1,26 @@
+{
+  "id": "263",
+  "slug": "anomaly-detection-zscore",
+  "title": "Detecting Anomalies Using Z-Score Approach",
+  "difficulty": "medium",
+  "tags": ["SELECT", "CTE", "JOIN", "AVG", "STDDEV", "z-score", "anomaly detection", "NULLIF"],
+  "description": "Identify **anomalous transactions** where the transaction amount is more than **2 standard deviations** above or below the customer's mean transaction amount. Show the transaction, the customer's mean and std, and the z-score.",
+  "schema_sql": "CREATE TABLE transactions (transaction_id INT, customer_id INT, amount DECIMAL(10,2), tx_date DATE); INSERT INTO transactions VALUES (1,1,100.00,'2026-01-05'),(2,1,105.00,'2026-01-10'),(3,1,95.00,'2026-01-15'),(4,1,100.00,'2026-01-20'),(5,1,102.00,'2026-01-25'),(6,1,900.00,'2026-01-30'),(7,2,200.00,'2026-01-08'),(8,2,210.00,'2026-01-12'),(9,2,195.00,'2026-01-18'),(10,2,205.00,'2026-01-22'),(11,2,198.00,'2026-01-26'),(12,2,1800.00,'2026-01-28'),(13,3,50.00,'2026-01-10'),(14,3,55.00,'2026-01-15'),(15,3,48.00,'2026-01-20'),(16,3,52.00,'2026-01-25'),(17,3,53.00,'2026-01-28'),(18,3,51.00,'2026-01-30');",
+  "solution_sql": "WITH stats AS (SELECT customer_id, AVG(amount) AS avg_amount, STDDEV(amount) AS std_amount FROM transactions GROUP BY customer_id) SELECT t.transaction_id, t.customer_id, t.amount, ROUND(s.avg_amount, 2) AS customer_mean, ROUND(s.std_amount, 2) AS customer_std, ROUND((t.amount - s.avg_amount) / NULLIF(s.std_amount, 0), 2) AS z_score FROM transactions t JOIN stats s ON t.customer_id = s.customer_id WHERE ABS((t.amount - s.avg_amount) / NULLIF(s.std_amount, 0)) > 2 ORDER BY z_score DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "2 anomalies: C1 transaction of $900 (z≈2.04) and C2 transaction of $1800 (z≈2.04). C3 has no outlier.",
+      "expected_row_count": 2,
+      "expected_columns": ["transaction_id", "customer_id", "amount", "customer_mean", "customer_std", "z_score"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Compute per-customer AVG and STDDEV in a CTE, then join back to the transactions table to calculate z-score = (amount - avg) / std for each transaction.",
+    "Filter WHERE ABS(z_score) > 2 to find outliers — use NULLIF(std_amount, 0) to avoid division by zero for customers with zero variance."
+  ],
+  "explanation": "The CTE computes per-customer statistical parameters. Z-score = (value - mean) / std_dev measures how many standard deviations a value is from the mean. Customer 1: 5 normal ≈$100 + 1 outlier $900; mean≈233.67, std≈326. Z for $900 ≈ 2.04 > 2. Customer 2: 5 normal ≈$200 + 1 outlier $1800; z ≈ 2.04 > 2. Customer 3: tightly clustered $48–$55, no outlier. Two anomalous transactions detected.",
+  "companies": ["Stripe", "Visa"],
+  "created_at": "2026-09-24"
+}

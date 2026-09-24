@@ -1,0 +1,26 @@
+{
+  "id": "279",
+  "slug": "cumulative-sum-reset-partition",
+  "title": "Cumulative Sum That Resets on Partition Change",
+  "difficulty": "medium",
+  "tags": ["SELECT", "window functions", "SUM OVER", "PARTITION BY", "ROWS BETWEEN", "running total", "quota"],
+  "description": "Compute a **running total of sales that automatically resets** at the start of each quota period for each salesperson. Use SUM() OVER with a composite PARTITION BY (salesperson_id, quota_period) to achieve the reset behavior.",
+  "schema_sql": "CREATE TABLE sales (sale_id INT, salesperson_id INT, sale_date DATE, amount DECIMAL(10,2), quota_period VARCHAR(10)); INSERT INTO sales VALUES (1,1,'2026-01-05',500.00,'Q1-2026'),(2,1,'2026-01-15',700.00,'Q1-2026'),(3,1,'2026-02-10',600.00,'Q1-2026'),(4,1,'2026-04-05',800.00,'Q2-2026'),(5,1,'2026-04-20',400.00,'Q2-2026'),(6,2,'2026-01-08',300.00,'Q1-2026'),(7,2,'2026-02-05',500.00,'Q1-2026'),(8,2,'2026-03-10',450.00,'Q1-2026'),(9,2,'2026-04-12',600.00,'Q2-2026'),(10,2,'2026-05-08',700.00,'Q2-2026');",
+  "solution_sql": "SELECT salesperson_id, quota_period, sale_date, amount, SUM(amount) OVER (PARTITION BY salesperson_id, quota_period ORDER BY sale_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM sales ORDER BY salesperson_id, quota_period, sale_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 rows. S1 Q1: 500→1200→1800 then resets. S1 Q2: 800→1200. S2 Q1: 300→800→1250 then resets. S2 Q2: 600→1300.",
+      "expected_row_count": 10,
+      "expected_columns": ["salesperson_id", "quota_period", "sale_date", "amount", "running_total"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "PARTITION BY (salesperson_id, quota_period) creates a separate window for each salesperson-quarter combination — the running total naturally resets when the partition changes.",
+    "ORDER BY sale_date with ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW ensures the running total accumulates chronologically within each partition."
+  ],
+  "explanation": "The composite partition key (salesperson_id, quota_period) means each unique combination gets its own window. When salesperson 1 transitions from Q1-2026 to Q2-2026, the window resets — the running total starts fresh at 800 for the first Q2 sale. S1 Q1: 500→1200→1800. S1 Q2: 800→1200. S2 Q1: 300→800→1250. S2 Q2: 600→1300. This pattern is used in quota tracking, budget period resets, and cumulative KPIs.",
+  "companies": ["Salesforce", "HubSpot"],
+  "created_at": "2026-09-24"
+}
