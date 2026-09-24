@@ -15,7 +15,8 @@
     "build:index": "tsx scripts/build-index.ts",
     "copy:questions": "tsx scripts/copy-questions.ts",
     "validate:questions": "tsx scripts/validate-questions.ts",
-    "check:secrets": "node scripts/check-secrets.mjs"
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "check:grants": "node scripts/check-data-api-grants.mjs"
   },
   "dependencies": {
     "tsx": "^4.19.3"

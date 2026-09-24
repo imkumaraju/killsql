@@ -1,0 +1,30 @@
+# Fail if a public table migration has no explicit Data API GRANT.
+# Supabase stops auto-granting new public tables on 2026-10-30.
+name: Data API grants
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/migrations/**"
+      - "scripts/check-data-api-grants.mjs"
+      - ".github/workflows/supabase-grants.yml"
+  pull_request:
+    paths:
+      - "supabase/migrations/**"
+      - "scripts/check-data-api-grants.mjs"
+      - ".github/workflows/supabase-grants.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  grants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/check-data-api-grants.mjs

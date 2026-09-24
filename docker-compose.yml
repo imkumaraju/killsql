@@ -17,6 +17,7 @@ services:
       - ./supabase/migrations/001_initial.sql:/docker-entrypoint-initdb.d/001_initial.sql:ro
       - ./supabase/migrations/002_streaks.sql:/docker-entrypoint-initdb.d/002_streaks.sql:ro
       - ./supabase/migrations/003_auth_onboarding.sql:/docker-entrypoint-initdb.d/003_auth_onboarding.sql:ro
+      - ./supabase/migrations/004_data_api_grants.sql:/docker-entrypoint-initdb.d/004_data_api_grants.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

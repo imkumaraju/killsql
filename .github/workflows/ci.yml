@@ -14,6 +14,7 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/check-secrets.mjs
+      - run: node scripts/check-data-api-grants.mjs
 
   validate:
     runs-on: ubuntu-latest

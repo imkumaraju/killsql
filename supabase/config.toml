@@ -8,6 +8,9 @@ project_id = "killsql"
 enabled = true
 port = 54321
 schemas = ["public"]
+# New public tables need an explicit GRANT. Removed by Supabase on 2026-10-30,
+# when this becomes the only behavior.
+auto_expose_new_tables = false
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
