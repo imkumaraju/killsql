@@ -10,8 +10,8 @@
   "test_cases": [
     {
       "id": "tc1",
-      "description": "Customers 3, 5, 7, 8 each have exactly one order. Customers 1, 4, 6 have multiple orders and are excluded.",
-      "expected_row_count": 4,
+      "description": "Customers 2, 3, 5, 7, 8 each have exactly one order. Customers 1, 4, 6 have multiple orders and are excluded.",
+      "expected_row_count": 5,
       "expected_columns": ["customer_id", "order_date"],
       "validate_order": false
     }
@@ -20,7 +20,7 @@
     "GROUP BY customer_id and count their orders — the key is HAVING COUNT(*) = 1 to keep only those with a single order.",
     "Since a one-time buyer has exactly one order, MIN(order_date) = that single date, giving you the purchase date cleanly."
   ],
-  "explanation": "Grouping by customer_id lets COUNT(*) tally orders per customer. HAVING COUNT(*) = 1 filters to one-time buyers. C1 has 2 orders, C4 has 3, C6 has 2 — all excluded. C3, C5, C7, C8 appear exactly once → 4 results. Since each has only one record, MIN(order_date) simply returns that date. This analysis is the first step in studying purchase retention rates.",
+  "explanation": "Grouping by customer_id lets COUNT(*) tally orders per customer. HAVING COUNT(*) = 1 filters to one-time buyers. C1 has 2 orders, C4 has 3, C6 has 2 — all excluded. C2, C3, C5, C7, C8 appear exactly once → 5 results. Since each has only one record, MIN(order_date) simply returns that date. This analysis is the first step in studying purchase retention rates.",
   "companies": ["Shopify", "WooCommerce"],
   "created_at": "2026-09-24"
 }

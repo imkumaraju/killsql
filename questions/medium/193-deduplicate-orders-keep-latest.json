@@ -1,6 +1,6 @@
 {
   "id": "193",
-  "slug": "deduplicate-with-row-number",
+  "slug": "deduplicate-orders-keep-latest",
   "title": "Deduplicate Orders Keeping the Latest Entry",
   "difficulty": "medium",
   "tags": ["deduplication", "ROW_NUMBER", "CTE", "PARTITION BY", "data cleaning"],

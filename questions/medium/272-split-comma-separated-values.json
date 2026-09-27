@@ -6,7 +6,7 @@
   "tags": ["SELECT", "STRING_TO_ARRAY", "UNNEST", "LATERAL", "GROUP BY", "COUNT", "string splitting", "array functions"],
   "description": "Each product has a comma-separated `tags` column. **Split** the tags into individual rows and count how many products are associated with each tag. Show each tag and its product_count, ordered by frequency descending.",
   "schema_sql": "CREATE TABLE products (product_id INT, name VARCHAR(100), tags TEXT); INSERT INTO products VALUES (1,'Laptop','electronics,computer,portable'),(2,'Phone','electronics,mobile,camera'),(3,'Tablet','electronics,portable,touchscreen'),(4,'Shirt','clothing,casual,cotton'),(5,'Shoes','clothing,footwear,sports');",
-  "solution_sql": "SELECT TRIM(tag) AS tag, COUNT(*) AS product_count FROM products, LATERAL UNNEST(STRING_TO_ARRAY(tags, ',')) AS tag GROUP BY TRIM(tag) ORDER BY product_count DESC, tag",
+  "solution_sql": "SELECT tag, COUNT(*) AS product_count FROM products, UNNEST(STRING_TO_ARRAY(tags, ',')) AS t(tag) GROUP BY tag ORDER BY product_count DESC, tag",
   "test_cases": [
     {
       "id": "tc1",

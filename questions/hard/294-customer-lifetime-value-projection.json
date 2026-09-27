@@ -1,6 +1,6 @@
 {
   "id": "294",
-  "slug": "customer-lifetime-value",
+  "slug": "customer-lifetime-value-projection",
   "title": "Customer Lifetime Value Projection",
   "difficulty": "hard",
   "tags": ["CTE", "aggregation", "arithmetic", "GREATEST", "date arithmetic", "analytics"],

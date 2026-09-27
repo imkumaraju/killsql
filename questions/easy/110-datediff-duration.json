@@ -6,7 +6,7 @@
   "tags": ["SELECT", "DATEDIFF", "date functions"],
   "description": "Write a query that returns each project's `id`, `name`, and the number of days between `start_date` and `end_date` as `duration_days`.\n\n**Table: projects**\n\n| Column | Type |\n|--------|------|\n| id | INT |\n| name | VARCHAR |\n| start_date | DATE |\n| end_date | DATE |",
   "schema_sql": "CREATE TABLE projects (id INT, name VARCHAR, start_date DATE, end_date DATE); INSERT INTO projects VALUES (1, 'Alpha', '2026-01-01', '2026-03-31'), (2, 'Beta', '2026-02-15', '2026-06-30'), (3, 'Gamma', '2026-04-01', '2026-09-30'), (4, 'Delta', '2026-03-10', '2026-05-10'), (5, 'Epsilon', '2026-07-01', '2026-12-31');",
-  "solution_sql": "SELECT id, name, DATEDIFF(end_date, start_date) AS duration_days FROM projects",
+  "solution_sql": "SELECT id, name, end_date - start_date AS duration_days FROM projects",
   "test_cases": [
     {
       "id": "tc1",

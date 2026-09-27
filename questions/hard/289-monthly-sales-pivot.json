@@ -14,7 +14,7 @@
       "expected_row_count": 2,
       "expected_columns": ["product_name", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "total_revenue"],
       "expected_rows": [
-        { "product_name": "Widget A", "jan": 1000, "feb": 1500, "mar": 1200, "apr": 900, "may": 1800, "jun": 2000, "jul": 1700, "aug": 1900, "sep": 1600, "oct": 2100, "nov": 2500, "dec": 3000, "total_revenue": 20200 },
+        { "product_name": "Widget A", "jan": 1000, "feb": 1500, "mar": 1200, "apr": 900, "may": 1800, "jun": 2000, "jul": 1700, "aug": 1900, "sep": 1600, "oct": 2100, "nov": 2500, "dec": 3000, "total_revenue": 21200 },
         { "product_name": "Widget B", "jan": 500, "feb": 600, "mar": 550, "apr": 700, "may": 0, "jun": 800, "jul": 0, "aug": 900, "sep": 0, "oct": 1000, "nov": 0, "dec": 1200, "total_revenue": 6250 }
       ],
       "validate_order": true
