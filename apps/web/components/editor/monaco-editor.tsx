@@ -102,7 +102,13 @@ export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
         },
       });
 
-      editor.onDidDispose(() => disposable.dispose());
+      const onResize = () => editor.layout();
+      window.addEventListener("resize", onResize);
+      editor.layout();
+      editor.onDidDispose(() => {
+        disposable.dispose();
+        window.removeEventListener("resize", onResize);
+      });
     },
     [onRun],
   );
@@ -124,7 +130,7 @@ export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
         fontFamily: "var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace",
         fontLigatures: true,
         scrollBeyondLastLine: false,
-        automaticLayout: true,
+        automaticLayout: false,
         tabSize: 2,
         wordWrap: "on",
         padding: { top: 12, bottom: 12 },

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { SqlWorkspace } from "@/components/editor/sql-workspace";
+import { ProblemWorkspace } from "@/components/editor/problem-workspace";
 import { loadAllQuestions, loadQuestionBySlug, loadQuestionSummaries } from "@/lib/questions";
 
 export function generateStaticParams() {
@@ -26,7 +26,7 @@ export default async function ProblemPage({
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col">
-      <SqlWorkspace key={question.slug} question={question} questions={questions} />
+      <ProblemWorkspace question={question} questions={questions} />
     </div>
   );
 }

@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { neighbors, pickRandom } from "@/lib/daily";
+import { EditorErrorBoundary } from "@/components/editor/editor-error-boundary";
 import { mergeSolved, useProgressStore } from "@/lib/local-progress";
 import { parseSchemaSql } from "@/lib/schema-sql";
 import { getSqlEngine } from "@/lib/sql-engine";
@@ -189,7 +190,7 @@ export function SqlWorkspace({
           </Button>
         </div>
       </div>
-      <PanelGroup direction="horizontal" className="min-h-0 flex-1">
+      <PanelGroup autoSaveId="killsql-problem-h" direction="horizontal" className="min-h-0 flex-1">
         <Panel defaultSize={42} minSize={28} className="min-h-0">
           <ScrollArea className="h-full">
             <div className="space-y-5 p-5">
@@ -274,7 +275,7 @@ export function SqlWorkspace({
         </Panel>
         <PanelResizeHandle className="w-1 bg-zinc-800 hover:bg-lime-400/60" />
         <Panel defaultSize={58} minSize={35} className="min-h-0">
-          <PanelGroup direction="vertical">
+          <PanelGroup autoSaveId="killsql-problem-v" direction="vertical">
             <Panel defaultSize={62} minSize={30}>
               <div className="flex h-full flex-col">
                 <div className="flex items-center justify-between border-b border-zinc-800 px-3 py-2">
@@ -293,7 +294,18 @@ export function SqlWorkspace({
                   </div>
                 </div>
                 <div className="min-h-0 flex-1">
-                  <MonacoEditor value={sql} onChange={setSql} onRun={() => void run()} tables={tables} />
+                  <EditorErrorBoundary
+                    fallback={
+                      <textarea
+                        value={sql}
+                        onChange={(event) => setSql(event.target.value)}
+                        spellCheck={false}
+                        className="h-full w-full resize-none bg-zinc-950 p-3 font-mono text-sm text-zinc-100 outline-none"
+                      />
+                    }
+                  >
+                    <MonacoEditor value={sql} onChange={setSql} onRun={() => void run()} tables={tables} />
+                  </EditorErrorBoundary>
                 </div>
               </div>
             </Panel>
