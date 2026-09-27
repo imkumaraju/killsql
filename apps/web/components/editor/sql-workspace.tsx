@@ -3,13 +3,13 @@
 import type { Question, QuestionSummary, ValidationResult } from "@killsql/question-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Lightbulb, Play, RotateCcw, Shuffle } from "lucide-react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDonatePrompt } from "@/components/donate/donate-prompt";
 import { isDonateHiddenToday } from "@/lib/donate";
 import { MarkdownBody } from "@/components/markdown";
+import { MonacoEditor } from "@/components/editor/monaco-editor";
 import { ResultsPanel } from "@/components/editor/results-panel";
 import { SchemaPreview } from "@/components/editor/schema-preview";
 import { Badge } from "@/components/ui/badge";
@@ -17,19 +17,16 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { neighbors, pickRandom } from "@/lib/daily";
 import { EditorErrorBoundary } from "@/components/editor/editor-error-boundary";
-import { mergeSolved, useProgressStore } from "@/lib/local-progress";
+import { mergeSolved, useProgressStore, type LocalAttempt } from "@/lib/local-progress";
 import { parseSchemaSql } from "@/lib/schema-sql";
 import { getSqlEngine } from "@/lib/sql-engine";
 import { useWorkspaceStore } from "@/lib/store";
 import { useCurrentUser } from "@/lib/use-user";
 
-const MonacoEditor = dynamic(
-  () => import("@/components/editor/monaco-editor").then((mod) => mod.MonacoEditor),
-  { ssr: false },
-);
-
 const STARTER = `-- Write your SQL here, then press Ctrl/Cmd+Enter
 `;
+
+const EMPTY_ATTEMPTS: LocalAttempt[] = [];
 
 const difficultyVariant = {
   easy: "easy",
@@ -47,14 +44,14 @@ export function SqlWorkspace({
   const { data: user } = useCurrentUser();
   const queryClient = useQueryClient();
   const router = useRouter();
-  const sql = useWorkspaceStore((state) => state.drafts[question.slug] ?? STARTER);
+  const sql = useWorkspaceStore((state) => state.drafts[question.slug]) ?? STARTER;
   const setDraft = useWorkspaceStore((state) => state.setDraft);
   const setSql = (value: string) => setDraft(question.slug, value);
   const markVisited = useProgressStore((state) => state.markVisited);
   const markSolved = useProgressStore((state) => state.markSolved);
   const recordAttempt = useProgressStore((state) => state.recordAttempt);
   const localSolved = useProgressStore((state) => state.solved);
-  const attempts = useProgressStore((state) => state.attempts[question.slug] ?? []);
+  const attempts = useProgressStore((state) => state.attempts[question.slug]) ?? EMPTY_ATTEMPTS;
   const solved = mergeSolved(user?.solved_slugs, localSolved);
   const [hintsShown, setHintsShown] = useState(0);
   const [showSolution, setShowSolution] = useState(false);
@@ -62,6 +59,7 @@ export function SqlWorkspace({
   const [error, setError] = useState<string | null>(null);
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [runNonce, setRunNonce] = useState(0);
+  const [editorKey, setEditorKey] = useState(0);
   const passedThisSession = useRef(false);
   const openDonatePrompt = useDonatePrompt((state) => state.openPrompt);
   const tables = useMemo(() => parseSchemaSql(question.schema_sql), [question.schema_sql]);
@@ -259,7 +257,10 @@ export function SqlWorkspace({
                         </div>
                         <button
                           type="button"
-                          onClick={() => setSql(attempt.sql)}
+                          onClick={() => {
+                            setSql(attempt.sql);
+                            setEditorKey((value) => value + 1);
+                          }}
                           className="mt-1 text-left font-mono text-zinc-300 hover:text-lime-300"
                         >
                           Restore this query
@@ -280,7 +281,14 @@ export function SqlWorkspace({
                     SQL editor · DuckDB
                   </span>
                   <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" onClick={() => setSql(STARTER)}>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        setSql(STARTER);
+                        setEditorKey((value) => value + 1);
+                      }}
+                    >
                       <RotateCcw className="h-3.5 w-3.5" />
                       Reset
                     </Button>
@@ -301,7 +309,13 @@ export function SqlWorkspace({
                       />
                     }
                   >
-                    <MonacoEditor value={sql} onChange={setSql} onRun={() => void run()} tables={tables} />
+                    <MonacoEditor
+                      resetKey={`${question.slug}-${editorKey}`}
+                      value={sql}
+                      onChange={setSql}
+                      onRun={() => void run()}
+                      tables={tables}
+                    />
                   </EditorErrorBoundary>
                 </div>
               </div>

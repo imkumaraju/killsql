@@ -9,13 +9,13 @@ type Props = {
   onChange: (value: string) => void;
   onRun?: () => void;
   tables?: SchemaTable[];
+  resetKey?: string | number;
 };
 
-export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
+export function MonacoEditor({ value, onChange, onRun, tables = [], resetKey = 0 }: Props) {
   const tablesRef = useRef(tables);
   const onChangeRef = useRef(onChange);
   const onRunRef = useRef(onRun);
-  const valueRef = useRef(value);
   useEffect(() => {
     tablesRef.current = tables;
   }, [tables]);
@@ -25,115 +25,108 @@ export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
   useEffect(() => {
     onRunRef.current = onRun;
   }, [onRun]);
-  useEffect(() => {
-    valueRef.current = value;
-  }, [value]);
 
   const handleMount: OnMount = useCallback((editor, monaco) => {
-      monaco.editor.defineTheme("killsql-dark", {
-        base: "vs-dark",
-        inherit: true,
-        rules: [
-          { token: "comment", foreground: "6b7280", fontStyle: "italic" },
-          { token: "keyword", foreground: "d9f99d" },
-          { token: "string", foreground: "fdba74" },
-          { token: "number", foreground: "7dd3fc" },
-        ],
-        colors: {
-          "editor.background": "#09090b",
-          "editor.foreground": "#e4e4e7",
-          "editorLineNumber.foreground": "#3f3f46",
-          "editorCursor.foreground": "#bef264",
-          "editor.selectionBackground": "#3f6218aa",
-          "editor.lineHighlightBackground": "#18181b",
-        },
-      });
-      monaco.editor.setTheme("killsql-dark");
-      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-        onRunRef.current?.();
-      });
+    monaco.editor.defineTheme("killsql-dark", {
+      base: "vs-dark",
+      inherit: true,
+      rules: [
+        { token: "comment", foreground: "6b7280", fontStyle: "italic" },
+        { token: "keyword", foreground: "d9f99d" },
+        { token: "string", foreground: "fdba74" },
+        { token: "number", foreground: "7dd3fc" },
+      ],
+      colors: {
+        "editor.background": "#09090b",
+        "editor.foreground": "#e4e4e7",
+        "editorLineNumber.foreground": "#3f3f46",
+        "editorCursor.foreground": "#bef264",
+        "editor.selectionBackground": "#3f6218aa",
+        "editor.lineHighlightBackground": "#18181b",
+      },
+    });
+    monaco.editor.setTheme("killsql-dark");
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+      onRunRef.current?.();
+    });
 
-      const disposable = monaco.languages.registerCompletionItemProvider("sql", {
-        triggerCharacters: [".", " ", ","],
-        provideCompletionItems(model, position) {
-          const schema = tablesRef.current;
-          const word = model.getWordUntilPosition(position);
-          const range = {
-            startLineNumber: position.lineNumber,
-            endLineNumber: position.lineNumber,
-            startColumn: word.startColumn,
-            endColumn: word.endColumn,
-          };
-          const line = model.getLineContent(position.lineNumber).slice(0, position.column - 1);
-          const tableDot = line.match(/([A-Za-z_][\w]*)\s*\.\s*$/);
-          const fromTable = tableDot
-            ? schema.find((table) => table.name.toLowerCase() === tableDot[1].toLowerCase())
-            : undefined;
+    const disposable = monaco.languages.registerCompletionItemProvider("sql", {
+      triggerCharacters: [".", " ", ","],
+      provideCompletionItems(model, position) {
+        const schema = tablesRef.current;
+        const word = model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+        const line = model.getLineContent(position.lineNumber).slice(0, position.column - 1);
+        const tableDot = line.match(/([A-Za-z_][\w]*)\s*\.\s*$/);
+        const fromTable = tableDot
+          ? schema.find((table) => table.name.toLowerCase() === tableDot[1].toLowerCase())
+          : undefined;
 
-          const suggestions: import("monaco-editor").languages.CompletionItem[] = [];
-          if (fromTable) {
-            for (const column of fromTable.columns) {
-              suggestions.push({
-                label: column.name,
-                kind: monaco.languages.CompletionItemKind.Field,
-                insertText: column.name,
-                detail: `${fromTable.name}.${column.name} ${column.type}`,
-                range,
-              });
-            }
-            return { suggestions };
-          }
-
-          for (const table of schema) {
+        const suggestions: import("monaco-editor").languages.CompletionItem[] = [];
+        if (fromTable) {
+          for (const column of fromTable.columns) {
             suggestions.push({
-              label: table.name,
-              kind: monaco.languages.CompletionItemKind.Class,
-              insertText: table.name,
-              detail: "table",
+              label: column.name,
+              kind: monaco.languages.CompletionItemKind.Field,
+              insertText: column.name,
+              detail: `${fromTable.name}.${column.name} ${column.type}`,
               range,
             });
-            for (const column of table.columns) {
-              suggestions.push({
-                label: `${table.name}.${column.name}`,
-                kind: monaco.languages.CompletionItemKind.Field,
-                insertText: `${table.name}.${column.name}`,
-                detail: column.type,
-                range,
-              });
-              suggestions.push({
-                label: column.name,
-                kind: monaco.languages.CompletionItemKind.Field,
-                insertText: column.name,
-                detail: `${table.name}.${column.name}`,
-                range,
-              });
-            }
           }
           return { suggestions };
-        },
-      });
+        }
 
-      const onResize = () => editor.layout();
-      window.addEventListener("resize", onResize);
-      editor.layout();
-      editor.onDidDispose(() => {
-        disposable.dispose();
-        window.removeEventListener("resize", onResize);
-      });
+        for (const table of schema) {
+          suggestions.push({
+            label: table.name,
+            kind: monaco.languages.CompletionItemKind.Class,
+            insertText: table.name,
+            detail: "table",
+            range,
+          });
+          for (const column of table.columns) {
+            suggestions.push({
+              label: `${table.name}.${column.name}`,
+              kind: monaco.languages.CompletionItemKind.Field,
+              insertText: `${table.name}.${column.name}`,
+              detail: column.type,
+              range,
+            });
+            suggestions.push({
+              label: column.name,
+              kind: monaco.languages.CompletionItemKind.Field,
+              insertText: column.name,
+              detail: `${table.name}.${column.name}`,
+              range,
+            });
+          }
+        }
+        return { suggestions };
+      },
+    });
+
+    const onResize = () => editor.layout();
+    window.addEventListener("resize", onResize);
+    editor.layout();
+    editor.onDidDispose(() => {
+      disposable.dispose();
+      window.removeEventListener("resize", onResize);
+    });
   }, []);
 
   return (
     <Editor
+      key={resetKey}
       height="100%"
       defaultLanguage="sql"
-      theme="killsql-dark"
-      value={value}
-      onChange={(next) => {
-        const sql = next ?? "";
-        if (sql === valueRef.current) return;
-        valueRef.current = sql;
-        onChangeRef.current(sql);
-      }}
+      theme="vs-dark"
+      defaultValue={value}
+      onChange={(next) => onChangeRef.current(next ?? "")}
       onMount={handleMount}
       options={{
         minimap: { enabled: false },
@@ -141,7 +134,7 @@ export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
         fontFamily: "var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace",
         fontLigatures: true,
         scrollBeyondLastLine: false,
-        automaticLayout: false,
+        automaticLayout: true,
         tabSize: 2,
         wordWrap: "on",
         padding: { top: 12, bottom: 12 },
@@ -149,7 +142,11 @@ export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
         smoothScrolling: true,
         quickSuggestions: { other: true, comments: false, strings: false },
       }}
-      loading={<div className="flex h-full items-center justify-center text-sm text-zinc-500">Loading editor…</div>}
+      loading={
+        <div className="flex h-full items-center justify-center text-sm text-zinc-500">
+          Loading editor…
+        </div>
+      }
     />
   );
 }
