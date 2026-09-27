@@ -94,6 +94,23 @@ export default function HomePage() {
           </pre>
         </div>
       </section>
+
+      <footer className="relative border-t border-zinc-800/80">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-zinc-500">KillSQL — free SQL practice in your browser.</p>
+          <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-zinc-400">
+            <Link className="hover:text-zinc-100" href="/privacy">
+              Privacy policy
+            </Link>
+            <Link className="hover:text-zinc-100" href="/terms">
+              Terms of service
+            </Link>
+            <a className="hover:text-zinc-100" href="mailto:support@killsql.org">
+              support@killsql.org
+            </a>
+          </nav>
+        </div>
+      </footer>
     </div>
   );
 }
