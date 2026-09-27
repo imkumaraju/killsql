@@ -13,12 +13,23 @@ type Props = {
 
 export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
   const tablesRef = useRef(tables);
+  const onChangeRef = useRef(onChange);
+  const onRunRef = useRef(onRun);
+  const valueRef = useRef(value);
   useEffect(() => {
     tablesRef.current = tables;
   }, [tables]);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+  useEffect(() => {
+    onRunRef.current = onRun;
+  }, [onRun]);
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
-  const handleMount: OnMount = useCallback(
-    (editor, monaco) => {
+  const handleMount: OnMount = useCallback((editor, monaco) => {
       monaco.editor.defineTheme("killsql-dark", {
         base: "vs-dark",
         inherit: true,
@@ -39,7 +50,7 @@ export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
       });
       monaco.editor.setTheme("killsql-dark");
       editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-        onRun?.();
+        onRunRef.current?.();
       });
 
       const disposable = monaco.languages.registerCompletionItemProvider("sql", {
@@ -109,9 +120,7 @@ export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
         disposable.dispose();
         window.removeEventListener("resize", onResize);
       });
-    },
-    [onRun],
-  );
+  }, []);
 
   return (
     <Editor
@@ -121,7 +130,9 @@ export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
       value={value}
       onChange={(next) => {
         const sql = next ?? "";
-        if (sql !== value) onChange(sql);
+        if (sql === valueRef.current) return;
+        valueRef.current = sql;
+        onChangeRef.current(sql);
       }}
       onMount={handleMount}
       options={{

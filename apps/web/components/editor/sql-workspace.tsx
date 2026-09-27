@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDonatePrompt } from "@/components/donate/donate-prompt";
 import { isDonateHiddenToday } from "@/lib/donate";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { MarkdownBody } from "@/components/markdown";
 import { ResultsPanel } from "@/components/editor/results-panel";
 import { SchemaPreview } from "@/components/editor/schema-preview";
@@ -190,8 +189,8 @@ export function SqlWorkspace({
           </Button>
         </div>
       </div>
-      <PanelGroup autoSaveId="killsql-problem-h" direction="horizontal" className="min-h-0 flex-1">
-        <Panel defaultSize={42} minSize={28} className="min-h-0">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <div className="min-h-0 min-w-0 flex-1 lg:max-w-[42%] lg:border-r lg:border-zinc-800">
           <ScrollArea className="h-full">
             <div className="space-y-5 p-5">
               <div>
@@ -272,12 +271,10 @@ export function SqlWorkspace({
               ) : null}
             </div>
           </ScrollArea>
-        </Panel>
-        <PanelResizeHandle className="w-1 bg-zinc-800 hover:bg-lime-400/60" />
-        <Panel defaultSize={58} minSize={35} className="min-h-0">
-          <PanelGroup autoSaveId="killsql-problem-v" direction="vertical">
-            <Panel defaultSize={62} minSize={30}>
-              <div className="flex h-full flex-col">
+        </div>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <div className="flex min-h-0 flex-[62] flex-col">
+              <div className="flex h-full min-h-[12rem] flex-col">
                 <div className="flex items-center justify-between border-b border-zinc-800 px-3 py-2">
                   <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">
                     SQL editor · DuckDB
@@ -308,10 +305,9 @@ export function SqlWorkspace({
                   </EditorErrorBoundary>
                 </div>
               </div>
-            </Panel>
-            <PanelResizeHandle className="h-1 bg-zinc-800 hover:bg-lime-400/60" />
-            <Panel defaultSize={38} minSize={20}>
-              <div className="flex h-full flex-col">
+          </div>
+          <div className="flex min-h-0 flex-[38] flex-col border-t border-zinc-800">
+              <div className="flex h-full min-h-[8rem] flex-col">
                 <div className="border-b border-zinc-800 px-3 py-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
                   Results
                 </div>
@@ -319,10 +315,9 @@ export function SqlWorkspace({
                   <ResultsPanel key={runNonce} running={running} error={error} validation={validation} />
                 </div>
               </div>
-            </Panel>
-          </PanelGroup>
-        </Panel>
-      </PanelGroup>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
