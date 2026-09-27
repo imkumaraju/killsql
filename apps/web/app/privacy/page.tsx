@@ -89,7 +89,11 @@ export default function PrivacyPage() {
         <Link href="/" className="text-lime-300 hover:underline">
           www.killsql.org
         </Link>
-        . It covers Google sign-in and the rest of the site.
+        . See also the{" "}
+        <Link href="/terms" className="text-lime-300 hover:underline">
+          Terms of service
+        </Link>
+        .
       </p>
       <div className="mt-10 space-y-8">
         {sections.map((section) => (

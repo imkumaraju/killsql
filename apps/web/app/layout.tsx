@@ -41,6 +41,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               Privacy
             </Link>
             <span className="mx-2 text-zinc-700">·</span>
+            <Link className="hover:text-zinc-300" href="/terms">
+              Terms
+            </Link>
+            <span className="mx-2 text-zinc-700">·</span>
             <a className="hover:text-zinc-300" href="mailto:support@killsql.org">
               support@killsql.org
             </a>

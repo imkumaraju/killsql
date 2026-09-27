@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useCurrentUser } from "@/lib/use-user";
 
-const OPEN_PATHS = new Set(["/welcome", "/privacy"]);
+const OPEN_PATHS = new Set(["/welcome", "/privacy", "/terms"]);
 
 export function OnboardingGate() {
   const pathname = usePathname();
