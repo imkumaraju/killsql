@@ -1,0 +1,30 @@
+{
+  "id": "392",
+  "slug": "dynamic-pricing-optimization",
+  "title": "Revenue-Maximizing Price per Product",
+  "difficulty": "hard",
+  "tags": ["ROW_NUMBER", "PARTITION BY", "arithmetic", "top N per group", "analytics"],
+  "description": "Price experiments record `price` and `units_sold`. For each product pick the experiment that **maximizes revenue = price * units_sold**.\n\n**Table: experiments** — `product_id`, `product_name`, `price`, `units_sold`\n\nOutput columns: `product_id`, `product_name`, `optimal_price`, `units_sold`, `revenue`. Order by `product_id`.",
+  "schema_sql": "CREATE TABLE experiments (product_id INT, product_name VARCHAR, price DECIMAL(10,2), units_sold INT); INSERT INTO experiments VALUES (1,'Widget',10,50),(1,'Widget',12,45),(1,'Widget',15,30),(2,'Gadget',20,20),(2,'Gadget',25,18),(2,'Gadget',30,12);",
+  "solution_sql": "WITH scored AS (SELECT product_id, product_name, price, units_sold, price * units_sold AS revenue, ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY price * units_sold DESC, price) AS rn FROM experiments) SELECT product_id, product_name, price AS optimal_price, units_sold, revenue FROM scored WHERE rn = 1 ORDER BY product_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Widget best at 12 (540); Gadget best at 25 (450)",
+      "expected_row_count": 2,
+      "expected_columns": ["product_id", "product_name", "optimal_price", "units_sold", "revenue"],
+      "expected_rows": [
+        { "product_id": 1, "product_name": "Widget", "optimal_price": 12, "units_sold": 45, "revenue": 540 },
+        { "product_id": 2, "product_name": "Gadget", "optimal_price": 25, "units_sold": 18, "revenue": 450 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Compute price * units_sold as revenue in a CTE.",
+    "ROW_NUMBER() PARTITION BY product_id ORDER BY revenue DESC keeps the winning experiment."
+  ],
+  "explanation": "Widget: 10×50=500, 12×45=540, 15×30=450 → 12 wins. Gadget: 20×20=400, 25×18=450, 30×12=360 → 25 wins. Higher price is not always better once demand falls.",
+  "companies": ["Amazon", "Uber", "Airbnb"],
+  "created_at": "2026-09-27"
+}

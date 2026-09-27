@@ -1,0 +1,27 @@
+{
+  "id": "339",
+  "slug": "product-price-elasticity",
+  "title": "Detect Same-Direction Price and Quantity Changes",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "LAG", "PARTITION BY", "analytics", "price tracking"],
+  "description": "Find all month-over-month records where **price and quantity moved in the same direction** (both increased or both decreased compared to the previous period). This signals unusual price elasticity.\n\n**Table: price_history** — `id`, `product_id`, `product_name`, `period_date`, `price`, `quantity_sold`\n\nOutput columns: `product_id`, `product_name`, `period_date`, `price`, `quantity_sold`, `price_change`, `qty_change`. Order by `product_id`, `period_date`.",
+  "schema_sql": "CREATE TABLE price_history (id INTEGER, product_id INTEGER, product_name VARCHAR, period_date DATE, price DECIMAL(10,2), quantity_sold INTEGER); INSERT INTO price_history VALUES (1,1,'Widget A','2024-01-01',10.00,100),(2,1,'Widget A','2024-02-01',12.00,120),(3,1,'Widget A','2024-03-01',15.00,90),(4,2,'Gadget B','2024-01-01',25.00,200),(5,2,'Gadget B','2024-02-01',20.00,150),(6,2,'Gadget B','2024-03-01',18.00,180),(7,3,'Doohickey C','2024-01-01',5.00,500),(8,3,'Doohickey C','2024-02-01',5.50,480),(9,3,'Doohickey C','2024-03-01',4.50,520),(10,4,'Thingamajig D','2024-01-01',30.00,80),(11,4,'Thingamajig D','2024-02-01',35.00,90),(12,4,'Thingamajig D','2024-03-01',32.00,85);",
+  "solution_sql": "WITH changes AS (SELECT product_id, product_name, period_date, price, quantity_sold, price - LAG(price) OVER (PARTITION BY product_id ORDER BY period_date) AS price_change, quantity_sold - LAG(quantity_sold) OVER (PARTITION BY product_id ORDER BY period_date) AS qty_change FROM price_history) SELECT product_id, product_name, period_date, price, quantity_sold, price_change, qty_change FROM changes WHERE price_change IS NOT NULL AND ((price_change > 0 AND qty_change > 0) OR (price_change < 0 AND qty_change < 0)) ORDER BY product_id, period_date;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Widget A Feb (+price +qty), Gadget B Feb (-price -qty), Thingamajig D Feb (+price +qty), Thingamajig D Mar (-price -qty) = 4 rows",
+      "expected_row_count": 4,
+      "expected_columns": ["product_id", "product_name", "period_date", "price", "quantity_sold", "price_change", "qty_change"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use LAG(price) and LAG(quantity_sold) both partitioned by product_id and ordered by period_date.",
+    "Compute price_change = price - LAG(price) and qty_change = quantity_sold - LAG(quantity_sold) in a CTE.",
+    "Filter WHERE (price_change > 0 AND qty_change > 0) OR (price_change < 0 AND qty_change < 0) to find same-direction movements."
+  ],
+  "explanation": "Widget A Feb: price +2, qty +20 (both up ✓). Gadget B Feb: price -5, qty -50 (both down ✓). Thingamajig D Feb: price +5, qty +10 (both up ✓). Thingamajig D Mar: price -3, qty -5 (both down ✓). The other changes have price and quantity moving in opposite directions (normal elasticity).",
+  "companies": ["Nielsen", "McKinsey", "Boston Consulting Group"],
+  "created_at": "2026-09-27"
+}

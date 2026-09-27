@@ -1,0 +1,26 @@
+{
+  "id": "378",
+  "slug": "revenue-contribution-cte",
+  "title": "Product Revenue Contribution via CTE",
+  "difficulty": "medium",
+  "tags": ["CTE", "percentage", "arithmetic", "CROSS JOIN", "ROUND", "revenue share"],
+  "description": "Using a CTE that computes **total revenue**, return each product's revenue and its **percentage contribution** of that total.\n\n**Table: sales** — `product_id`, `product_name`, `revenue`\n\nOutput columns: `product_name`, `revenue`, `contribution_pct`. Order by `contribution_pct` DESC.",
+  "schema_sql": "CREATE TABLE sales (product_id INT, product_name VARCHAR, revenue DECIMAL(10,2)); INSERT INTO sales VALUES (1,'Widget',400.00),(2,'Gadget',300.00),(3,'Tool',200.00),(4,'Kit',100.00);",
+  "solution_sql": "WITH tot AS (SELECT SUM(revenue) AS total FROM sales) SELECT s.product_name, s.revenue, ROUND(s.revenue / t.total * 100, 2) AS contribution_pct FROM sales s CROSS JOIN tot t ORDER BY contribution_pct DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Total 1000: Widget 40%, Gadget 30%, Tool 20%, Kit 10% — 4 products",
+      "expected_row_count": 4,
+      "expected_columns": ["product_name", "revenue", "contribution_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "CTE `tot` holds a single SUM(revenue) row.",
+    "CROSS JOIN that one-row CTE onto sales so every product can divide by the same total."
+  ],
+  "explanation": "A one-row CTE avoids repeating a scalar subquery. Each revenue is divided by 1000 and multiplied by 100: 400→40, 300→30, 200→20, 100→10. This is the classic share-of-total pattern used in category mix reports.",
+  "companies": ["Google", "Amazon", "Stripe"],
+  "created_at": "2026-09-27"
+}

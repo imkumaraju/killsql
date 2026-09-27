@@ -1,0 +1,27 @@
+{
+  "id": "355",
+  "slug": "employee-overlap-in-projects",
+  "title": "Employees Sharing at Least One Project",
+  "difficulty": "medium",
+  "tags": ["self join", "self-join", "GROUP BY", "HAVING", "multi-table join", "analytics"],
+  "description": "Find all **pairs of employees** who share at least one project in common. Return each pair once (lower `employee_id` first) along with the number of shared projects.\n\n**Table: project_assignments** — `employee_id`, `employee_name`, `project_id`\n\nOutput columns: `emp1_id`, `emp1_name`, `emp2_id`, `emp2_name`, `shared_projects`. Order by `emp1_id`, `emp2_id`.",
+  "schema_sql": "CREATE TABLE project_assignments (employee_id INTEGER, employee_name VARCHAR, project_id INTEGER); INSERT INTO project_assignments VALUES (1,'Alice',101),(1,'Alice',102),(1,'Alice',103),(2,'Bob',101),(2,'Bob',104),(3,'Charlie',102),(3,'Charlie',104),(4,'Diana',103),(4,'Diana',105),(5,'Eve',106);",
+  "solution_sql": "SELECT a1.employee_id AS emp1_id, a1.employee_name AS emp1_name, a2.employee_id AS emp2_id, a2.employee_name AS emp2_name, COUNT(*) AS shared_projects FROM project_assignments a1 JOIN project_assignments a2 ON a1.project_id = a2.project_id AND a1.employee_id < a2.employee_id GROUP BY a1.employee_id, a1.employee_name, a2.employee_id, a2.employee_name ORDER BY emp1_id, emp2_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice-Bob share project 101; Alice-Charlie share 102; Alice-Diana share 103; Bob-Charlie share 104 — 4 pairs",
+      "expected_row_count": 4,
+      "expected_columns": ["emp1_id", "emp1_name", "emp2_id", "emp2_name", "shared_projects"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Self-join project_assignments on a1.project_id = a2.project_id with a1.employee_id < a2.employee_id to get unique pairs.",
+    "Each matching row in the join represents one shared project; COUNT(*) gives the number of shared projects.",
+    "GROUP BY both employee identifiers to aggregate across multiple shared projects per pair."
+  ],
+  "explanation": "Alice (projects 101,102,103) shares: 101 with Bob, 102 with Charlie, 103 with Diana. Bob (101,104) shares 104 with Charlie. Bob and Diana share no projects. Charlie (102,104) and Diana (103,105) share no projects. Eve is isolated on project 106. Result: 4 pairs — (Alice,Bob), (Alice,Charlie), (Alice,Diana), (Bob,Charlie).",
+  "companies": ["Atlassian", "Asana", "Monday.com"],
+  "created_at": "2026-09-27"
+}

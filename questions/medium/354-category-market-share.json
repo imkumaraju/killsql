@@ -1,0 +1,27 @@
+{
+  "id": "354",
+  "slug": "category-market-share",
+  "title": "Category Market Share of Total Revenue",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "SUM OVER", "percentage", "revenue share", "analytics", "aggregation"],
+  "description": "For each product category, calculate total revenue and its **percentage share of overall revenue** using a window function (`SUM() OVER()` for the grand total).\n\n**Table: sales** — `sale_id`, `category`, `revenue`\n\nOutput columns: `category`, `total_revenue`, `market_share_pct`. Order by `total_revenue DESC`.",
+  "schema_sql": "CREATE TABLE sales (sale_id INTEGER, category VARCHAR, revenue DECIMAL(10,2)); INSERT INTO sales VALUES (1,'Electronics',5000),(2,'Electronics',3000),(3,'Clothing',2000),(4,'Clothing',1500),(5,'Food',800),(6,'Food',400),(7,'Sports',1200),(8,'Sports',600),(9,'Books',300),(10,'Books',200),(11,'Electronics',4000),(12,'Clothing',1000);",
+  "solution_sql": "WITH category_revenue AS (SELECT category, SUM(revenue) AS total_revenue FROM sales GROUP BY category) SELECT category, total_revenue, ROUND(total_revenue * 100.0 / SUM(total_revenue) OVER (), 2) AS market_share_pct FROM category_revenue ORDER BY total_revenue DESC;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Electronics=12000 (60%), Clothing=4500 (22.5%), Sports=1800 (9%), Food=1200 (6%), Books=500 (2.5%) — total 20000",
+      "expected_row_count": 5,
+      "expected_columns": ["category", "total_revenue", "market_share_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "First aggregate revenue per category in a CTE.",
+    "Then use SUM(total_revenue) OVER () (no PARTITION BY) in the outer query to get the grand total across all categories.",
+    "Multiply by 100.0 before dividing to get a percentage; use ROUND to 2 decimal places."
+  ],
+  "explanation": "Grand total = 12000+4500+1800+1200+500 = 20000. Electronics: 12000/20000 * 100 = 60%. Clothing: 4500/20000 * 100 = 22.5%. Sports: 1800/20000 * 100 = 9%. Food: 1200/20000 * 100 = 6%. Books: 500/20000 * 100 = 2.5%. SUM() OVER () with no PARTITION BY computes a single grand total applied to every row.",
+  "companies": ["Nielsen", "McKinsey", "Bain"],
+  "created_at": "2026-09-27"
+}

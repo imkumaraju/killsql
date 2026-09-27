@@ -1,0 +1,26 @@
+{
+  "id": "307",
+  "slug": "salary-after-bonus",
+  "title": "Calculate Salary After a 10% Bonus",
+  "difficulty": "easy",
+  "tags": ["SELECT", "arithmetic", "calculated column", "ROUND"],
+  "description": "The company is giving every employee a **10% bonus**. Calculate what each employee's new salary will be.\n\n**Table: employees** — `id`, `name`, `department`, `salary`\n\nReturn `name`, `salary`, and `salary * 1.10` rounded to 2 decimal places, aliased as `salary_with_bonus`. Order by `name`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary DECIMAL(10,2)); INSERT INTO employees VALUES (1,'Alice','Engineering',90000.00),(2,'Bob','Engineering',85000.00),(3,'Carol','Sales',70000.00),(4,'Dave','Sales',65000.00),(5,'Eve','Marketing',75000.00),(6,'Frank','HR',60000.00);",
+  "solution_sql": "SELECT name, salary, ROUND(salary * 1.10, 2) AS salary_with_bonus FROM employees ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All 6 employees returned with salary_with_bonus column",
+      "expected_row_count": 6,
+      "expected_columns": ["name", "salary", "salary_with_bonus"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Multiply salary by 1.10 to add 10%. Alternatively use salary + salary * 0.10.",
+    "Wrap with ROUND(..., 2) to keep two decimal places."
+  ],
+  "explanation": "salary * 1.10 multiplies each row's salary by 1.1 (equivalent to adding 10%). ROUND(..., 2) ensures the result has exactly two decimal places. Alice's salary 90000 × 1.10 = 99000.00, and so on for all 6 employees.",
+  "companies": ["Workday", "ADP"],
+  "created_at": "2026-09-27"
+}

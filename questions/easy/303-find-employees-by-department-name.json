@@ -1,0 +1,26 @@
+{
+  "id": "303",
+  "slug": "find-employees-by-department-name",
+  "title": "Find Employees in a Named Department",
+  "difficulty": "easy",
+  "tags": ["JOIN", "INNER JOIN", "WHERE", "filtering", "multi-table"],
+  "description": "Employee records store a `department_id` foreign key. To filter by department **name** you need to join the two tables.\n\n**Table: employees** — `id`, `name`, `department_id`, `salary`\n**Table: departments** — `id`, `name`\n\nReturn the `name` of every employee in the **Engineering** department, along with the department `name` aliased as `department`. Order by employee `name`.",
+  "schema_sql": "CREATE TABLE departments (id INT, name VARCHAR); CREATE TABLE employees (id INT, name VARCHAR, department_id INT, salary INT); INSERT INTO departments VALUES (1,'Engineering'),(2,'Sales'),(3,'HR'); INSERT INTO employees VALUES (1,'Alice',1,90000),(2,'Bob',1,85000),(3,'Carol',2,70000),(4,'Dave',2,65000),(5,'Eve',1,95000),(6,'Frank',3,60000),(7,'Grace',3,58000);",
+  "solution_sql": "SELECT e.name, d.name AS department FROM employees e JOIN departments d ON e.department_id = d.id WHERE d.name = 'Engineering' ORDER BY e.name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 employees (Alice, Bob, Eve) are in Engineering",
+      "expected_row_count": 3,
+      "expected_columns": ["name", "department"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "JOIN departments on the foreign key: e.department_id = d.id.",
+    "Filter with WHERE d.name = 'Engineering' after the join."
+  ],
+  "explanation": "Joining employees to departments via the foreign key allows filtering by the human-readable department name instead of a numeric id. After the join, WHERE d.name = 'Engineering' keeps only the 3 rows for Alice, Bob, and Eve.",
+  "companies": ["Google", "Microsoft"],
+  "created_at": "2026-09-27"
+}

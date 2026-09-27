@@ -1,0 +1,26 @@
+{
+  "id": "319",
+  "slug": "find-rows-between-dates",
+  "title": "Orders in a Date Range (BETWEEN)",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "BETWEEN", "date filtering", "date ranges", "date functions"],
+  "description": "Retrieve all orders placed during **Q1 2026** (January 1 through March 31 inclusive).\n\n**Table: orders** — `id`, `customer_id`, `amount`, `order_date`\n\nReturn `id`, `customer_id`, `amount`, and `order_date`. Order by `order_date`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL(10,2), order_date DATE); INSERT INTO orders VALUES (1,1,150.00,'2025-12-15'),(2,2,200.00,'2026-01-05'),(3,3,350.00,'2026-01-20'),(4,4,180.00,'2026-02-10'),(5,5,420.00,'2026-02-28'),(6,1,90.00,'2026-03-15'),(7,2,310.00,'2026-03-31'),(8,3,260.00,'2026-04-10'),(9,4,190.00,'2026-05-20'),(10,5,450.00,'2026-06-30');",
+  "solution_sql": "SELECT id, customer_id, amount, order_date FROM orders WHERE order_date BETWEEN '2026-01-01' AND '2026-03-31' ORDER BY order_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "6 orders fall in Q1 2026 (2026-01-05 through 2026-03-31)",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "customer_id", "amount", "order_date"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "BETWEEN is inclusive on both ends: BETWEEN a AND b means a <= value <= b.",
+    "Date strings in ISO format ('YYYY-MM-DD') compare correctly with BETWEEN."
+  ],
+  "explanation": "BETWEEN '2026-01-01' AND '2026-03-31' is equivalent to order_date >= '2026-01-01' AND order_date <= '2026-03-31'. Order 1 (2025-12-15) is before the range; orders 8–10 are after the range. Orders 2–7 fall within Q1 2026.",
+  "companies": ["Stripe", "Square"],
+  "created_at": "2026-09-27"
+}

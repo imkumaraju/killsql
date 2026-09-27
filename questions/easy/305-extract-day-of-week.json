@@ -1,0 +1,26 @@
+{
+  "id": "305",
+  "slug": "extract-day-of-week",
+  "title": "Extract Day of Week from Order Date",
+  "difficulty": "easy",
+  "tags": ["SELECT", "EXTRACT", "date functions", "date"],
+  "description": "Analyse which day of the week orders are placed on. Use `EXTRACT(DOW FROM date)` to retrieve the numeric day-of-week (0 = Sunday, 1 = Monday … 6 = Saturday).\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `amount`\n\nReturn `id`, `order_date`, and `EXTRACT(DOW FROM order_date)` aliased as `day_of_week`. Order by `id`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2026-09-27',150.00),(2,2,'2026-09-28',200.00),(3,3,'2026-09-29',350.00),(4,4,'2026-09-30',180.00),(5,5,'2026-10-01',420.00),(6,1,'2026-10-02',90.00),(7,2,'2026-10-03',310.00);",
+  "solution_sql": "SELECT id, order_date, EXTRACT(DOW FROM order_date) AS day_of_week FROM orders ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All 7 orders returned with numeric day-of-week (0=Sun through 6=Sat)",
+      "expected_row_count": 7,
+      "expected_columns": ["id", "order_date", "day_of_week"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "EXTRACT(DOW FROM date_col) returns an integer 0–6 where 0 is Sunday.",
+    "DuckDB uses DOW (day of week) not WEEKDAY as the field name inside EXTRACT."
+  ],
+  "explanation": "EXTRACT(DOW FROM order_date) pulls the day-of-week component from each date. The data spans 2026-09-27 (Sunday, DOW=0) through 2026-10-03 (Saturday, DOW=6), so the result cycles cleanly through all seven values.",
+  "companies": ["Instacart", "Lyft"],
+  "created_at": "2026-09-27"
+}

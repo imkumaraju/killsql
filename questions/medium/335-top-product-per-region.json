@@ -1,0 +1,27 @@
+{
+  "id": "335",
+  "slug": "top-product-per-region",
+  "title": "Top-Selling Product in Each Region",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "ROW_NUMBER", "PARTITION BY", "aggregation", "top N per group", "TOP N per group"],
+  "description": "Find the **single best-selling product** (by total quantity sold) in each region. If there is a tie, return the one that comes first alphabetically by product name.\n\n**Table: sales** — `sale_id`, `product_name`, `region`, `quantity`\n\nOutput columns: `region`, `product_name`, `total_qty`. Order by `region`.",
+  "schema_sql": "CREATE TABLE sales (sale_id INTEGER, product_name VARCHAR, region VARCHAR, quantity INTEGER); INSERT INTO sales VALUES (1,'Widget A','North',30),(2,'Widget A','North',20),(3,'Gadget B','North',30),(4,'Doohickey C','North',20),(5,'Gadget B','South',40),(6,'Gadget B','South',20),(7,'Widget A','South',25),(8,'Thingamajig D','South',15),(9,'Doohickey C','East',45),(10,'Widget A','East',30),(11,'Gadget B','East',20),(12,'Thingamajig D','East',10);",
+  "solution_sql": "WITH agg AS (SELECT region, product_name, SUM(quantity) AS total_qty FROM sales GROUP BY region, product_name), ranked AS (SELECT region, product_name, total_qty, ROW_NUMBER() OVER (PARTITION BY region ORDER BY total_qty DESC, product_name ASC) AS rn FROM agg) SELECT region, product_name, total_qty FROM ranked WHERE rn = 1 ORDER BY region;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "North: Widget A=50 wins; South: Gadget B=60 wins; East: Doohickey C=45 wins",
+      "expected_row_count": 3,
+      "expected_columns": ["region", "product_name", "total_qty"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "First aggregate total quantity per (region, product_name) in a CTE.",
+    "Then apply ROW_NUMBER() OVER (PARTITION BY region ORDER BY total_qty DESC) to rank within each region.",
+    "Filter for rn = 1 to keep only the top product per region."
+  ],
+  "explanation": "After aggregating: North totals — Widget A=50, Gadget B=30, Doohickey C=20 (Widget A wins). South totals — Gadget B=60, Widget A=25, Thingamajig D=15 (Gadget B wins). East totals — Doohickey C=45, Widget A=30, Gadget B=20 (Doohickey C wins). ROW_NUMBER partitioned by region picks one winner per region.",
+  "companies": ["Walmart", "Target", "Amazon"],
+  "created_at": "2026-09-27"
+}

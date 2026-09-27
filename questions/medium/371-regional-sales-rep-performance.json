@@ -1,0 +1,27 @@
+{
+  "id": "371",
+  "slug": "regional-sales-rep-performance",
+  "title": "Regional Sales Rep Performance with Rank",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "RANK", "PARTITION BY", "aggregation", "analytics", "ranking"],
+  "description": "For each sales rep in each region, calculate total revenue and their **rank within that region** (highest revenue = rank 1).\n\n**Table: sales** — `sale_id`, `rep_name`, `region`, `amount`\n\nOutput columns: `region`, `rep_name`, `total_revenue`, `region_rank`. Order by `region`, `region_rank`.",
+  "schema_sql": "CREATE TABLE sales (sale_id INTEGER, rep_name VARCHAR, region VARCHAR, amount DECIMAL(10,2)); INSERT INTO sales VALUES (1,'Alice','North',5000),(2,'Alice','North',3000),(3,'Bob','North',6000),(4,'Bob','North',4000),(5,'Charlie','South',4000),(6,'Charlie','South',2000),(7,'Diana','South',7000),(8,'Diana','South',3000),(9,'Eve','East',5000),(10,'Eve','East',5000),(11,'Frank','East',4000),(12,'Frank','East',2000);",
+  "solution_sql": "WITH rep_revenue AS (SELECT region, rep_name, SUM(amount) AS total_revenue FROM sales GROUP BY region, rep_name) SELECT region, rep_name, total_revenue, RANK() OVER (PARTITION BY region ORDER BY total_revenue DESC) AS region_rank FROM rep_revenue ORDER BY region, region_rank;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "6 rep-region combinations; Bob leads North (10000), Diana leads South (10000), Eve leads East (10000)",
+      "expected_row_count": 6,
+      "expected_columns": ["region", "rep_name", "total_revenue", "region_rank"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Aggregate revenue per (region, rep_name) in a CTE.",
+    "Apply RANK() OVER (PARTITION BY region ORDER BY total_revenue DESC) in the outer query.",
+    "RANK() assigns rank 1 to the top revenue rep in each region and handles ties by giving the same rank."
+  ],
+  "explanation": "CTE totals: Alice-North=8000, Bob-North=10000, Charlie-South=6000, Diana-South=10000, Eve-East=10000, Frank-East=6000. RANK partitioned by region: North: Bob=rank1, Alice=rank2. South: Diana=rank1, Charlie=rank2. East: Eve=rank1, Frank=rank2. Six rows total.",
+  "companies": ["Salesforce", "HubSpot", "Oracle"],
+  "created_at": "2026-09-27"
+}

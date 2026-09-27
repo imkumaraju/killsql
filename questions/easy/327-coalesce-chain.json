@@ -1,0 +1,26 @@
+{
+  "id": "327",
+  "slug": "coalesce-chain",
+  "title": "Pick the First Non-NULL Name with COALESCE",
+  "difficulty": "easy",
+  "tags": ["SELECT", "COALESCE", "NULL handling", "conditional logic"],
+  "description": "Users may have a `preferred_name`, a `nickname`, or fall back to their `first_name`. Use `COALESCE` to return the first non-NULL value from those three columns as the display name.\n\n**Table: users** — `id`, `preferred_name`, `nickname`, `first_name`\n\nReturn `id` and the resolved display name aliased as `display_name`. Order by `id`.",
+  "schema_sql": "CREATE TABLE users (id INT, preferred_name VARCHAR, nickname VARCHAR, first_name VARCHAR); INSERT INTO users VALUES (1,'Alicia',NULL,'Alice'),(2,NULL,'Bobby','Robert'),(3,NULL,NULL,'Carol'),(4,'Dave',NULL,'David'),(5,NULL,'Evie','Evelyn'),(6,NULL,NULL,'Frank');",
+  "solution_sql": "SELECT id, COALESCE(preferred_name, nickname, first_name) AS display_name FROM users ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "6 rows: Alicia uses preferred_name, Bobby uses nickname, Carol/Frank use first_name, Dave uses preferred_name, Evie uses nickname",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "display_name"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "COALESCE(a, b, c) returns the first argument that is NOT NULL.",
+    "The arguments are evaluated left-to-right; as soon as a non-NULL is found, the rest are skipped."
+  ],
+  "explanation": "COALESCE evaluates its arguments left-to-right: user 1 has preferred_name='Alicia' → 'Alicia'; user 2 has preferred_name=NULL, nickname='Bobby' → 'Bobby'; user 3 has both NULL, first_name='Carol' → 'Carol'; user 4 preferred_name='Dave' → 'Dave'; user 5 nickname='Evie' → 'Evie'; user 6 first_name='Frank' → 'Frank'.",
+  "companies": ["Slack", "Discord"],
+  "created_at": "2026-09-27"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "345",
+  "slug": "invoice-overdue-detection",
+  "title": "Detect Overdue Invoices and Days Late",
+  "difficulty": "medium",
+  "tags": ["CASE WHEN", "date arithmetic", "IS NULL", "filtering", "financial analysis", "billing"],
+  "description": "Identify overdue invoices as of **2024-06-01**. An invoice is overdue if it was paid after its due date (`paid_date > due_date`) or is still unpaid (`paid_date IS NULL`) with a past due date. Return the days overdue for each.\n\n**Table: invoices** — `invoice_id`, `customer_name`, `amount`, `due_date`, `paid_date`\n\nOutput columns: `invoice_id`, `customer_name`, `amount`, `due_date`, `days_overdue`. Order by `days_overdue DESC`.",
+  "schema_sql": "CREATE TABLE invoices (invoice_id INTEGER, customer_name VARCHAR, amount DECIMAL(10,2), due_date DATE, paid_date DATE); INSERT INTO invoices VALUES (1,'ACME Corp',1500.00,'2024-04-01','2024-03-25'),(2,'Beta Inc',2000.00,'2024-03-15','2024-04-20'),(3,'Gamma Ltd',750.00,'2024-04-01',NULL),(4,'Delta Co',3000.00,'2024-02-28',NULL),(5,'Epsilon LLC',500.00,'2024-05-15','2024-05-14'),(6,'Zeta Corp',1200.00,'2024-04-30',NULL),(7,'Eta Inc',800.00,'2024-05-01','2024-05-30'),(8,'Theta Ltd',2500.00,'2024-03-10','2024-03-05');",
+  "solution_sql": "SELECT invoice_id, customer_name, amount, due_date, CASE WHEN paid_date IS NOT NULL THEN (paid_date - due_date) ELSE ('2024-06-01'::DATE - due_date) END AS days_overdue FROM invoices WHERE paid_date > due_date OR (paid_date IS NULL AND due_date < '2024-06-01'::DATE) ORDER BY days_overdue DESC;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Delta Co (94 days), Gamma Ltd (61 days), Beta Inc (36 days), Zeta Corp (32 days), Eta Inc (29 days) = 5 overdue; ACME paid early, Epsilon paid early, Theta paid early",
+      "expected_row_count": 5,
+      "expected_columns": ["invoice_id", "customer_name", "amount", "due_date", "days_overdue"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use paid_date > due_date OR (paid_date IS NULL AND due_date < '2024-06-01') in the WHERE clause.",
+    "For days_overdue: use paid_date - due_date for late-paid invoices; use '2024-06-01' - due_date for still-unpaid ones.",
+    "In DuckDB, DATE - DATE returns an INTEGER (number of days), so no special cast is needed."
+  ],
+  "explanation": "ACME paid Mar 25 before due Apr 1 (paid early, not overdue). Beta paid Apr 20 vs due Mar 15 → 36 days late ✓. Gamma unpaid, due Apr 1 → 61 days as of Jun 1 ✓. Delta unpaid, due Feb 28 → 94 days ✓. Epsilon paid May 14 before due May 15 (early). Zeta unpaid, due Apr 30 → 32 days ✓. Eta paid May 30 vs due May 1 → 29 days late ✓. Theta paid Mar 5 before due Mar 10 (early). Five invoices are overdue.",
+  "companies": ["QuickBooks", "FreshBooks", "Bill.com"],
+  "created_at": "2026-09-27"
+}

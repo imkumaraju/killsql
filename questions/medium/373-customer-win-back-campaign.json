@@ -1,0 +1,27 @@
+{
+  "id": "373",
+  "slug": "customer-win-back-campaign",
+  "title": "Win-Back: Customers Who Returned After 90-Day Dormancy",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "LAG", "PARTITION BY", "date arithmetic", "analytics", "retention"],
+  "description": "Find customers who had a gap of **more than 90 days** between two consecutive orders (they 'churned' and then returned). Return each qualifying customer once.\n\n**Table: orders** — `order_id`, `customer_id`, `customer_name`, `order_date`\n\nOutput columns: `customer_id`, `customer_name`. Order by `customer_id`.",
+  "schema_sql": "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, customer_name VARCHAR, order_date DATE); INSERT INTO orders VALUES (1,1,'Alice','2024-01-01'),(2,1,'Alice','2024-02-01'),(3,1,'Alice','2024-06-01'),(4,2,'Bob','2024-01-05'),(5,2,'Bob','2024-02-05'),(6,2,'Bob','2024-03-05'),(7,3,'Charlie','2024-01-10'),(8,3,'Charlie','2024-05-10'),(9,4,'Diana','2024-01-20'),(10,4,'Diana','2024-02-20'),(11,4,'Diana','2024-11-20'),(12,5,'Eve','2024-01-15');",
+  "solution_sql": "WITH order_gaps AS (SELECT customer_id, customer_name, order_date, order_date - LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date) AS gap_days FROM orders) SELECT DISTINCT customer_id, customer_name FROM order_gaps WHERE gap_days > 90 ORDER BY customer_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice (Feb→Jun gap=121 days), Charlie (Jan→May gap=121 days), Diana (Feb→Nov gap=274 days) win-back; Bob all gaps <90; Eve has only one order",
+      "expected_row_count": 3,
+      "expected_columns": ["customer_id", "customer_name"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date) then subtract to get gap_days (INTEGER in DuckDB).",
+    "Filter WHERE gap_days > 90 to find dormancy gaps.",
+    "Use DISTINCT to return each customer once even if they have multiple gaps > 90 days."
+  ],
+  "explanation": "Alice: Jan→Feb gap=31 days (normal), Feb→Jun gap≈122 days (win-back ✓). Bob: all gaps are 31 and 29 days (no churn). Charlie: Jan→May gap≈121 days (win-back ✓). Diana: Jan→Feb gap=31 days, Feb→Nov gap≈274 days (win-back ✓). Eve has only one order and no gap. Three customers qualify.",
+  "companies": ["HubSpot", "Klaviyo", "Braze"],
+  "created_at": "2026-09-27"
+}

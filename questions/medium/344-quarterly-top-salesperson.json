@@ -1,0 +1,27 @@
+{
+  "id": "344",
+  "slug": "quarterly-top-salesperson",
+  "title": "Top Salesperson Each Quarter",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "ROW_NUMBER", "PARTITION BY", "EXTRACT", "aggregation", "top N per group", "TOP N per group"],
+  "description": "Find the **#1 salesperson by total sales** in each quarter of 2024. Use `ROW_NUMBER()` to break ties by `rep_name` alphabetically.\n\n**Table: sales_reps** — `rep_id`, `rep_name`\n\n**Table: sales** — `sale_id`, `rep_id`, `sale_date`, `amount`\n\nOutput columns: `quarter`, `rep_id`, `rep_name`, `total_sales`. Order by `quarter`.",
+  "schema_sql": "CREATE TABLE sales_reps (rep_id INTEGER, rep_name VARCHAR); CREATE TABLE sales (sale_id INTEGER, rep_id INTEGER, sale_date DATE, amount DECIMAL(10,2)); INSERT INTO sales_reps VALUES (1,'Alice'),(2,'Bob'),(3,'Charlie'); INSERT INTO sales VALUES (1,1,'2024-01-15',5000),(2,2,'2024-02-10',6000),(3,3,'2024-03-05',4500),(4,1,'2024-04-20',7000),(5,2,'2024-05-15',5500),(6,3,'2024-06-10',8000),(7,1,'2024-07-25',4000),(8,2,'2024-08-15',8000),(9,3,'2024-09-10',6000),(10,1,'2024-10-20',9000),(11,2,'2024-11-15',7500),(12,3,'2024-12-10',6500);",
+  "solution_sql": "WITH quarterly_sales AS (SELECT sr.rep_id, sr.rep_name, EXTRACT(QUARTER FROM s.sale_date)::INTEGER AS quarter, SUM(s.amount) AS total_sales FROM sales s JOIN sales_reps sr ON s.rep_id = sr.rep_id GROUP BY sr.rep_id, sr.rep_name, EXTRACT(QUARTER FROM s.sale_date)), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY quarter ORDER BY total_sales DESC, rep_name ASC) AS rn FROM quarterly_sales) SELECT quarter, rep_id, rep_name, total_sales FROM ranked WHERE rn = 1 ORDER BY quarter;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Q1: Bob=6000 wins; Q2: Charlie=8000 wins; Q3: Bob=8000 wins; Q4: Alice=9000 wins",
+      "expected_row_count": 4,
+      "expected_columns": ["quarter", "rep_id", "rep_name", "total_sales"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use EXTRACT(QUARTER FROM sale_date) to group sales into Q1–Q4.",
+    "Aggregate total sales per (rep, quarter) in a CTE, then apply ROW_NUMBER() OVER (PARTITION BY quarter ORDER BY total_sales DESC).",
+    "Filter WHERE rn = 1 to keep the top rep per quarter."
+  ],
+  "explanation": "Q1 totals: Alice=5000, Bob=6000, Charlie=4500 → Bob wins. Q2: Alice=7000, Bob=5500, Charlie=8000 → Charlie wins. Q3: Alice=4000, Bob=8000, Charlie=6000 → Bob wins. Q4: Alice=9000, Bob=7500, Charlie=6500 → Alice wins. ROW_NUMBER with PARTITION BY quarter selects exactly one winner per quarter.",
+  "companies": ["Salesforce", "HubSpot", "Oracle"],
+  "created_at": "2026-09-27"
+}

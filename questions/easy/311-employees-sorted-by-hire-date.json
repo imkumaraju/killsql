@@ -1,0 +1,26 @@
+{
+  "id": "311",
+  "slug": "employees-sorted-by-hire-date",
+  "title": "Sort Employees by Hire Date",
+  "difficulty": "easy",
+  "tags": ["SELECT", "ORDER BY", "sorting", "date"],
+  "description": "Retrieve all employees ordered from the **earliest hire date** to the most recent.\n\n**Table: employees** — `id`, `name`, `department`, `hire_date`\n\nReturn `id`, `name`, and `hire_date`. Order by `hire_date` ascending.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, hire_date DATE); INSERT INTO employees VALUES (1,'Alice','Engineering','2021-03-15'),(2,'Bob','Sales','2019-07-22'),(3,'Carol','HR','2022-11-01'),(4,'Dave','Engineering','2018-04-10'),(5,'Eve','Marketing','2023-06-30'),(6,'Frank','Sales','2020-01-15'),(7,'Grace','Engineering','2024-02-28');",
+  "solution_sql": "SELECT id, name, hire_date FROM employees ORDER BY hire_date ASC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All 7 employees returned, ordered from earliest hire date (Dave 2018) to latest (Grace 2024)",
+      "expected_row_count": 7,
+      "expected_columns": ["id", "name", "hire_date"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "ORDER BY hire_date ASC sorts from oldest to newest. ASC is the default so it can be omitted.",
+    "Date columns sort correctly when stored as DATE type — no casting needed."
+  ],
+  "explanation": "ORDER BY hire_date ASC sorts rows in ascending chronological order. The correct order is: Dave (2018-04-10), Bob (2019-07-22), Frank (2020-01-15), Alice (2021-03-15), Carol (2022-11-01), Eve (2023-06-30), Grace (2024-02-28).",
+  "companies": ["LinkedIn", "Workday"],
+  "created_at": "2026-09-27"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "387",
+  "slug": "tournament-bracket-simulation",
+  "title": "Four-Team Single-Elimination Bracket",
+  "difficulty": "hard",
+  "tags": ["CTE", "CASE WHEN", "JOIN", "UNION ALL", "conditional logic"],
+  "description": "Simulate a 4-team single-elimination tournament. The winner of a match is the team with the **higher skill**. Round 1 pairings are in `matches`. The final is winner of match 1 vs winner of match 2.\n\n**Tables:** `teams` (`team_id`, `name`, `skill`), `matches` (`round`, `match_id`, `team_a`, `team_b`)\n\nOutput columns: `round`, `match_id`, `winner`, `loser`. Order by `round`, `match_id`.",
+  "schema_sql": "CREATE TABLE teams (team_id INT, name VARCHAR, skill INT); INSERT INTO teams VALUES (1,'Alpha',90),(2,'Bravo',70),(3,'Charlie',80),(4,'Delta',60); CREATE TABLE matches (round INT, match_id INT, team_a INT, team_b INT); INSERT INTO matches VALUES (1,1,1,4),(1,2,2,3);",
+  "solution_sql": "WITH r1 AS (SELECT m.round, m.match_id, CASE WHEN ta.skill >= tb.skill THEN ta.name ELSE tb.name END AS winner, CASE WHEN ta.skill >= tb.skill THEN tb.name ELSE ta.name END AS loser FROM matches m JOIN teams ta ON ta.team_id = m.team_a JOIN teams tb ON tb.team_id = m.team_b), r2 AS (SELECT 2 AS round, 3 AS match_id, CASE WHEN t1.skill >= t2.skill THEN t1.name ELSE t2.name END AS winner, CASE WHEN t1.skill >= t2.skill THEN t2.name ELSE t1.name END AS loser FROM r1 w1 JOIN teams t1 ON t1.name = w1.winner AND w1.match_id = 1 JOIN r1 w2 ON w2.match_id = 2 JOIN teams t2 ON t2.name = w2.winner) SELECT round, match_id, winner, loser FROM r1 UNION ALL SELECT round, match_id, winner, loser FROM r2 ORDER BY round, match_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alpha beats Delta, Charlie beats Bravo, Alpha wins the final",
+      "expected_row_count": 3,
+      "expected_columns": ["round", "match_id", "winner", "loser"],
+      "expected_rows": [
+        { "round": 1, "match_id": 1, "winner": "Alpha", "loser": "Delta" },
+        { "round": 1, "match_id": 2, "winner": "Charlie", "loser": "Bravo" },
+        { "round": 2, "match_id": 3, "winner": "Alpha", "loser": "Charlie" }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Join matches to teams twice (team_a and team_b) and CASE on skill to pick winner/loser.",
+    "The final CTE joins the two round-1 winners back to teams and compares skill again."
+  ],
+  "explanation": "Match 1: Alpha 90 > Delta 60. Match 2: Charlie 80 > Bravo 70. Final: Alpha 90 > Charlie 80. Two CTEs plus UNION ALL produce the full bracket without needing a recursive walk for only two rounds.",
+  "companies": ["ESPN", "Riot Games", "Twitch"],
+  "created_at": "2026-09-27"
+}

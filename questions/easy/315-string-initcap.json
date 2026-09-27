@@ -1,0 +1,26 @@
+{
+  "id": "315",
+  "slug": "string-initcap",
+  "title": "Uppercase Product Names",
+  "difficulty": "easy",
+  "tags": ["SELECT", "string functions", "UPPER"],
+  "description": "Product names were entered in all lowercase. Use `UPPER()` to convert each name to **all capitals**.\n\n**Table: products** — `id`, `name`, `category`\n\nReturn `id` and the formatted name aliased as `formatted_name`. Order by `id`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR); INSERT INTO products VALUES (1,'apple iphone','electronics'),(2,'samsung galaxy','electronics'),(3,'coffee maker','appliances'),(4,'blender pro','appliances'),(5,'running shoes','footwear'),(6,'leather wallet','accessories');",
+  "solution_sql": "SELECT id, UPPER(name) AS formatted_name FROM products ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All 6 rows returned with names in uppercase",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "formatted_name"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "UPPER(str) converts every character in the string to uppercase.",
+    "Alias the result as formatted_name so the column name is readable."
+  ],
+  "explanation": "UPPER() is a single-argument string function. 'apple iphone' becomes 'APPLE IPHONE'. It is the standard way to normalize case for display or case-insensitive comparisons in engines that are case-sensitive.",
+  "companies": ["Shopify", "Etsy"],
+  "created_at": "2026-09-27"
+}

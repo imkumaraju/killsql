@@ -1,0 +1,26 @@
+{
+  "id": "329",
+  "slug": "exists-subquery",
+  "title": "Customers Who Have Placed at Least One Order",
+  "difficulty": "easy",
+  "tags": ["SELECT", "EXISTS", "subquery", "filtering", "filter"],
+  "description": "Find all customers who have placed **at least one order** using an EXISTS subquery.\n\n**Table: customers** — `id`, `name`, `email`\n**Table: orders** — `id`, `customer_id`, `amount`, `order_date`\n\nReturn `id` and `name`. Order by `id`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR); CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL(10,2), order_date DATE); INSERT INTO customers VALUES (1,'Alice','alice@example.com'),(2,'Bob','bob@example.com'),(3,'Carol','carol@example.com'),(4,'Dave','dave@example.com'),(5,'Eve','eve@example.com'); INSERT INTO orders VALUES (1,1,150.00,'2026-01-05'),(2,1,200.00,'2026-02-10'),(3,3,350.00,'2026-01-20'),(4,5,180.00,'2026-03-15');",
+  "solution_sql": "SELECT c.id, c.name FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id) ORDER BY c.id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 customers have orders: Alice(1), Carol(3), Eve(5). Bob and Dave have none.",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "name"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "EXISTS returns TRUE if the subquery produces at least one row.",
+    "SELECT 1 inside EXISTS is conventional — the actual value doesn't matter, only whether a row exists."
+  ],
+  "explanation": "For each customer, the subquery checks whether any order row has a matching customer_id. Alice (id 1) has orders 1 and 2 → EXISTS = true. Bob (id 2) has no orders → false. Carol (id 3) has order 3 → true. Dave (id 4) has none → false. Eve (id 5) has order 4 → true. Result: 3 rows.",
+  "companies": ["Shopify", "WooCommerce"],
+  "created_at": "2026-09-27"
+}

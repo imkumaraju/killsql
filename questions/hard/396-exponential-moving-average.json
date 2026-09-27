@@ -1,0 +1,32 @@
+{
+  "id": "396",
+  "slug": "exponential-moving-average",
+  "title": "Exponential Moving Average with Alpha 0.3",
+  "difficulty": "hard",
+  "tags": ["recursive CTE", "ROW_NUMBER", "ROUND", "moving average", "statistics"],
+  "description": "Compute a daily EMA with **alpha = 0.3**. Seed EMA on day 1 with that day's price. Then `EMA_t = 0.3 * price_t + 0.7 * EMA_{t-1}`. Round the displayed EMA to 2 decimals (do not round intermediate recursion).\n\n**Table: prices** — `d`, `price`\n\nOutput columns: `d`, `ema`. Order by `d`.",
+  "schema_sql": "CREATE TABLE prices (d DATE, price DOUBLE); INSERT INTO prices VALUES ('2026-01-01',10),('2026-01-02',12),('2026-01-03',11),('2026-01-04',13);",
+  "solution_sql": "WITH RECURSIVE ordered AS (SELECT ROW_NUMBER() OVER (ORDER BY d) AS n, d, price FROM prices), ema AS (SELECT n, d, price AS ema_val FROM ordered WHERE n = 1 UNION ALL SELECT o.n, o.d, 0.3 * o.price + 0.7 * e.ema_val FROM ema e JOIN ordered o ON o.n = e.n + 1) SELECT d, ROUND(ema_val, 2) AS ema FROM ema ORDER BY d",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "EMA path: 10.00, 10.60, 10.72, 11.40",
+      "expected_row_count": 4,
+      "expected_columns": ["d", "ema"],
+      "expected_rows": [
+        { "d": "2026-01-01", "ema": 10 },
+        { "d": "2026-01-02", "ema": 10.6 },
+        { "d": "2026-01-03", "ema": 10.72 },
+        { "d": "2026-01-04", "ema": 11.4 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Number the days with ROW_NUMBER() so the recursive step can join n = previous n + 1.",
+    "Keep full precision in the recursive column; ROUND only in the final SELECT."
+  ],
+  "explanation": "Day1 seed 10. Day2: 0.3×12 + 0.7×10 = 10.6. Day3: 0.3×11 + 0.7×10.6 = 10.72. Day4: 0.3×13 + 0.7×10.72 = 11.404 → 11.40. Recursive CTE is the natural way to express a value that depends on yesterday's EMA.",
+  "companies": ["Bloomberg", "Two Sigma", "Citadel"],
+  "created_at": "2026-09-27"
+}

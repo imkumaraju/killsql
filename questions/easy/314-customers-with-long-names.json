@@ -1,0 +1,26 @@
+{
+  "id": "314",
+  "slug": "customers-with-long-names",
+  "title": "Customers with Long Names",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "LENGTH", "string functions", "filtering", "filter"],
+  "description": "Find customers whose full name is longer than **10 characters**.\n\n**Table: customers** — `id`, `name`, `email`\n\nReturn `id`, `name`, and the name length aliased as `name_length`. Order by `name`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR); INSERT INTO customers VALUES (1,'Alice','alice@example.com'),(2,'Bob Smith','bob@example.com'),(3,'Carol Johnson','carol@example.com'),(4,'Dave','dave@example.com'),(5,'Eve Williams','eve@example.com'),(6,'Frank Brown','frank@example.com'),(7,'Grace','grace@example.com'),(8,'Henry Martinez','henry@example.com');",
+  "solution_sql": "SELECT id, name, LENGTH(name) AS name_length FROM customers WHERE LENGTH(name) > 10 ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 customers have names longer than 10 characters: Carol Johnson(13), Eve Williams(12), Frank Brown(11), Henry Martinez(14)",
+      "expected_row_count": 4,
+      "expected_columns": ["id", "name", "name_length"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "LENGTH(name) returns the number of characters in the string (including spaces).",
+    "You can use LENGTH() in both the SELECT list and the WHERE clause."
+  ],
+  "explanation": "LENGTH() counts characters. 'Carol Johnson' = 13, 'Eve Williams' = 12, 'Frank Brown' = 11, 'Henry Martinez' = 14 — all exceed 10. 'Alice' = 5, 'Bob Smith' = 9, 'Dave' = 4, 'Grace' = 5 are all ≤ 10 and are excluded.",
+  "companies": ["Salesforce", "HubSpot"],
+  "created_at": "2026-09-27"
+}

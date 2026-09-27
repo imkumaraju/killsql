@@ -1,0 +1,27 @@
+{
+  "id": "359",
+  "slug": "region-quarter-revenue-matrix",
+  "title": "Region × Quarter Revenue Pivot Matrix",
+  "difficulty": "medium",
+  "tags": ["conditional aggregation", "FILTER", "EXTRACT", "pivot", "GROUP BY", "data reshaping", "analytics"],
+  "description": "Create a pivot table showing total revenue for each **region** (rows) and each **quarter** (columns: q1_revenue, q2_revenue, q3_revenue, q4_revenue) using conditional aggregation.\n\n**Table: sales** — `sale_id`, `region`, `sale_date`, `revenue`\n\nOutput columns: `region`, `q1_revenue`, `q2_revenue`, `q3_revenue`, `q4_revenue`. Order by `region`.",
+  "schema_sql": "CREATE TABLE sales (sale_id INTEGER, region VARCHAR, sale_date DATE, revenue DECIMAL(10,2)); INSERT INTO sales VALUES (1,'East','2024-03-05',2500),(2,'East','2024-06-25',4000),(3,'East','2024-09-15',3500),(4,'East','2024-12-10',5000),(5,'North','2024-01-15',5000),(6,'North','2024-04-20',7000),(7,'North','2024-07-10',4000),(8,'North','2024-10-05',8000),(9,'South','2024-02-10',3000),(10,'South','2024-05-15',5500),(11,'South','2024-08-20',6000),(12,'South','2024-11-30',4500);",
+  "solution_sql": "SELECT region, SUM(revenue) FILTER (WHERE EXTRACT(QUARTER FROM sale_date) = 1) AS q1_revenue, SUM(revenue) FILTER (WHERE EXTRACT(QUARTER FROM sale_date) = 2) AS q2_revenue, SUM(revenue) FILTER (WHERE EXTRACT(QUARTER FROM sale_date) = 3) AS q3_revenue, SUM(revenue) FILTER (WHERE EXTRACT(QUARTER FROM sale_date) = 4) AS q4_revenue FROM sales GROUP BY region ORDER BY region;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 regions (East, North, South), one sale per region per quarter — 3 rows, 5 columns",
+      "expected_row_count": 3,
+      "expected_columns": ["region", "q1_revenue", "q2_revenue", "q3_revenue", "q4_revenue"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use SUM(revenue) FILTER (WHERE EXTRACT(QUARTER FROM sale_date) = 1) for Q1, repeat for Q2, Q3, Q4.",
+    "GROUP BY region to produce one row per region.",
+    "EXTRACT(QUARTER FROM date) returns 1 for Jan–Mar, 2 for Apr–Jun, 3 for Jul–Sep, 4 for Oct–Dec."
+  ],
+  "explanation": "Each region has exactly one sale per quarter. East: Q1=2500, Q2=4000, Q3=3500, Q4=5000. North: Q1=5000, Q2=7000, Q3=4000, Q4=8000. South: Q1=3000, Q2=5500, Q3=6000, Q4=4500. Conditional aggregation with FILTER pivots the quarterly data into columns without needing a PIVOT keyword.",
+  "companies": ["Tableau", "Looker", "Snowflake"],
+  "created_at": "2026-09-27"
+}

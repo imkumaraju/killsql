@@ -1,0 +1,27 @@
+{
+  "id": "337",
+  "slug": "order-items-without-discount",
+  "title": "Order Items With No Discount Applied",
+  "difficulty": "medium",
+  "tags": ["LEFT JOIN", "IS NULL", "anti-join", "NULL handling", "multi-table join"],
+  "description": "Find all order items that had **no discount applied**. A discount is applied to a specific (order_id, product_id) combination. Return items where no matching discount record exists.\n\n**Table: order_items** — `item_id`, `order_id`, `product_id`, `price`\n\n**Table: discounts** — `discount_id`, `order_id`, `product_id`, `discount_pct`\n\nOutput columns: `item_id`, `order_id`, `product_id`, `price`. Order by `item_id`.",
+  "schema_sql": "CREATE TABLE order_items (item_id INTEGER, order_id INTEGER, product_id INTEGER, price DECIMAL(10,2)); CREATE TABLE discounts (discount_id INTEGER, order_id INTEGER, product_id INTEGER, discount_pct DECIMAL(5,2)); INSERT INTO order_items VALUES (1,1,101,100.00),(2,1,102,50.00),(3,2,101,100.00),(4,2,103,75.00),(5,3,102,50.00),(6,3,104,120.00),(7,4,101,100.00),(8,4,105,30.00),(9,5,103,75.00),(10,5,106,90.00),(11,6,104,120.00),(12,6,105,30.00); INSERT INTO discounts VALUES (1,1,101,10.00),(2,2,103,5.00),(3,3,102,15.00),(4,4,101,20.00);",
+  "solution_sql": "SELECT oi.item_id, oi.order_id, oi.product_id, oi.price FROM order_items oi LEFT JOIN discounts d ON oi.order_id = d.order_id AND oi.product_id = d.product_id WHERE d.discount_id IS NULL ORDER BY oi.item_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 discounts cover items 1,4,5,7; the remaining 8 items have no discount",
+      "expected_row_count": 8,
+      "expected_columns": ["item_id", "order_id", "product_id", "price"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use a LEFT JOIN from order_items to discounts on BOTH order_id AND product_id.",
+    "After the LEFT JOIN, rows with no matching discount will have NULL in all discount columns.",
+    "Filter WHERE d.discount_id IS NULL to keep only the unmatched rows (the anti-join pattern)."
+  ],
+  "explanation": "The LEFT JOIN keeps all order_items rows regardless of whether a discount exists. The ON clause matches on both order_id and product_id together. When no discount row matches, the joined discount columns are NULL — filtering WHERE d.discount_id IS NULL isolates items that never received a discount. Items 2, 3, 6, 8, 9, 10, 11, 12 have no corresponding discount entry.",
+  "companies": ["Shopify", "Stripe", "PayPal"],
+  "created_at": "2026-09-27"
+}

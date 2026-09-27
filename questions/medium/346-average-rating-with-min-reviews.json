@@ -1,0 +1,27 @@
+{
+  "id": "346",
+  "slug": "average-rating-with-min-reviews",
+  "title": "Average Product Rating (Minimum 5 Reviews Required)",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "HAVING", "AVG", "COUNT", "aggregation", "filtering", "reviews"],
+  "description": "Calculate the average rating for each product, but **only include products that have at least 5 reviews**. Order results by average rating descending.\n\n**Table: reviews** — `review_id`, `product_id`, `product_name`, `rating`\n\nOutput columns: `product_id`, `product_name`, `review_count`, `avg_rating`. Order by `avg_rating DESC`.",
+  "schema_sql": "CREATE TABLE reviews (review_id INTEGER, product_id INTEGER, product_name VARCHAR, rating INTEGER); INSERT INTO reviews VALUES (1,101,'Widget A',4),(2,101,'Widget A',5),(3,101,'Widget A',3),(4,101,'Widget A',4),(5,101,'Widget A',5),(6,102,'Gadget B',5),(7,102,'Gadget B',4),(8,102,'Gadget B',3),(9,103,'Doohickey C',3),(10,103,'Doohickey C',4),(11,103,'Doohickey C',5),(12,103,'Doohickey C',2),(13,103,'Doohickey C',4);",
+  "solution_sql": "SELECT product_id, product_name, COUNT(*) AS review_count, ROUND(AVG(rating::NUMERIC), 2) AS avg_rating FROM reviews GROUP BY product_id, product_name HAVING COUNT(*) >= 5 ORDER BY avg_rating DESC;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Widget A has 5 reviews (avg 4.20), Gadget B has 3 reviews (excluded), Doohickey C has 5 reviews (avg 3.60)",
+      "expected_row_count": 2,
+      "expected_columns": ["product_id", "product_name", "review_count", "avg_rating"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use HAVING COUNT(*) >= 5 to exclude products with fewer than 5 reviews.",
+    "Wrap AVG(rating) with ROUND(..., 2) for a clean decimal output; cast to NUMERIC first for precision.",
+    "Gadget B has only 3 reviews and will be filtered out by the HAVING clause."
+  ],
+  "explanation": "Widget A: 5 reviews with ratings 4,5,3,4,5 → avg = 21/5 = 4.20 ✓. Gadget B: only 3 reviews → excluded by HAVING. Doohickey C: 5 reviews with ratings 3,4,5,2,4 → avg = 18/5 = 3.60 ✓. Only Widget A and Doohickey C pass the minimum review threshold.",
+  "companies": ["Amazon", "Yelp", "TripAdvisor"],
+  "created_at": "2026-09-27"
+}

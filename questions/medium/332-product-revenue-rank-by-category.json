@@ -1,0 +1,27 @@
+{
+  "id": "332",
+  "slug": "product-revenue-rank-by-category",
+  "title": "Rank Products by Revenue Within Each Category",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "RANK", "PARTITION BY", "JOIN", "aggregation", "ranking"],
+  "description": "For each product, calculate its total revenue and rank it within its category using `RANK()` (highest revenue = rank 1). Include all products.\n\n**Table: products** — `product_id`, `product_name`, `category`, `price`\n\n**Table: order_items** — `order_id`, `product_id`, `quantity`\n\nOutput columns: `product_name`, `category`, `total_revenue`, `revenue_rank`. Order by `category`, `revenue_rank`.",
+  "schema_sql": "CREATE TABLE products (product_id INTEGER, product_name VARCHAR, category VARCHAR, price DECIMAL(10,2)); CREATE TABLE order_items (order_id INTEGER, product_id INTEGER, quantity INTEGER); INSERT INTO products VALUES (1,'Laptop','Electronics',1000.00),(2,'Phone','Electronics',500.00),(3,'Tablet','Electronics',300.00),(4,'Jacket','Clothing',100.00),(5,'Shirt','Clothing',50.00),(6,'Pants','Clothing',75.00),(7,'Coffee','Food',20.00),(8,'Tea','Food',15.00),(9,'Snack','Food',10.00); INSERT INTO order_items VALUES (1,1,5),(2,2,8),(3,3,3),(4,4,10),(5,5,15),(6,6,8),(7,7,20),(8,8,25),(9,9,30);",
+  "solution_sql": "WITH revenue AS (SELECT p.product_id, p.product_name, p.category, SUM(oi.quantity * p.price) AS total_revenue FROM products p JOIN order_items oi ON p.product_id = oi.product_id GROUP BY p.product_id, p.product_name, p.category) SELECT product_name, category, total_revenue, RANK() OVER (PARTITION BY category ORDER BY total_revenue DESC) AS revenue_rank FROM revenue ORDER BY category, revenue_rank;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "9 products across 3 categories; each category has ranks 1,2,3",
+      "expected_row_count": 9,
+      "expected_columns": ["product_name", "category", "total_revenue", "revenue_rank"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "First aggregate revenue per product using SUM(quantity * price) in a CTE.",
+    "Then apply RANK() OVER (PARTITION BY category ORDER BY total_revenue DESC) in the outer query.",
+    "You cannot use an aggregate function directly inside a window OVER clause — compute aggregates first in a CTE or subquery."
+  ],
+  "explanation": "The CTE computes each product's total revenue. Electronics: Laptop=5000 (rank 1), Phone=4000 (rank 2), Tablet=900 (rank 3). Clothing: Jacket=1000 (rank 1), Shirt=750 (rank 2), Pants=600 (rank 3). Food: Coffee=400 (rank 1), Tea=375 (rank 2), Snack=300 (rank 3). RANK() OVER (PARTITION BY category) restarts numbering within each category.",
+  "companies": ["Shopify", "Walmart", "Target"],
+  "created_at": "2026-09-27"
+}

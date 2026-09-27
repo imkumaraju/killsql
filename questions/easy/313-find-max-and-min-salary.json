@@ -1,0 +1,26 @@
+{
+  "id": "313",
+  "slug": "find-max-and-min-salary",
+  "title": "Find the Highest and Lowest Salary",
+  "difficulty": "easy",
+  "tags": ["SELECT", "MAX", "MIN", "aggregate", "aggregation", "aggregates"],
+  "description": "Return the highest and lowest salary across all employees **in a single row**.\n\n**Table: employees** — `id`, `name`, `department`, `salary`\n\nReturn `max_salary` and `min_salary`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, department VARCHAR, salary INT); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',85000),(3,'Carol','Sales',70000),(4,'Dave','Sales',65000),(5,'Eve','Marketing',75000),(6,'Frank','HR',60000);",
+  "solution_sql": "SELECT MAX(salary) AS max_salary, MIN(salary) AS min_salary FROM employees",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Single row with max_salary=95000 and min_salary=60000",
+      "expected_row_count": 1,
+      "expected_columns": ["max_salary", "min_salary"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "MAX() and MIN() can appear together in the same SELECT — both operate over all rows.",
+    "No GROUP BY needed here — this aggregates the entire table into a single result row."
+  ],
+  "explanation": "When aggregate functions are used without GROUP BY, they collapse all rows into a single result. MAX(salary) = 95000 (Alice) and MIN(salary) = 60000 (Frank). Both values appear on the same output row.",
+  "companies": ["Google", "Meta"],
+  "created_at": "2026-09-27"
+}

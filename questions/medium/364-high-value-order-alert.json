@@ -1,0 +1,27 @@
+{
+  "id": "364",
+  "slug": "high-value-order-alert",
+  "title": "High-Value Order Alert (2× Customer Average)",
+  "difficulty": "medium",
+  "tags": ["CTE", "subquery", "JOIN", "aggregation", "threshold filter", "analytics", "fraud detection"],
+  "description": "Find orders where the order amount is **more than 2× that customer's average order value**. Return the order details and the customer's average for context.\n\n**Table: orders** — `order_id`, `customer_id`, `customer_name`, `amount`\n\nOutput columns: `order_id`, `customer_id`, `customer_name`, `amount`, `customer_avg`. Order by `order_id`.",
+  "schema_sql": "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, customer_name VARCHAR, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'Alice',100.00),(2,1,'Alice',110.00),(3,1,'Alice',600.00),(4,2,'Bob',200.00),(5,2,'Bob',210.00),(6,2,'Bob',900.00),(7,3,'Charlie',50.00),(8,3,'Charlie',60.00),(9,3,'Charlie',70.00),(10,3,'Charlie',500.00),(11,4,'Diana',1000.00),(12,4,'Diana',1100.00);",
+  "solution_sql": "WITH customer_avg AS (SELECT customer_id, AVG(amount) AS avg_amount FROM orders GROUP BY customer_id) SELECT o.order_id, o.customer_id, o.customer_name, o.amount, ROUND(ca.avg_amount, 2) AS customer_avg FROM orders o JOIN customer_avg ca ON o.customer_id = ca.customer_id WHERE o.amount > 2 * ca.avg_amount ORDER BY o.order_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice avg=270: order 3 (600 > 540) qualifies; Bob avg=436.67: order 6 (900 > 873.33) qualifies; Charlie avg=170: order 10 (500 > 340) qualifies; Diana no outlier",
+      "expected_row_count": 3,
+      "expected_columns": ["order_id", "customer_id", "customer_name", "amount", "customer_avg"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Calculate each customer's average order amount in a CTE, then JOIN it back to the orders table.",
+    "The WHERE condition is o.amount > 2 * ca.avg_amount.",
+    "Remember that the average includes the outlier order itself, so the 2× threshold is relative to the customer's overall average."
+  ],
+  "explanation": "Alice: avg = (100+110+600)/3 = 270. Order 3 (600) > 2*270 = 540 ✓. Bob: avg = (200+210+900)/3 = 436.67. Order 6 (900) > 2*436.67 = 873.33 ✓. Charlie: avg = (50+60+70+500)/4 = 170. Order 10 (500) > 2*170 = 340 ✓. Diana: avg = 1050. Neither order exceeds 2100. Three high-value orders flagged.",
+  "companies": ["Stripe", "Visa", "Mastercard"],
+  "created_at": "2026-09-27"
+}

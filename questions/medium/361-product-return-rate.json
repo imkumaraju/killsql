@@ -1,0 +1,27 @@
+{
+  "id": "361",
+  "slug": "product-return-rate",
+  "title": "Product Return Rate as Percentage",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "FILTER", "conditional aggregation", "COUNT", "percentage", "analytics", "ratio"],
+  "description": "For each product, calculate the **return rate** as `returns / total_orders * 100`. Include all products even if their return rate is 0%.\n\n**Table: orders** — `order_id`, `product_id`, `product_name`, `is_returned` (BOOLEAN)\n\nOutput columns: `product_id`, `product_name`, `total_orders`, `returns`, `return_rate_pct`. Order by `return_rate_pct DESC`, `product_id`.",
+  "schema_sql": "CREATE TABLE orders (order_id INTEGER, product_id INTEGER, product_name VARCHAR, is_returned BOOLEAN); INSERT INTO orders VALUES (1,1,'Widget A',false),(2,1,'Widget A',true),(3,1,'Widget A',false),(4,1,'Widget A',true),(5,2,'Gadget B',false),(6,2,'Gadget B',false),(7,2,'Gadget B',true),(8,3,'Doohickey C',false),(9,3,'Doohickey C',false),(10,3,'Doohickey C',false),(11,4,'Thingamajig D',true),(12,4,'Thingamajig D',false);",
+  "solution_sql": "SELECT product_id, product_name, COUNT(*) AS total_orders, COUNT(*) FILTER (WHERE is_returned) AS returns, ROUND(COUNT(*) FILTER (WHERE is_returned)::NUMERIC / COUNT(*) * 100, 2) AS return_rate_pct FROM orders GROUP BY product_id, product_name ORDER BY return_rate_pct DESC, product_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Widget A: 50%, Thingamajig D: 50%, Gadget B: 33.33%, Doohickey C: 0% — 4 products",
+      "expected_row_count": 4,
+      "expected_columns": ["product_id", "product_name", "total_orders", "returns", "return_rate_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use COUNT(*) FILTER (WHERE is_returned) to count only returned orders.",
+    "Divide by COUNT(*) for total orders and multiply by 100; cast to NUMERIC for decimal division.",
+    "ORDER BY return_rate_pct DESC, product_id ensures a deterministic order when there are ties."
+  ],
+  "explanation": "Widget A: 4 orders, 2 returns → 50.00%. Gadget B: 3 orders, 1 return → 33.33%. Doohickey C: 3 orders, 0 returns → 0.00%. Thingamajig D: 2 orders, 1 return → 50.00%. Ordered by rate DESC then product_id: Widget A (50%, id=1), Thingamajig D (50%, id=4), Gadget B (33.33%), Doohickey C (0%).",
+  "companies": ["Amazon", "Zappos", "Nordstrom"],
+  "created_at": "2026-09-27"
+}

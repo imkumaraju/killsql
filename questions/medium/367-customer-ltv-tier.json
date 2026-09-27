@@ -1,0 +1,27 @@
+{
+  "id": "367",
+  "slug": "customer-ltv-tier",
+  "title": "Assign Customer Lifetime Value Tiers",
+  "difficulty": "medium",
+  "tags": ["CTE", "CASE WHEN", "GROUP BY", "SUM", "customer segmentation", "segmentation", "analytics"],
+  "description": "Calculate each customer's **total lifetime spend** and assign a tier: `'bronze'` (< 1000), `'silver'` (1000–4999), `'gold'` (5000–9999), or `'platinum'` (≥ 10000).\n\n**Table: orders** — `order_id`, `customer_id`, `customer_name`, `amount`\n\nOutput columns: `customer_id`, `customer_name`, `lifetime_spend`, `tier`. Order by `lifetime_spend DESC`.",
+  "schema_sql": "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, customer_name VARCHAR, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'Alice',500.00),(2,1,'Alice',300.00),(3,2,'Bob',1200.00),(4,2,'Bob',800.00),(5,3,'Charlie',3000.00),(6,3,'Charlie',2500.00),(7,4,'Diana',6000.00),(8,4,'Diana',4500.00),(9,5,'Eve',400.00),(10,6,'Frank',2000.00),(11,6,'Frank',1500.00),(12,7,'Grace',7000.00);",
+  "solution_sql": "WITH ltv AS (SELECT customer_id, customer_name, SUM(amount) AS lifetime_spend FROM orders GROUP BY customer_id, customer_name) SELECT customer_id, customer_name, lifetime_spend, CASE WHEN lifetime_spend >= 10000 THEN 'platinum' WHEN lifetime_spend >= 5000 THEN 'gold' WHEN lifetime_spend >= 1000 THEN 'silver' ELSE 'bronze' END AS tier FROM ltv ORDER BY lifetime_spend DESC;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Diana=10500 (platinum), Grace=7000 (gold), Charlie=5500 (gold), Frank=3500 (silver), Bob=2000 (silver), Alice=800 (bronze), Eve=400 (bronze) — 7 customers",
+      "expected_row_count": 7,
+      "expected_columns": ["customer_id", "customer_name", "lifetime_spend", "tier"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Aggregate SUM(amount) per customer in a CTE, then apply CASE WHEN thresholds in the outer SELECT.",
+    "Order the CASE WHEN conditions from highest to lowest threshold (platinum first) to avoid incorrect branching.",
+    "Diana's total = 6000+4500 = 10500 → platinum; Grace has a single order of 7000 → gold."
+  ],
+  "explanation": "CTE computes lifetime_spend per customer. Diana: 10500 → platinum. Grace: 7000 → gold. Charlie: 5500 → gold. Frank: 3500 → silver. Bob: 2000 → silver. Alice: 800 → bronze. Eve: 400 → bronze. The CASE WHEN checks from highest threshold downward to correctly bin each customer.",
+  "companies": ["Starbucks", "Amazon", "Nordstrom"],
+  "created_at": "2026-09-27"
+}

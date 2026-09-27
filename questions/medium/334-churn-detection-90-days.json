@@ -1,0 +1,27 @@
+{
+  "id": "334",
+  "slug": "churn-detection-90-days",
+  "title": "Churn Detection: Customers Inactive for 90+ Days",
+  "difficulty": "medium",
+  "tags": ["CTE", "subquery", "date arithmetic", "date filtering", "analytics", "GROUP BY", "HAVING"],
+  "description": "Identify customers whose **last order date** is more than 90 days before the most recent order date in the entire table. Return those customers along with their last order date.\n\n**Table: orders** — `order_id`, `customer_id`, `order_date`\n\nOutput columns: `customer_id`, `last_order_date`. Order by `customer_id`.",
+  "schema_sql": "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, order_date DATE); INSERT INTO orders VALUES (1,1,'2024-01-01'),(2,2,'2023-12-15'),(3,3,'2024-02-01'),(4,4,'2024-03-01'),(5,5,'2024-04-01'),(6,1,'2023-11-01'),(7,6,'2023-10-15');",
+  "solution_sql": "WITH max_date AS (SELECT MAX(order_date) AS max_dt FROM orders), last_orders AS (SELECT customer_id, MAX(order_date) AS last_order_date FROM orders GROUP BY customer_id) SELECT lo.customer_id, lo.last_order_date FROM last_orders lo, max_date md WHERE (md.max_dt - lo.last_order_date) > 90 ORDER BY lo.customer_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Max date is 2024-04-01. Customers 1 (last: 2024-01-01, 91 days), 2 (last: 2023-12-15, 108 days), 6 (last: 2023-10-15, 169 days) are churned.",
+      "expected_row_count": 3,
+      "expected_columns": ["customer_id", "last_order_date"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use MAX(order_date) in a CTE to determine the 'current' reference date dynamically.",
+    "Use another CTE to find each customer's last order date with MAX(order_date) GROUP BY customer_id.",
+    "In DuckDB, DATE - DATE returns an INTEGER (number of days). Compare that integer to 90."
+  ],
+  "explanation": "The max date in the table is 2024-04-01. Customer 1's last order (2024-01-01) is 91 days before — just over 90. Customer 2 (2023-12-15) is 108 days prior. Customer 6 (2023-10-15) is 169 days prior. Customers 3, 4, and 5 ordered within 90 days and are not churned.",
+  "companies": ["Stripe", "HubSpot", "Salesforce"],
+  "created_at": "2026-09-27"
+}

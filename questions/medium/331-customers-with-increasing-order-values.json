@@ -1,0 +1,27 @@
+{
+  "id": "331",
+  "slug": "customers-with-increasing-order-values",
+  "title": "Customers With Strictly Increasing Order Values",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "LAG", "PARTITION BY", "HAVING", "analytics"],
+  "description": "Find all customers whose order amounts are **strictly increasing** with each successive order (every order must be greater than the previous one). Only include customers who have placed at least 2 orders.\n\n**Table: orders** — `order_id`, `customer_id`, `order_date`, `amount`\n\nOutput columns: `customer_id`. Order by `customer_id`.",
+  "schema_sql": "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2024-01-05',100.00),(2,1,'2024-02-10',150.00),(3,1,'2024-03-15',200.00),(4,2,'2024-01-08',80.00),(5,2,'2024-02-12',60.00),(6,2,'2024-03-20',120.00),(7,3,'2024-01-03',50.00),(8,3,'2024-02-07',75.00),(9,3,'2024-03-11',90.00),(10,4,'2024-01-15',200.00),(11,4,'2024-02-20',300.00),(12,5,'2024-01-20',400.00);",
+  "solution_sql": "WITH ordered AS (SELECT customer_id, amount, LAG(amount) OVER (PARTITION BY customer_id ORDER BY order_date) AS prev_amount FROM orders), flags AS (SELECT customer_id, SUM(CASE WHEN prev_amount IS NOT NULL AND amount <= prev_amount THEN 1 ELSE 0 END) AS violations, COUNT(*) AS total_orders FROM ordered GROUP BY customer_id) SELECT customer_id FROM flags WHERE violations = 0 AND total_orders >= 2 ORDER BY customer_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Customer 1 (100→150→200 all increasing), customer 3 (50→75→90), customer 4 (200→300); customer 2 decreased once, customer 5 has only 1 order",
+      "expected_row_count": 3,
+      "expected_columns": ["customer_id"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use LAG(amount) OVER (PARTITION BY customer_id ORDER BY order_date) to get the previous order amount.",
+    "Count the number of 'violations' (rows where amount <= prev_amount) per customer, then filter for zero violations.",
+    "Remember to also require total_orders >= 2 so single-order customers are excluded."
+  ],
+  "explanation": "The CTE 'ordered' computes each order's previous amount using LAG. The CTE 'flags' counts violations (non-strictly-increasing steps) per customer. Only customers with 0 violations and at least 2 orders qualify: customer 1 (100→150→200), customer 3 (50→75→90), customer 4 (200→300). Customer 2 dropped from 80→60, and customer 5 has only one order.",
+  "companies": ["Amazon", "Shopify", "Stripe"],
+  "created_at": "2026-09-27"
+}

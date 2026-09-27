@@ -1,0 +1,27 @@
+{
+  "id": "341",
+  "slug": "department-salary-percentile",
+  "title": "Salary Percentile Rank Within Department",
+  "difficulty": "medium",
+  "tags": ["window functions", "PERCENT_RANK", "PARTITION BY", "HR analytics", "salary percentile", "ranking"],
+  "description": "For each employee, compute their **percent rank of salary within their department** using `PERCENT_RANK()`. A value of 0 means the lowest salary; 1 means the highest.\n\n**Table: employees** — `employee_id`, `name`, `department`, `salary`\n\nOutput columns: `employee_id`, `name`, `department`, `salary`, `salary_percentile`. Order by `department`, `salary`.",
+  "schema_sql": "CREATE TABLE employees (employee_id INTEGER, name VARCHAR, department VARCHAR, salary DECIMAL(10,2)); INSERT INTO employees VALUES (1,'Alice','Engineering',95000),(2,'Bob','Engineering',85000),(3,'Charlie','Engineering',75000),(4,'Diana','Engineering',105000),(5,'Eve','Marketing',65000),(6,'Frank','Marketing',72000),(7,'Grace','Marketing',80000),(8,'Henry','Sales',55000),(9,'Iris','Sales',62000),(10,'Jack','Sales',70000),(11,'Karen','HR',60000),(12,'Liam','HR',68000);",
+  "solution_sql": "SELECT employee_id, name, department, salary, ROUND(PERCENT_RANK() OVER (PARTITION BY department ORDER BY salary), 4) AS salary_percentile FROM employees ORDER BY department, salary;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "12 employees across 4 departments; lowest earner in each dept gets 0.0, highest gets 1.0",
+      "expected_row_count": 12,
+      "expected_columns": ["employee_id", "name", "department", "salary", "salary_percentile"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "PERCENT_RANK() = (rank - 1) / (total rows in partition - 1). The lowest value always returns 0, the highest returns 1.",
+    "Use PARTITION BY department so the percentile is computed independently within each department.",
+    "Wrap in ROUND(..., 4) to keep the output tidy."
+  ],
+  "explanation": "Engineering (4 employees): Charlie=0.0, Bob=0.333, Alice=0.667, Diana=1.0. Marketing (3): Eve=0.0, Frank=0.5, Grace=1.0. Sales (3): Henry=0.0, Iris=0.5, Jack=1.0. HR (2): Karen=0.0, Liam=1.0. PERCENT_RANK partitions by department so each group is independent.",
+  "companies": ["Workday", "LinkedIn", "Google"],
+  "created_at": "2026-09-27"
+}

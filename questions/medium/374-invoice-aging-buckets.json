@@ -1,0 +1,27 @@
+{
+  "id": "374",
+  "slug": "invoice-aging-buckets",
+  "title": "Invoice Aging Bucket Report",
+  "difficulty": "medium",
+  "tags": ["CTE", "CASE WHEN", "GROUP BY", "SUM", "COUNT", "date arithmetic", "financial analysis", "billing", "buckets"],
+  "description": "Categorize all unpaid invoices (past due as of **2024-06-01**) into aging buckets based on days overdue: `'0-30'`, `'31-60'`, `'61-90'`, and `'90+'`. Return the count and total amount per bucket.\n\n**Table: invoices** — `invoice_id`, `customer_name`, `amount`, `due_date`\n\nOutput columns: `aging_bucket`, `invoice_count`, `total_amount`. Order by `MIN(days_overdue)` ascending.",
+  "schema_sql": "CREATE TABLE invoices (invoice_id INTEGER, customer_name VARCHAR, amount DECIMAL(10,2), due_date DATE); INSERT INTO invoices VALUES (1,'ACME Corp',500.00,'2024-05-20'),(2,'Beta Inc',1000.00,'2024-05-01'),(3,'Gamma Ltd',750.00,'2024-04-20'),(4,'Delta Co',2000.00,'2024-04-01'),(5,'Epsilon LLC',300.00,'2024-03-20'),(6,'Zeta Corp',1500.00,'2024-03-01'),(7,'Eta Inc',800.00,'2024-01-15'),(8,'Theta Ltd',2500.00,'2023-12-01'),(9,'Iota Co',400.00,'2024-05-25'),(10,'Kappa Inc',600.00,'2024-05-10');",
+  "solution_sql": "WITH overdue AS (SELECT invoice_id, customer_name, amount, due_date, ('2024-06-01'::DATE - due_date) AS days_overdue FROM invoices WHERE due_date < '2024-06-01'::DATE) SELECT CASE WHEN days_overdue <= 30 THEN '0-30' WHEN days_overdue <= 60 THEN '31-60' WHEN days_overdue <= 90 THEN '61-90' ELSE '90+' END AS aging_bucket, COUNT(*) AS invoice_count, SUM(amount) AS total_amount FROM overdue GROUP BY CASE WHEN days_overdue <= 30 THEN '0-30' WHEN days_overdue <= 60 THEN '31-60' WHEN days_overdue <= 90 THEN '61-90' ELSE '90+' END ORDER BY MIN(days_overdue);",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "0-30: 3 invoices (ACME=12d, Kappa=22d, Iota=7d); 31-60: 2 (Beta=31d, Gamma=42d); 61-90: 2 (Delta=61d, Epsilon=73d); 90+: 3 (Zeta=92d, Eta=137d, Theta=182d)",
+      "expected_row_count": 4,
+      "expected_columns": ["aging_bucket", "invoice_count", "total_amount"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Calculate days_overdue = '2024-06-01'::DATE - due_date (INTEGER in DuckDB) in a CTE; filter for due_date < '2024-06-01'.",
+    "Use CASE WHEN to assign buckets, then GROUP BY the same CASE expression.",
+    "ORDER BY MIN(days_overdue) within each bucket produces chronological bucket ordering."
+  ],
+  "explanation": "10 invoices all have due_date before 2024-06-01. Days overdue: Iota=7, ACME=12, Kappa=22, Beta=31, Gamma=42, Delta=61, Epsilon=73, Zeta=92, Eta=137, Theta=182. Buckets: '0-30'={Iota,ACME,Kappa}=3 invoices/$1400. '31-60'={Beta,Gamma}=2/$1750. '61-90'={Delta,Epsilon}=2/$2300. '90+'={Zeta,Eta,Theta}=3/$4800.",
+  "companies": ["QuickBooks", "Bill.com", "SAP"],
+  "created_at": "2026-09-27"
+}

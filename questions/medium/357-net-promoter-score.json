@@ -1,0 +1,27 @@
+{
+  "id": "357",
+  "slug": "net-promoter-score",
+  "title": "Calculate Net Promoter Score (NPS)",
+  "difficulty": "medium",
+  "tags": ["FILTER", "conditional aggregation", "COUNT", "arithmetic", "analytics", "metrics", "statistics"],
+  "description": "From customer survey scores (0–10), compute the **Net Promoter Score**: `NPS = (promoters - detractors) / total * 100` where promoters score 9–10, detractors score 0–6, and passives score 7–8.\n\n**Table: survey_responses** — `response_id`, `customer_id`, `score`\n\nOutput columns: `promoters`, `passives`, `detractors`, `total_responses`, `nps`.",
+  "schema_sql": "CREATE TABLE survey_responses (response_id INTEGER, customer_id INTEGER, score INTEGER); INSERT INTO survey_responses VALUES (1,1,10),(2,2,9),(3,3,8),(4,4,7),(5,5,6),(6,6,5),(7,7,4),(8,8,10),(9,9,9),(10,10,3),(11,11,8),(12,12,9);",
+  "solution_sql": "SELECT COUNT(*) FILTER (WHERE score >= 9) AS promoters, COUNT(*) FILTER (WHERE score BETWEEN 7 AND 8) AS passives, COUNT(*) FILTER (WHERE score <= 6) AS detractors, COUNT(*) AS total_responses, ROUND((COUNT(*) FILTER (WHERE score >= 9) - COUNT(*) FILTER (WHERE score <= 6))::NUMERIC / COUNT(*) * 100, 2) AS nps FROM survey_responses;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Promoters=5 (scores 10,9,10,9,9), Passives=3 (scores 8,7,8), Detractors=4 (scores 6,5,4,3), NPS=(5-4)/12*100=8.33",
+      "expected_row_count": 1,
+      "expected_columns": ["promoters", "passives", "detractors", "total_responses", "nps"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use COUNT(*) FILTER (WHERE score >= 9) for promoters, FILTER (WHERE score <= 6) for detractors.",
+    "NPS formula: (promoters - detractors) / total_responses * 100. Cast to NUMERIC for decimal division.",
+    "The result is a single-row aggregate — no GROUP BY needed."
+  ],
+  "explanation": "12 total responses. Promoters (9–10): customer_ids 1,2,8,9,12 = 5. Passives (7–8): customer_ids 3,4,11 = 3. Detractors (0–6): customer_ids 5,6,7,10 = 4. NPS = (5-4)/12 * 100 = 1/12 * 100 ≈ 8.33. A positive NPS indicates more promoters than detractors.",
+  "companies": ["Medallia", "Qualtrics", "SurveyMonkey"],
+  "created_at": "2026-09-27"
+}

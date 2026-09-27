@@ -1,0 +1,27 @@
+{
+  "id": "369",
+  "slug": "employee-span-of-control",
+  "title": "Manager Span of Control (Direct Reports Count)",
+  "difficulty": "medium",
+  "tags": ["self join", "self-join", "GROUP BY", "COUNT", "JOIN", "HR analytics", "hierarchy"],
+  "description": "For every manager, count how many **direct reports** they have. Only include employees who manage at least one person.\n\n**Table: employees** — `employee_id`, `name`, `manager_id`\n\nOutput columns: `manager_id`, `manager_name`, `direct_reports`. Order by `direct_reports DESC`, `manager_id`.",
+  "schema_sql": "CREATE TABLE employees (employee_id INTEGER, name VARCHAR, manager_id INTEGER); INSERT INTO employees VALUES (1,'CEO',NULL),(2,'VP Engineering',1),(3,'VP Marketing',1),(4,'VP Sales',1),(5,'Dev Lead',2),(6,'Dev 1',5),(7,'Dev 2',5),(8,'Dev 3',5),(9,'Mkt Manager',3),(10,'Mkt Analyst 1',9),(11,'Mkt Analyst 2',9),(12,'Sales Rep',4);",
+  "solution_sql": "SELECT m.employee_id AS manager_id, m.name AS manager_name, COUNT(e.employee_id) AS direct_reports FROM employees m JOIN employees e ON e.manager_id = m.employee_id GROUP BY m.employee_id, m.name ORDER BY direct_reports DESC, manager_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "CEO has 3 direct reports; Dev Lead has 3; Mkt Manager has 2; VP Engineering, VP Marketing, VP Sales each have 1 — 6 managers total",
+      "expected_row_count": 6,
+      "expected_columns": ["manager_id", "manager_name", "direct_reports"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Self-join: alias employees as 'm' (managers) and 'e' (employees); join on e.manager_id = m.employee_id.",
+    "COUNT(e.employee_id) per manager gives the direct report count.",
+    "Employees with no direct reports (Dev 1, Dev 2, Dev 3, Mkt Analysts, Sales Rep) won't appear because the INNER JOIN requires at least one matching direct report."
+  ],
+  "explanation": "CEO (id=1): direct reports are VP Engineering, VP Marketing, VP Sales = 3. VP Engineering (id=2): direct report is Dev Lead = 1. Dev Lead (id=5): direct reports are Dev 1, Dev 2, Dev 3 = 3. VP Marketing (id=3): direct report is Mkt Manager = 1. Mkt Manager (id=9): direct reports are Mkt Analyst 1, Mkt Analyst 2 = 2. VP Sales (id=4): direct report is Sales Rep = 1. Six managers total.",
+  "companies": ["Google", "LinkedIn", "Workday"],
+  "created_at": "2026-09-27"
+}

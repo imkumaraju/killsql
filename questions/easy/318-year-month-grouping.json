@@ -1,0 +1,26 @@
+{
+  "id": "318",
+  "slug": "year-month-grouping",
+  "title": "Count Orders Grouped by Year and Month",
+  "difficulty": "easy",
+  "tags": ["GROUP BY", "COUNT", "EXTRACT", "date functions", "date grouping", "aggregate"],
+  "description": "Group orders by calendar year and month to see how many were placed each month.\n\n**Table: orders** — `id`, `customer_id`, `amount`, `order_date`\n\nReturn `year`, `month`, and `order_count`. Order by `year`, `month`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL(10,2), order_date DATE); INSERT INTO orders VALUES (1,1,150.00,'2026-01-05'),(2,2,200.00,'2026-01-15'),(3,3,350.00,'2026-01-25'),(4,4,180.00,'2026-02-08'),(5,5,420.00,'2026-02-20'),(6,1,90.00,'2026-02-28'),(7,2,310.00,'2026-03-10'),(8,3,260.00,'2026-03-20'),(9,4,190.00,'2026-03-25'),(10,5,450.00,'2026-03-30');",
+  "solution_sql": "SELECT EXTRACT(YEAR FROM order_date) AS year, EXTRACT(MONTH FROM order_date) AS month, COUNT(*) AS order_count FROM orders GROUP BY 1, 2 ORDER BY 1, 2",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 year-month groups: Jan(3 orders), Feb(3), Mar(4)",
+      "expected_row_count": 3,
+      "expected_columns": ["year", "month", "order_count"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use EXTRACT(YEAR FROM date) and EXTRACT(MONTH FROM date) to decompose the date.",
+    "GROUP BY 1, 2 is shorthand for grouping by the 1st and 2nd SELECT expressions."
+  ],
+  "explanation": "EXTRACT splits a date into components. Grouping by both year and month creates one row per calendar month. January has orders 1–3 (count=3), February has 4–6 (count=3), March has 7–10 (count=4).",
+  "companies": ["Stripe", "PayPal"],
+  "created_at": "2026-09-27"
+}

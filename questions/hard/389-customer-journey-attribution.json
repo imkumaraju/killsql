@@ -1,0 +1,32 @@
+{
+  "id": "389",
+  "slug": "customer-journey-attribution",
+  "title": "First, Last, and Linear Touch Attribution",
+  "difficulty": "hard",
+  "tags": ["window functions", "ROW_NUMBER", "COUNT OVER", "aggregation", "marketing analytics", "funnel"],
+  "description": "Converted customers have one or more marketing touches. Credit each channel three ways: **first-touch** (1 if first event), **last-touch** (1 if last event), and **linear** (`1 / touch_count` per touch). Sum credits by channel.\n\n**Tables:** `touches` (`customer_id`, `channel`, `touched_at`), `conversions` (`customer_id`)\n\nOutput columns: `channel`, `first_touch_credit`, `last_touch_credit`, `linear_credit`. Order by `channel`. Round linear credit to 2 decimals.",
+  "schema_sql": "CREATE TABLE touches (customer_id INT, channel VARCHAR, touched_at TIMESTAMP); INSERT INTO touches VALUES (1,'google','2026-01-01 10:00:00'),(1,'email','2026-01-02 10:00:00'),(1,'direct','2026-01-03 10:00:00'),(2,'facebook','2026-01-01 11:00:00'),(2,'google','2026-01-04 11:00:00'); CREATE TABLE conversions (customer_id INT); INSERT INTO conversions VALUES (1),(2);",
+  "solution_sql": "WITH ranked AS (SELECT t.channel, ROW_NUMBER() OVER (PARTITION BY t.customer_id ORDER BY t.touched_at) AS rn_first, ROW_NUMBER() OVER (PARTITION BY t.customer_id ORDER BY t.touched_at DESC) AS rn_last, COUNT(*) OVER (PARTITION BY t.customer_id) AS n FROM touches t WHERE t.customer_id IN (SELECT customer_id FROM conversions)) SELECT channel, SUM(CASE WHEN rn_first = 1 THEN 1 ELSE 0 END) AS first_touch_credit, SUM(CASE WHEN rn_last = 1 THEN 1 ELSE 0 END) AS last_touch_credit, ROUND(SUM(1.0 / n), 2) AS linear_credit FROM ranked GROUP BY channel ORDER BY channel",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "direct 0/1/0.33, email 0/0/0.33, facebook 1/0/0.50, google 1/1/0.83",
+      "expected_row_count": 4,
+      "expected_columns": ["channel", "first_touch_credit", "last_touch_credit", "linear_credit"],
+      "expected_rows": [
+        { "channel": "direct", "first_touch_credit": 0, "last_touch_credit": 1, "linear_credit": 0.33 },
+        { "channel": "email", "first_touch_credit": 0, "last_touch_credit": 0, "linear_credit": 0.33 },
+        { "channel": "facebook", "first_touch_credit": 1, "last_touch_credit": 0, "linear_credit": 0.5 },
+        { "channel": "google", "first_touch_credit": 1, "last_touch_credit": 1, "linear_credit": 0.83 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "ROW_NUMBER ASC and DESC on touched_at mark first and last touches.",
+    "COUNT(*) OVER (PARTITION BY customer_id) is the denominator for linear credit."
+  ],
+  "explanation": "Customer 1: google → email → direct (linear 1/3 each). Customer 2: facebook → google (linear 1/2 each). First-touch totals: google 1, facebook 1. Last-touch: direct 1, google 1. Linear google = 0.33+0.50 = 0.83.",
+  "companies": ["Google", "HubSpot", "Segment"],
+  "created_at": "2026-09-27"
+}

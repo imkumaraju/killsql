@@ -1,0 +1,26 @@
+{
+  "id": "326",
+  "slug": "cross-join-calendar",
+  "title": "Generate All Month–Category Combinations",
+  "difficulty": "easy",
+  "tags": ["CROSS JOIN", "JOIN", "joins", "Cartesian product"],
+  "description": "Use a CROSS JOIN to produce every possible combination of month and product category — useful as a scaffold for reports that must show all combinations even when data is missing.\n\n**Table: months** — `month_num`, `month_name`\n**Table: categories** — `id`, `name`\n\nReturn `month_name` and category `name` aliased as `category`. Order by `month_num`, then `category`.",
+  "schema_sql": "CREATE TABLE months (month_num INT, month_name VARCHAR); CREATE TABLE categories (id INT, name VARCHAR); INSERT INTO months VALUES (1,'January'),(2,'February'),(3,'March'); INSERT INTO categories VALUES (1,'Electronics'),(2,'Clothing'),(3,'Food');",
+  "solution_sql": "SELECT m.month_name, c.name AS category FROM months m CROSS JOIN categories c ORDER BY m.month_num, c.name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 months × 3 categories = 9 combinations",
+      "expected_row_count": 9,
+      "expected_columns": ["month_name", "category"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "A CROSS JOIN has no ON condition — it pairs every row from the left table with every row from the right.",
+    "The result count is always left_rows × right_rows."
+  ],
+  "explanation": "CROSS JOIN produces a Cartesian product: each of the 3 months paired with each of the 3 categories gives 9 rows. This technique is used to pre-populate a reporting grid so that months or categories with zero sales still appear in the output.",
+  "companies": ["Tableau", "Looker"],
+  "created_at": "2026-09-27"
+}

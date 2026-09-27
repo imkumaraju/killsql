@@ -1,0 +1,27 @@
+{
+  "id": "366",
+  "slug": "order-status-transition-time",
+  "title": "Time Between Order Status Transitions",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "LAG", "PARTITION BY", "timestamp functions", "analytics", "time analysis"],
+  "description": "For each status change in an order's history, calculate the **hours elapsed since the previous status**. The first status entry per order should show `NULL` for both `prev_status_at` and `hours_since_previous`.\n\n**Table: order_status_history** — `id`, `order_id`, `status`, `changed_at` (TIMESTAMP)\n\nOutput columns: `order_id`, `status`, `changed_at`, `prev_status_at`, `hours_since_previous`. Order by `order_id`, `changed_at`.",
+  "schema_sql": "CREATE TABLE order_status_history (id INTEGER, order_id INTEGER, status VARCHAR, changed_at TIMESTAMP); INSERT INTO order_status_history VALUES (1,1001,'placed','2024-01-15 08:00:00'),(2,1001,'confirmed','2024-01-15 09:30:00'),(3,1001,'shipped','2024-01-16 10:00:00'),(4,1001,'delivered','2024-01-18 14:00:00'),(5,1002,'placed','2024-01-16 10:00:00'),(6,1002,'confirmed','2024-01-16 11:00:00'),(7,1002,'shipped','2024-01-17 09:00:00'),(8,1002,'delivered','2024-01-19 15:00:00'),(9,1003,'placed','2024-01-17 14:00:00'),(10,1003,'confirmed','2024-01-17 16:30:00'),(11,1003,'cancelled','2024-01-18 09:00:00');",
+  "solution_sql": "WITH history AS (SELECT order_id, status, changed_at, LAG(changed_at) OVER (PARTITION BY order_id ORDER BY changed_at) AS prev_status_at FROM order_status_history) SELECT order_id, status, changed_at, prev_status_at, ROUND(EXTRACT(EPOCH FROM (changed_at - prev_status_at)) / 3600.0, 2) AS hours_since_previous FROM history ORDER BY order_id, changed_at;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "11 rows total; 3 'placed' rows have NULL prev_status_at; order 1001 placed→confirmed = 1.5h",
+      "expected_row_count": 11,
+      "expected_columns": ["order_id", "status", "changed_at", "prev_status_at", "hours_since_previous"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use LAG(changed_at) OVER (PARTITION BY order_id ORDER BY changed_at) to get the previous timestamp.",
+    "Subtract timestamps to get an INTERVAL, then use EXTRACT(EPOCH FROM interval) to convert to seconds, and divide by 3600 for hours.",
+    "The first status per order ('placed') has no previous timestamp, so LAG returns NULL and the elapsed time is also NULL."
+  ],
+  "explanation": "EXTRACT(EPOCH FROM interval) converts an INTERVAL to total seconds; dividing by 3600 gives hours. Order 1001: placed→confirmed = 1.5h, confirmed→shipped = 24.5h, shipped→delivered = 52.0h. Order 1002: placed→confirmed = 1.0h, confirmed→shipped = 22.0h, shipped→delivered = 54.0h. Order 1003: placed→confirmed = 2.5h, confirmed→cancelled = 16.5h. All 3 'placed' rows show NULL.",
+  "companies": ["Shopify", "Amazon", "FedEx"],
+  "created_at": "2026-09-27"
+}

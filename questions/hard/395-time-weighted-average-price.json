@@ -1,0 +1,27 @@
+{
+  "id": "395",
+  "slug": "time-weighted-average-price",
+  "title": "Intraday Time-Weighted Average Price",
+  "difficulty": "hard",
+  "tags": ["LEAD", "window functions", "weighted average", "timestamp arithmetic", "analytics"],
+  "description": "Each tick is live until the next tick. TWAP = `SUM(price * minutes_until_next) / SUM(minutes_until_next)`. Ignore the last tick of the day (no next timestamp).\n\n**Table: ticks** — `stock`, `ts`, `price`\n\nOutput columns: `stock`, `twap` rounded to 2 decimals.",
+  "schema_sql": "CREATE TABLE ticks (stock VARCHAR, ts TIMESTAMP, price DECIMAL(10,2)); INSERT INTO ticks VALUES ('AAA','2026-01-01 09:00:00',100),('AAA','2026-01-01 10:00:00',110),('AAA','2026-01-01 12:00:00',105),('AAA','2026-01-01 16:00:00',108);",
+  "solution_sql": "WITH spans AS (SELECT stock, price, DATE_DIFF('minute', ts, LEAD(ts) OVER (PARTITION BY stock ORDER BY ts)) AS minutes_held FROM ticks) SELECT stock, ROUND(SUM(price * minutes_held) / SUM(minutes_held), 2) AS twap FROM spans WHERE minutes_held IS NOT NULL GROUP BY stock",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "(100*60 + 110*120 + 105*240) / 420 = 105.71",
+      "expected_row_count": 1,
+      "expected_columns": ["stock", "twap"],
+      "expected_rows": [{ "stock": "AAA", "twap": 105.71 }],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LEAD(ts) OVER (ORDER BY ts) is the end of the current price interval.",
+    "DATE_DIFF('minute', ts, next_ts) is the weight. Drop the last row where LEAD is NULL."
+  ],
+  "explanation": "09:00–10:00 holds 100 for 60 minutes, 10:00–12:00 holds 110 for 120, 12:00–16:00 holds 105 for 240. 6000+13200+25200 = 44400; 44400/420 = 105.714… → 105.71. The 16:00 print has no duration so it does not enter the average.",
+  "companies": ["Jane Street", "Bloomberg", "Citadel"],
+  "created_at": "2026-09-27"
+}

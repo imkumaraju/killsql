@@ -1,0 +1,26 @@
+{
+  "id": "380",
+  "slug": "top-3-categories-by-orders",
+  "title": "Top 3 Categories by Order Count",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "COUNT", "ORDER BY", "LIMIT", "ranking", "aggregation"],
+  "description": "Rank product categories by how many orders they appear in and return **only the top 3**.\n\n**Table: orders** — `id`, `category`\n\nOutput columns: `category`, `order_count`. Order by `order_count` DESC, then `category`.",
+  "schema_sql": "CREATE TABLE orders (id INT, category VARCHAR); INSERT INTO orders VALUES (1,'Electronics'),(2,'Electronics'),(3,'Electronics'),(4,'Electronics'),(5,'Clothing'),(6,'Clothing'),(7,'Clothing'),(8,'Home'),(9,'Home'),(10,'Sports'),(11,'Books'),(12,'Electronics');",
+  "solution_sql": "SELECT category, COUNT(*) AS order_count FROM orders GROUP BY category ORDER BY order_count DESC, category LIMIT 3",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Electronics 5, Clothing 3, Home 2 — Sports and Books excluded",
+      "expected_row_count": 3,
+      "expected_columns": ["category", "order_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "GROUP BY category and COUNT(*) to get order volume.",
+    "ORDER BY the count descending and LIMIT 3."
+  ],
+  "explanation": "Electronics appears 5 times, Clothing 3, Home 2, Sports 1, Books 1. LIMIT 3 after a descending sort keeps the three highest-volume categories. Tie-breaking by category name is unused here because the top three counts are unique.",
+  "companies": ["Amazon", "eBay", "Target"],
+  "created_at": "2026-09-27"
+}

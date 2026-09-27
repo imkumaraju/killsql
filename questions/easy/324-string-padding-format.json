@@ -1,0 +1,26 @@
+{
+  "id": "324",
+  "slug": "string-padding-format",
+  "title": "Format Order IDs with Zero-Padding",
+  "difficulty": "easy",
+  "tags": ["SELECT", "LPAD", "string functions", "CAST", "string concatenation"],
+  "description": "Generate a formatted **order code** by left-padding the numeric order id with zeros to a width of 6 characters (e.g. order 3 → `'000003'`).\n\n**Table: orders** — `id`, `customer_id`, `amount`, `order_date`\n\nReturn `order_code` (the padded id), `customer_id`, and `amount`. Order by `id`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, amount DECIMAL(10,2), order_date DATE); INSERT INTO orders VALUES (1,101,150.00,'2026-01-05'),(2,102,200.00,'2026-01-10'),(3,103,350.00,'2026-02-15'),(4,104,180.00,'2026-03-20'),(5,105,420.00,'2026-04-25');",
+  "solution_sql": "SELECT LPAD(id::VARCHAR, 6, '0') AS order_code, customer_id, amount FROM orders ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 rows with zero-padded order_code: 000001 through 000005",
+      "expected_row_count": 5,
+      "expected_columns": ["order_code", "customer_id", "amount"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LPAD(string, total_length, pad_char) pads the string on the left until it reaches total_length.",
+    "Cast the integer id to VARCHAR first: id::VARCHAR."
+  ],
+  "explanation": "LPAD requires a string input, so id is cast with ::VARCHAR first. LPAD('1', 6, '0') produces '000001'. LPAD('5', 6, '0') produces '000005'. This pattern is common for generating human-readable reference codes from sequential integer IDs.",
+  "companies": ["Shopify", "Square"],
+  "created_at": "2026-09-27"
+}

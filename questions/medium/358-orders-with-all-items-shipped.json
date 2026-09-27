@@ -1,0 +1,27 @@
+{
+  "id": "358",
+  "slug": "orders-with-all-items-shipped",
+  "title": "Orders Where Every Line Item Is Shipped",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "HAVING", "FILTER", "conditional aggregation", "aggregation", "analytics"],
+  "description": "Find all orders where **every single line item** has `status = 'shipped'`. Orders with even one non-shipped item should be excluded.\n\n**Table: order_items** — `item_id`, `order_id`, `product_id`, `status`\n\nOutput columns: `order_id`. Order by `order_id`.",
+  "schema_sql": "CREATE TABLE order_items (item_id INTEGER, order_id INTEGER, product_id INTEGER, status VARCHAR); INSERT INTO order_items VALUES (1,101,1,'shipped'),(2,101,2,'shipped'),(3,102,3,'shipped'),(4,102,4,'pending'),(5,103,5,'shipped'),(6,103,6,'shipped'),(7,103,7,'shipped'),(8,104,8,'pending'),(9,104,9,'pending'),(10,105,10,'shipped'),(11,105,11,'shipped'),(12,106,12,'shipped');",
+  "solution_sql": "SELECT order_id FROM order_items GROUP BY order_id HAVING COUNT(*) = COUNT(*) FILTER (WHERE status = 'shipped') ORDER BY order_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Orders 101, 103, 106 have all items shipped; order 102 has a pending item; order 104 has two pending items; order 105 has all shipped",
+      "expected_row_count": 4,
+      "expected_columns": ["order_id"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use HAVING COUNT(*) = COUNT(*) FILTER (WHERE status = 'shipped') — if the total count equals the shipped count, all items are shipped.",
+    "Alternatively: HAVING SUM(CASE WHEN status != 'shipped' THEN 1 ELSE 0 END) = 0.",
+    "GROUP BY order_id and apply the HAVING condition to filter complete orders."
+  ],
+  "explanation": "Order 101: 2 items, both shipped → COUNT(*) = COUNT(shipped) = 2 ✓. Order 102: 2 items, 1 shipped + 1 pending → 2 ≠ 1 ✗. Order 103: 3 items, all shipped ✓. Order 104: 2 pending → 2 ≠ 0 ✗. Order 105: 2 shipped ✓. Order 106: 1 shipped ✓. Four orders (101, 103, 105, 106) have all items shipped.",
+  "companies": ["Amazon", "FedEx", "Shopify"],
+  "created_at": "2026-09-27"
+}

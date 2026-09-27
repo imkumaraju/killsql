@@ -1,0 +1,27 @@
+{
+  "id": "351",
+  "slug": "most-popular-product-per-month",
+  "title": "Most Popular Product Each Month",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "ROW_NUMBER", "PARTITION BY", "top N per group", "TOP N per group", "analytics"],
+  "description": "Find the **product with the highest order count** in each month. If there is a tie, the product with the lower `product_id` wins.\n\n**Table: order_summary** — `order_month` (first day of month), `product_id`, `product_name`, `order_count`\n\nOutput columns: `order_month`, `product_id`, `product_name`, `order_count`. Order by `order_month`.",
+  "schema_sql": "CREATE TABLE order_summary (order_month DATE, product_id INTEGER, product_name VARCHAR, order_count INTEGER); INSERT INTO order_summary VALUES ('2024-01-01',1,'Widget A',10),('2024-01-01',2,'Gadget B',8),('2024-01-01',3,'Doohickey C',5),('2024-02-01',1,'Widget A',7),('2024-02-01',2,'Gadget B',12),('2024-02-01',3,'Doohickey C',9),('2024-03-01',1,'Widget A',6),('2024-03-01',2,'Gadget B',8),('2024-03-01',3,'Doohickey C',11);",
+  "solution_sql": "WITH ranked AS (SELECT order_month, product_id, product_name, order_count, ROW_NUMBER() OVER (PARTITION BY order_month ORDER BY order_count DESC, product_id ASC) AS rn FROM order_summary) SELECT order_month, product_id, product_name, order_count FROM ranked WHERE rn = 1 ORDER BY order_month;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan: Widget A (10), Feb: Gadget B (12), Mar: Doohickey C (11) — one winner per month = 3 rows",
+      "expected_row_count": 3,
+      "expected_columns": ["order_month", "product_id", "product_name", "order_count"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use ROW_NUMBER() OVER (PARTITION BY order_month ORDER BY order_count DESC) to rank products within each month.",
+    "Add a secondary sort on product_id ASC to break ties deterministically.",
+    "Filter WHERE rn = 1 to keep exactly one winner per month."
+  ],
+  "explanation": "January: Widget A leads with 10 orders. February: Gadget B leads with 12. March: Doohickey C leads with 11. ROW_NUMBER() partitioned by order_month and ordered by order_count DESC assigns rank 1 to the top product each month. Filtering rn = 1 yields exactly 3 rows (one per month).",
+  "companies": ["Shopify", "BigCommerce", "WooCommerce"],
+  "created_at": "2026-09-27"
+}

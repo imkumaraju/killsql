@@ -1,0 +1,27 @@
+{
+  "id": "363",
+  "slug": "employees-in-multiple-departments",
+  "title": "Employees Assigned to Multiple Departments",
+  "difficulty": "medium",
+  "tags": ["GROUP BY", "HAVING", "COUNT DISTINCT", "aggregation", "filtering", "HR analytics"],
+  "description": "Find employees who are assigned to **more than one department**. Return their employee ID, name, and the count of departments they belong to.\n\n**Table: employee_departments** — `id`, `employee_id`, `employee_name`, `department`\n\nOutput columns: `employee_id`, `employee_name`, `dept_count`. Order by `employee_id`.",
+  "schema_sql": "CREATE TABLE employee_departments (id INTEGER, employee_id INTEGER, employee_name VARCHAR, department VARCHAR); INSERT INTO employee_departments VALUES (1,1,'Alice','Engineering'),(2,1,'Alice','Product'),(3,2,'Bob','Engineering'),(4,3,'Charlie','Marketing'),(5,3,'Charlie','Sales'),(6,3,'Charlie','Product'),(7,4,'Diana','HR'),(8,5,'Eve','Finance'),(9,5,'Eve','HR'),(10,6,'Frank','Sales');",
+  "solution_sql": "SELECT employee_id, employee_name, COUNT(DISTINCT department) AS dept_count FROM employee_departments GROUP BY employee_id, employee_name HAVING COUNT(DISTINCT department) > 1 ORDER BY employee_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice (2 depts: Engineering, Product), Charlie (3 depts: Marketing, Sales, Product), Eve (2 depts: Finance, HR) — 3 employees",
+      "expected_row_count": 3,
+      "expected_columns": ["employee_id", "employee_name", "dept_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "GROUP BY employee_id and employee_name, then apply HAVING COUNT(DISTINCT department) > 1.",
+    "Use COUNT(DISTINCT department) rather than COUNT(*) to handle any accidental duplicate rows correctly.",
+    "Bob, Diana, and Frank each belong to exactly one department and are excluded."
+  ],
+  "explanation": "Alice appears in Engineering and Product → dept_count = 2 ✓. Bob appears only in Engineering → 1, excluded. Charlie appears in Marketing, Sales, Product → dept_count = 3 ✓. Diana is only in HR → 1. Eve is in Finance and HR → dept_count = 2 ✓. Frank is only in Sales → 1. Three employees qualify.",
+  "companies": ["Google", "Meta", "Microsoft"],
+  "created_at": "2026-09-27"
+}

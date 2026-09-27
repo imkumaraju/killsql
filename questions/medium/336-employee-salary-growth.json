@@ -1,0 +1,27 @@
+{
+  "id": "336",
+  "slug": "employee-salary-growth",
+  "title": "Employee Salary Growth Over Time",
+  "difficulty": "medium",
+  "tags": ["window functions", "LAG", "PARTITION BY", "analytics", "HR analytics", "salary analysis"],
+  "description": "For each salary record, show the employee's previous salary and the change amount. Records with no previous salary (the employee's first record) should show `NULL` for both `prev_salary` and `salary_change`.\n\n**Table: salary_history** — `id`, `employee_id`, `salary`, `effective_date`\n\nOutput columns: `employee_id`, `effective_date`, `salary`, `prev_salary`, `salary_change`. Order by `employee_id`, `effective_date`.",
+  "schema_sql": "CREATE TABLE salary_history (id INTEGER, employee_id INTEGER, salary DECIMAL(10,2), effective_date DATE); INSERT INTO salary_history VALUES (1,1,50000.00,'2022-01-01'),(2,1,55000.00,'2023-01-01'),(3,1,60000.00,'2024-01-01'),(4,2,45000.00,'2022-06-01'),(5,2,42000.00,'2023-06-01'),(6,3,70000.00,'2022-03-01'),(7,3,75000.00,'2023-03-01'),(8,3,80000.00,'2024-03-01'),(9,4,55000.00,'2023-01-01'),(10,5,65000.00,'2022-09-01'),(11,5,68000.00,'2023-09-01');",
+  "solution_sql": "SELECT employee_id, effective_date, salary, LAG(salary) OVER (PARTITION BY employee_id ORDER BY effective_date) AS prev_salary, salary - LAG(salary) OVER (PARTITION BY employee_id ORDER BY effective_date) AS salary_change FROM salary_history ORDER BY employee_id, effective_date;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "11 total salary records; first record per employee has NULL prev_salary and NULL salary_change",
+      "expected_row_count": 11,
+      "expected_columns": ["employee_id", "effective_date", "salary", "prev_salary", "salary_change"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use LAG(salary) OVER (PARTITION BY employee_id ORDER BY effective_date) to fetch the previous salary.",
+    "The salary_change is simply salary - LAG(salary). When there is no previous row, LAG returns NULL and the subtraction also yields NULL.",
+    "Employee 2 shows a negative salary_change (pay cut from 45000 to 42000)."
+  ],
+  "explanation": "LAG() with PARTITION BY employee_id looks back one row within each employee's history (ordered by effective_date). Employee 1 grew from 50K→55K→60K (+5K each time). Employee 2 took a pay cut (45K→42K, change = -3K). Employee 4 has only one record so prev_salary is NULL. The subtraction propagates NULL automatically.",
+  "companies": ["Workday", "ADP", "SAP"],
+  "created_at": "2026-09-27"
+}

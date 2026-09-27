@@ -1,0 +1,26 @@
+{
+  "id": "302",
+  "slug": "count-orders-by-status",
+  "title": "Count Orders by Status",
+  "difficulty": "easy",
+  "tags": ["GROUP BY", "COUNT", "aggregate", "aggregation"],
+  "description": "The orders table tracks the fulfillment status of every order. Count how many orders exist for each status.\n\n**Table: orders** — `id`, `customer_id`, `status`, `order_date`\n\nReturn `status` and `order_count`. Order by `status`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, status VARCHAR, order_date DATE); INSERT INTO orders VALUES (1,1,'pending','2026-01-05'),(2,2,'shipped','2026-01-10'),(3,3,'delivered','2026-01-15'),(4,4,'pending','2026-02-01'),(5,5,'shipped','2026-02-10'),(6,1,'delivered','2026-02-20'),(7,2,'cancelled','2026-03-01'),(8,3,'delivered','2026-03-10'),(9,4,'shipped','2026-03-15'),(10,5,'delivered','2026-03-20');",
+  "solution_sql": "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 distinct statuses returned (cancelled, delivered, pending, shipped)",
+      "expected_row_count": 4,
+      "expected_columns": ["status", "order_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use GROUP BY status to collapse rows with the same status into one.",
+    "COUNT(*) counts all rows in each group."
+  ],
+  "explanation": "GROUP BY status groups all rows that share the same status value. COUNT(*) then counts how many rows fall into each group, giving: cancelled=1, delivered=4, pending=2, shipped=3.",
+  "companies": ["Uber", "DoorDash"],
+  "created_at": "2026-09-27"
+}

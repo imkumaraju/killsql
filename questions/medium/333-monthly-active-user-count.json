@@ -1,0 +1,27 @@
+{
+  "id": "333",
+  "slug": "monthly-active-user-count",
+  "title": "Monthly Active User Count",
+  "difficulty": "medium",
+  "tags": ["DATE_TRUNC", "COUNT DISTINCT", "GROUP BY", "date grouping", "analytics", "DAU/MAU"],
+  "description": "Count the number of **distinct active users** for each calendar month. A user is considered active in a month if they appear at least once in the events table that month.\n\n**Table: events** — `event_id`, `user_id`, `event_date`, `event_type`\n\nOutput columns: `month`, `active_users`. Order by `month`.",
+  "schema_sql": "CREATE TABLE events (event_id INTEGER, user_id INTEGER, event_date DATE, event_type VARCHAR); INSERT INTO events VALUES (1,1,'2024-01-05','login'),(2,2,'2024-01-10','purchase'),(3,3,'2024-01-15','login'),(4,1,'2024-01-20','purchase'),(5,2,'2024-02-05','login'),(6,4,'2024-02-10','purchase'),(7,5,'2024-02-15','login'),(8,2,'2024-02-20','login'),(9,1,'2024-03-05','purchase'),(10,3,'2024-03-10','login'),(11,6,'2024-03-15','purchase'),(12,6,'2024-03-20','login');",
+  "solution_sql": "SELECT DATE_TRUNC('month', event_date)::DATE AS month, COUNT(DISTINCT user_id) AS active_users FROM events GROUP BY DATE_TRUNC('month', event_date) ORDER BY month;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan: users 1,2,3 (3 distinct); Feb: users 2,4,5 (3 distinct); Mar: users 1,3,6 (3 distinct)",
+      "expected_row_count": 3,
+      "expected_columns": ["month", "active_users"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use DATE_TRUNC('month', event_date) to group all dates in the same month together.",
+    "Use COUNT(DISTINCT user_id) to avoid counting the same user twice within a month.",
+    "Cast the result to DATE (::DATE) so the output shows a date rather than a timestamp."
+  ],
+  "explanation": "DATE_TRUNC('month', event_date) truncates each date to the first of its month, enabling month-level grouping. COUNT(DISTINCT user_id) correctly handles users who appear multiple times in a month (e.g., user 2 appears twice in January). Each of the 3 months has 3 unique active users.",
+  "companies": ["Meta", "TikTok", "Spotify"],
+  "created_at": "2026-09-27"
+}

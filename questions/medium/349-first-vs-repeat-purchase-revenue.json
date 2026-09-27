@@ -1,0 +1,27 @@
+{
+  "id": "349",
+  "slug": "first-vs-repeat-purchase-revenue",
+  "title": "Revenue From First-Time vs Repeat Purchases",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "ROW_NUMBER", "PARTITION BY", "CASE WHEN", "aggregation", "analytics", "one-time buyers", "repeat buyers"],
+  "description": "Split all orders into `'first'` (the customer's earliest order) and `'repeat'` (all subsequent orders). Show the order count and total revenue for each purchase type.\n\n**Table: orders** — `order_id`, `customer_id`, `order_date`, `amount`\n\nOutput columns: `purchase_type`, `order_count`, `total_revenue`. Order by `purchase_type`.",
+  "schema_sql": "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2024-01-05',100.00),(2,1,'2024-01-20',150.00),(3,1,'2024-02-10',200.00),(4,2,'2024-01-10',120.00),(5,3,'2024-01-15',80.00),(6,3,'2024-02-05',160.00),(7,3,'2024-03-01',90.00),(8,4,'2024-02-20',250.00),(9,4,'2024-03-10',300.00);",
+  "solution_sql": "WITH order_ranks AS (SELECT order_id, customer_id, amount, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) AS order_rank FROM orders) SELECT CASE WHEN order_rank = 1 THEN 'first' ELSE 'repeat' END AS purchase_type, COUNT(*) AS order_count, SUM(amount) AS total_revenue FROM order_ranks GROUP BY CASE WHEN order_rank = 1 THEN 'first' ELSE 'repeat' END ORDER BY purchase_type;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "First purchases: 4 orders totalling 550; Repeat purchases: 5 orders totalling 900",
+      "expected_row_count": 2,
+      "expected_columns": ["purchase_type", "order_count", "total_revenue"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) to number each customer's orders.",
+    "Label rows with order_rank = 1 as 'first' and all others as 'repeat' using CASE WHEN.",
+    "Then GROUP BY the purchase_type label to get total counts and revenue."
+  ],
+  "explanation": "ROW_NUMBER assigns rank 1 to each customer's earliest order. First purchases: customer 1 (100), customer 2 (120), customer 3 (80), customer 4 (250) = 4 orders, total 550. Repeat purchases: customer 1 orders 2 & 3 (150+200=350), customer 3 orders 2 & 3 (160+90=250), customer 4 order 2 (300) = 5 orders, total 900.",
+  "companies": ["Shopify", "Stripe", "Braintree"],
+  "created_at": "2026-09-27"
+}

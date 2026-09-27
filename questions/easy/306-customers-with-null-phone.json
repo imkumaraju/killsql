@@ -1,0 +1,26 @@
+{
+  "id": "306",
+  "slug": "customers-with-null-phone",
+  "title": "Find Customers with No Phone Number",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "IS NULL", "NULL check", "NULL handling", "filtering"],
+  "description": "Some customers did not provide a phone number when they signed up. Find everyone whose phone is missing.\n\n**Table: customers** — `id`, `name`, `email`, `phone`\n\nReturn `id`, `name`, and `email` for all customers where `phone` IS NULL. Order by `id`.",
+  "schema_sql": "CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR, phone VARCHAR); INSERT INTO customers VALUES (1,'Alice Smith','alice@example.com','555-1234'),(2,'Bob Jones','bob@example.com',NULL),(3,'Carol White','carol@example.com','555-5678'),(4,'Dave Black','dave@example.com',NULL),(5,'Eve Green','eve@example.com','555-9012'),(6,'Frank Brown','frank@example.com','555-3456'),(7,'Grace Lee','grace@example.com',NULL),(8,'Hank Miller','hank@example.com','555-7890');",
+  "solution_sql": "SELECT id, name, email FROM customers WHERE phone IS NULL ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 customers (Bob, Dave, Grace) have no phone number",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "name", "email"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "NULL cannot be compared with = or !=. Use IS NULL to check for missing values.",
+    "WHERE phone = NULL will never match any row — always use IS NULL."
+  ],
+  "explanation": "NULL represents the absence of a value. The only correct way to test for NULL is with IS NULL (or IS NOT NULL). Equality operators like = NULL always return unknown/false in SQL. Customers 2 (Bob), 4 (Dave), and 7 (Grace) have NULL in the phone column.",
+  "companies": ["Salesforce", "HubSpot"],
+  "created_at": "2026-09-27"
+}

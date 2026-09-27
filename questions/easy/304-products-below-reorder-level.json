@@ -1,0 +1,26 @@
+{
+  "id": "304",
+  "slug": "products-below-reorder-level",
+  "title": "Products Below Reorder Level",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "filtering", "filter"],
+  "description": "Warehouse management requires restocking whenever `stock_quantity` drops below `reorder_level`. Identify which products need to be reordered.\n\n**Table: products** — `id`, `name`, `stock_quantity`, `reorder_level`\n\nReturn `name`, `stock_quantity`, and `reorder_level` for every product where current stock is **strictly less than** the reorder level. Order by `name`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, stock_quantity INT, reorder_level INT); INSERT INTO products VALUES (1,'Product A',50,30),(2,'Product B',10,25),(3,'Product C',100,50),(4,'Product D',5,20),(5,'Product E',80,60),(6,'Product F',0,15),(7,'Product G',200,100),(8,'Product H',8,10);",
+  "solution_sql": "SELECT name, stock_quantity, reorder_level FROM products WHERE stock_quantity < reorder_level ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 products are below reorder level: B(10<25), D(5<20), F(0<15), H(8<10)",
+      "expected_row_count": 4,
+      "expected_columns": ["name", "stock_quantity", "reorder_level"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use WHERE stock_quantity < reorder_level — a column can be compared against another column.",
+    "Strict less-than (<) means equal values (stock = reorder_level) are NOT included."
+  ],
+  "explanation": "The WHERE clause compares two columns in the same row. Rows where stock_quantity is strictly less than reorder_level are: Product B (10 < 25), Product D (5 < 20), Product F (0 < 15), and Product H (8 < 10). Product E has 80 stock vs. 60 reorder level — 80 is not < 60 so it is excluded.",
+  "companies": ["Walmart", "Target"],
+  "created_at": "2026-09-27"
+}

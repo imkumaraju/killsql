@@ -1,0 +1,27 @@
+{
+  "id": "347",
+  "slug": "price-range-histogram",
+  "title": "Product Price Range Histogram",
+  "difficulty": "medium",
+  "tags": ["CASE WHEN", "GROUP BY", "COUNT", "conditional logic", "buckets", "histogram", "distribution"],
+  "description": "Bucket all products into four price ranges and count how many fall in each bucket: `'0-50'`, `'51-150'`, `'151-300'`, and `'301+'`.\n\n**Table: products** — `product_id`, `product_name`, `price`\n\nOutput columns: `price_range`, `product_count`. Order by the minimum price in each bucket (ascending).",
+  "schema_sql": "CREATE TABLE products (product_id INTEGER, product_name VARCHAR, price DECIMAL(10,2)); INSERT INTO products VALUES (1,'Budget Phone',49.99),(2,'Basic Tablet',79.99),(3,'Mid Phone',149.99),(4,'Standard Tablet',199.99),(5,'Premium Phone',349.99),(6,'Basic Laptop',499.99),(7,'Gaming Mouse',29.99),(8,'Mechanical Keyboard',89.99),(9,'Monitor 24in',249.99),(10,'Gaming Chair',399.99),(11,'Headphones',59.99),(12,'Webcam',39.99);",
+  "solution_sql": "SELECT CASE WHEN price <= 50 THEN '0-50' WHEN price <= 150 THEN '51-150' WHEN price <= 300 THEN '151-300' ELSE '301+' END AS price_range, COUNT(*) AS product_count FROM products GROUP BY CASE WHEN price <= 50 THEN '0-50' WHEN price <= 150 THEN '51-150' WHEN price <= 300 THEN '151-300' ELSE '301+' END ORDER BY MIN(price);",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "0-50: 3 products (Gaming Mouse, Webcam, Budget Phone); 51-150: 4; 151-300: 2; 301+: 3",
+      "expected_row_count": 4,
+      "expected_columns": ["price_range", "product_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use a CASE WHEN expression in both SELECT and GROUP BY to define the buckets.",
+    "ORDER BY MIN(price) ensures the buckets are ordered from cheapest to most expensive.",
+    "When grouping by a CASE expression, you must repeat the full CASE WHEN logic in the GROUP BY clause."
+  ],
+  "explanation": "'0-50': Budget Phone (49.99), Gaming Mouse (29.99), Webcam (39.99) = 3 products. '51-150': Basic Tablet (79.99), Mid Phone (149.99), Headphones (59.99), Mechanical Keyboard (89.99) = 4 products. '151-300': Standard Tablet (199.99), Monitor (249.99) = 2 products. '301+': Premium Phone (349.99), Basic Laptop (499.99), Gaming Chair (399.99) = 3 products.",
+  "companies": ["Best Buy", "Amazon", "Newegg"],
+  "created_at": "2026-09-27"
+}

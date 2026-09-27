@@ -1,0 +1,26 @@
+{
+  "id": "308",
+  "slug": "products-starting-with-letter",
+  "title": "Products Whose Name Starts with 'A'",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "LIKE", "pattern matching", "filtering"],
+  "description": "Find all products whose name begins with the letter **A**.\n\n**Table: products** — `id`, `name`, `category`, `price`\n\nReturn `id` and `name`. Order by `name`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL(10,2)); INSERT INTO products VALUES (1,'Apple Juice','Beverages',3.99),(2,'Banana','Fruits',0.99),(3,'Almond Butter','Spreads',7.99),(4,'Cheese','Dairy',4.99),(5,'Avocado','Fruits',1.99),(6,'Milk','Dairy',2.99),(7,'Butter','Dairy',3.49),(8,'Orange Juice','Beverages',4.49);",
+  "solution_sql": "SELECT id, name FROM products WHERE name LIKE 'A%' ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 products start with A: Almond Butter, Apple Juice, Avocado",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "name"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The % wildcard in LIKE matches zero or more characters.",
+    "'A%' means: starts with A followed by anything."
+  ],
+  "explanation": "LIKE 'A%' matches any string that begins with the letter A. The % wildcard stands for any sequence of characters (including an empty one). Products matching are: Almond Butter, Apple Juice, and Avocado. Banana and Butter start with B and are excluded.",
+  "companies": ["Whole Foods", "Kroger"],
+  "created_at": "2026-09-27"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "397",
+  "slug": "geospatial-distance-ranking",
+  "title": "Nearest Neighbor by Euclidean Distance",
+  "difficulty": "hard",
+  "tags": ["CROSS JOIN", "ROW_NUMBER", "SQRT", "POWER", "nearest match", "ranking"],
+  "description": "For each location, find the **nearest other location** using Euclidean distance `SQRT((lat1-lat2)^2 + (lng1-lng2)^2)`. Break ties by neighbor name. Round distance to 2 decimals.\n\n**Table: locs** — `id`, `name`, `lat`, `lng`\n\nOutput columns: `loc_id`, `loc_name`, `neighbor_name`, `distance`. Order by `loc_id`.",
+  "schema_sql": "CREATE TABLE locs (id INT, name VARCHAR, lat DOUBLE, lng DOUBLE); INSERT INTO locs VALUES (1,'A',0,0),(2,'B',3,4),(3,'C',0,10),(4,'D',6,8);",
+  "solution_sql": "WITH pairs AS (SELECT a.id AS loc_id, a.name AS loc_name, b.name AS neighbor_name, SQRT(POWER(a.lat - b.lat, 2) + POWER(a.lng - b.lng, 2)) AS distance FROM locs a CROSS JOIN locs b WHERE a.id <> b.id), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY loc_id ORDER BY distance, neighbor_name) AS rn FROM pairs) SELECT loc_id, loc_name, neighbor_name, ROUND(distance, 2) AS distance FROM ranked WHERE rn = 1 ORDER BY loc_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "A→B 5, B→A 5, C→D 6.32, D→B 5",
+      "expected_row_count": 4,
+      "expected_columns": ["loc_id", "loc_name", "neighbor_name", "distance"],
+      "expected_rows": [
+        { "loc_id": 1, "loc_name": "A", "neighbor_name": "B", "distance": 5 },
+        { "loc_id": 2, "loc_name": "B", "neighbor_name": "A", "distance": 5 },
+        { "loc_id": 3, "loc_name": "C", "neighbor_name": "D", "distance": 6.32 },
+        { "loc_id": 4, "loc_name": "D", "neighbor_name": "B", "distance": 5 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "CROSS JOIN the table to itself and drop a.id = b.id.",
+    "ROW_NUMBER() PARTITION BY loc_id ORDER BY distance, neighbor_name picks the nearest (and stable) neighbor."
+  ],
+  "explanation": "A–B is the classic 3-4-5 triangle. B is 5 from both A and D; name 'A' wins the tie. C to D is sqrt((0-6)^2+(10-8)^2)=sqrt(40)≈6.32, closer than C to B (sqrt(45)).",
+  "companies": ["Uber", "Google", "Lyft"],
+  "created_at": "2026-09-27"
+}

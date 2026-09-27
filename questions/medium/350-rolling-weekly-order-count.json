@@ -1,0 +1,27 @@
+{
+  "id": "350",
+  "slug": "rolling-weekly-order-count",
+  "title": "7-Day Rolling Order Count",
+  "difficulty": "medium",
+  "tags": ["window functions", "SUM OVER", "ROWS BETWEEN", "rolling window", "sliding window", "moving average", "analytics"],
+  "description": "For each day, calculate the **total order count over the current day and the 6 preceding days** (a 7-day rolling window). Use `ROWS BETWEEN 6 PRECEDING AND CURRENT ROW`.\n\n**Table: daily_orders** — `order_date`, `order_count`\n\nOutput columns: `order_date`, `order_count`, `rolling_7day_count`. Order by `order_date`.",
+  "schema_sql": "CREATE TABLE daily_orders (order_date DATE, order_count INTEGER); INSERT INTO daily_orders VALUES ('2024-01-01',5),('2024-01-02',8),('2024-01-03',3),('2024-01-04',10),('2024-01-05',7),('2024-01-06',4),('2024-01-07',6),('2024-01-08',9),('2024-01-09',2),('2024-01-10',11),('2024-01-11',5),('2024-01-12',8);",
+  "solution_sql": "SELECT order_date, order_count, SUM(order_count) OVER (ORDER BY order_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS rolling_7day_count FROM daily_orders ORDER BY order_date;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "12 rows; Jan 7 rolling sum = 5+8+3+10+7+4+6 = 43; Jan 8 = 8+3+10+7+4+6+9 = 47",
+      "expected_row_count": 12,
+      "expected_columns": ["order_date", "order_count", "rolling_7day_count"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Use SUM(order_count) OVER (ORDER BY order_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) for the 7-day window.",
+    "For the first 6 days (before a full 7-day window is available), the sum covers only the available rows.",
+    "ROWS BETWEEN specifies a physical row range, which is what you want here (vs RANGE BETWEEN which works with values)."
+  ],
+  "explanation": "The window frame ROWS BETWEEN 6 PRECEDING AND CURRENT ROW includes the current row plus up to 6 rows before it. Jan 1–6: partial windows (1 to 6 days). Jan 7: first full 7-day window → 5+8+3+10+7+4+6=43. Jan 8: drops Jan 1, adds Jan 8 → 8+3+10+7+4+6+9=47. The window slides forward each day.",
+  "companies": ["Uber", "Lyft", "DoorDash"],
+  "created_at": "2026-09-27"
+}

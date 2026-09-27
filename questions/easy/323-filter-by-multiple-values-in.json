@@ -1,0 +1,26 @@
+{
+  "id": "323",
+  "slug": "filter-by-multiple-values-in",
+  "title": "Filter Employees by Status Using IN",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "IN", "filtering", "filter"],
+  "description": "Retrieve all employees whose employment status is either **'active'** or **'pending'**.\n\n**Table: employees** — `id`, `name`, `status`, `department`\n\nReturn `id`, `name`, and `status`. Order by `name`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, status VARCHAR, department VARCHAR); INSERT INTO employees VALUES (1,'Alice','active','Engineering'),(2,'Bob','inactive','Sales'),(3,'Carol','pending','HR'),(4,'Dave','active','Marketing'),(5,'Eve','suspended','Engineering'),(6,'Frank','pending','Sales'),(7,'Grace','active','HR'),(8,'Hank','inactive','Marketing'),(9,'Iris','active','Engineering');",
+  "solution_sql": "SELECT id, name, status FROM employees WHERE status IN ('active', 'pending') ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "6 employees are active (Alice, Dave, Grace, Iris) or pending (Carol, Frank)",
+      "expected_row_count": 6,
+      "expected_columns": ["id", "name", "status"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "IN ('active', 'pending') is a concise way to write: status = 'active' OR status = 'pending'.",
+    "The IN list can contain as many values as needed, separated by commas."
+  ],
+  "explanation": "WHERE status IN ('active', 'pending') matches rows where status equals any value in the list. Active employees: Alice, Dave, Grace, Iris (4 rows). Pending employees: Carol, Frank (2 rows). Total = 6. Bob, Hank (inactive) and Eve (suspended) are excluded.",
+  "companies": ["Workday", "Greenhouse"],
+  "created_at": "2026-09-27"
+}

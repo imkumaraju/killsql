@@ -1,0 +1,26 @@
+{
+  "id": "312",
+  "slug": "category-product-count",
+  "title": "Count Products per Category",
+  "difficulty": "easy",
+  "tags": ["GROUP BY", "COUNT", "aggregate", "aggregation"],
+  "description": "Count how many products belong to each category in the catalog.\n\n**Table: products** — `id`, `name`, `category`, `price`\n\nReturn `category` and `product_count`. Order by `category`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, category VARCHAR, price DECIMAL(10,2)); INSERT INTO products VALUES (1,'Widget A','Electronics',25.00),(2,'Widget B','Electronics',40.00),(3,'Widget C','Electronics',35.00),(4,'Chair','Furniture',199.00),(5,'Desk','Furniture',299.00),(6,'Lamp','Furniture',49.00),(7,'Shirt','Clothing',29.99),(8,'Pants','Clothing',49.99),(9,'Hat','Clothing',19.99);",
+  "solution_sql": "SELECT category, COUNT(*) AS product_count FROM products GROUP BY category ORDER BY category",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 categories (Clothing, Electronics, Furniture), each with 3 products",
+      "expected_row_count": 3,
+      "expected_columns": ["category", "product_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "GROUP BY category creates one output row per unique category value.",
+    "COUNT(*) counts the rows in each category group."
+  ],
+  "explanation": "GROUP BY category partitions the 9 product rows into three groups: Clothing (3 products), Electronics (3), and Furniture (3). COUNT(*) returns the size of each group.",
+  "companies": ["Etsy", "Amazon"],
+  "created_at": "2026-09-27"
+}

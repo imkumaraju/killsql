@@ -1,0 +1,31 @@
+{
+  "id": "400",
+  "slug": "monthly-growth-dashboard",
+  "title": "Monthly Revenue and New-Customer Dashboard",
+  "difficulty": "hard",
+  "tags": ["CTE", "DATE_TRUNC", "LAG", "LEFT JOIN", "growth rate", "pipeline", "analytics"],
+  "description": "Build a monthly dashboard from `orders`: **revenue**, **order_count**, **new_customers** (customers whose first order falls in that month), and **mom_growth_pct** vs the prior month. Round growth to 2 decimals (NULL in the first month).\n\n**Table: orders** — `order_id`, `order_date`, `customer_id`, `amount`\n\nOutput columns: `month`, `revenue`, `order_count`, `new_customers`, `mom_growth_pct`. Order by `month`.",
+  "schema_sql": "CREATE TABLE orders (order_id INT, order_date DATE, customer_id INT, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,'2026-01-10',1,100),(2,'2026-01-20',2,200),(3,'2026-02-05',1,150),(4,'2026-02-15',3,300),(5,'2026-03-01',2,250),(6,'2026-03-20',1,100);",
+  "solution_sql": "WITH monthly AS (SELECT DATE_TRUNC('month', order_date)::DATE AS month, SUM(amount) AS revenue, COUNT(*) AS order_count FROM orders GROUP BY 1), new_cust AS (SELECT DATE_TRUNC('month', first_order)::DATE AS month, COUNT(*) AS new_customers FROM (SELECT customer_id, MIN(order_date) AS first_order FROM orders GROUP BY customer_id) t GROUP BY 1) SELECT m.month, m.revenue, m.order_count, COALESCE(n.new_customers, 0) AS new_customers, ROUND((m.revenue - LAG(m.revenue) OVER (ORDER BY m.month))::NUMERIC / LAG(m.revenue) OVER (ORDER BY m.month) * 100, 2) AS mom_growth_pct FROM monthly m LEFT JOIN new_cust n ON n.month = m.month ORDER BY m.month",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan 300/2/2/null, Feb 450/2/1/50, Mar 350/2/0/-22.22",
+      "expected_row_count": 3,
+      "expected_columns": ["month", "revenue", "order_count", "new_customers", "mom_growth_pct"],
+      "expected_rows": [
+        { "month": "2026-01-01", "revenue": 300, "order_count": 2, "new_customers": 2, "mom_growth_pct": null },
+        { "month": "2026-02-01", "revenue": 450, "order_count": 2, "new_customers": 1, "mom_growth_pct": 50 },
+        { "month": "2026-03-01", "revenue": 350, "order_count": 2, "new_customers": 0, "mom_growth_pct": -22.22 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "One CTE aggregates revenue and orders by DATE_TRUNC('month', ...).",
+    "Another CTE takes MIN(order_date) per customer, then counts those first orders by month. LAG computes MoM growth."
+  ],
+  "explanation": "January: customers 1 and 2 first appear, revenue 300. February: customer 3 is new, revenue 450 → +50%. March: no new customers, revenue 350 → (350-450)/450 = −22.22%. Combining several CTEs into one dashboard row per month is a typical analytics pipeline.",
+  "companies": ["Stripe", "Shopify", "Snowflake"],
+  "created_at": "2026-09-27"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "310",
+  "slug": "orders-placed-today",
+  "title": "Filter Orders by a Specific Date",
+  "difficulty": "easy",
+  "tags": ["SELECT", "WHERE", "date functions", "date filtering", "date"],
+  "description": "Filter the orders table to return only the orders placed on **2026-09-27**. This demonstrates exact date equality — the same pattern you would use with `CURRENT_DATE` to fetch today's orders in a production query.\n\n**Table: orders** — `id`, `customer_id`, `order_date`, `amount`\n\nReturn `id`, `customer_id`, and `amount` for orders on that date. Order by `id`.",
+  "schema_sql": "CREATE TABLE orders (id INT, customer_id INT, order_date DATE, amount DECIMAL(10,2)); INSERT INTO orders VALUES (1,1,'2026-09-25',150.00),(2,2,'2026-09-25',200.00),(3,3,'2026-09-26',350.00),(4,4,'2026-09-26',180.00),(5,5,'2026-09-27',420.00),(6,1,'2026-09-27',90.00),(7,2,'2026-09-27',310.00),(8,3,'2026-09-28',260.00);",
+  "solution_sql": "SELECT id, customer_id, amount FROM orders WHERE order_date = '2026-09-27'::DATE ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "3 orders were placed on 2026-09-27 (ids 5, 6, 7)",
+      "expected_row_count": 3,
+      "expected_columns": ["id", "customer_id", "amount"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Cast the string literal to a DATE type: '2026-09-27'::DATE.",
+    "In production you would replace the literal with CURRENT_DATE to get today's orders."
+  ],
+  "explanation": "Comparing order_date = '2026-09-27'::DATE filters to rows where the date matches exactly. Orders 5, 6, and 7 have order_date = 2026-09-27. Orders 1-4 are on earlier dates and order 8 is the next day — all excluded.",
+  "companies": ["DoorDash", "Instacart"],
+  "created_at": "2026-09-27"
+}

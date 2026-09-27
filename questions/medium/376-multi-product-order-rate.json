@@ -1,0 +1,27 @@
+{
+  "id": "376",
+  "slug": "multi-product-order-rate",
+  "title": "Percentage of Orders With Multiple Products",
+  "difficulty": "medium",
+  "tags": ["subquery", "COUNT DISTINCT", "CASE WHEN", "percentage", "analytics", "aggregation", "ratio"],
+  "description": "Calculate the **percentage of orders that contain more than one distinct product**. Return total orders, multi-product orders, and the rate as a percentage.\n\n**Table: order_items** — `item_id`, `order_id`, `product_id`\n\nOutput columns: `total_orders`, `multi_product_orders`, `multi_product_rate_pct`.",
+  "schema_sql": "CREATE TABLE order_items (item_id INTEGER, order_id INTEGER, product_id INTEGER); INSERT INTO order_items VALUES (1,101,1),(2,101,2),(3,101,3),(4,102,1),(5,103,2),(6,103,3),(7,104,1),(8,105,2),(9,105,3),(10,105,4),(11,106,1),(12,107,2),(13,107,5);",
+  "solution_sql": "SELECT COUNT(DISTINCT order_id) AS total_orders, COUNT(DISTINCT CASE WHEN product_count > 1 THEN order_id END) AS multi_product_orders, ROUND(COUNT(DISTINCT CASE WHEN product_count > 1 THEN order_id END)::NUMERIC / COUNT(DISTINCT order_id) * 100, 2) AS multi_product_rate_pct FROM (SELECT order_id, COUNT(DISTINCT product_id) AS product_count FROM order_items GROUP BY order_id) t;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "7 total orders; orders 101,103,105,107 have multiple products (4 multi-product orders); rate = 4/7*100 = 57.14%",
+      "expected_row_count": 1,
+      "expected_columns": ["total_orders", "multi_product_orders", "multi_product_rate_pct"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "First subquery: GROUP BY order_id and compute COUNT(DISTINCT product_id) per order.",
+    "Outer query: count total distinct order_ids and use a CASE WHEN to count only those with product_count > 1.",
+    "Divide multi_product_orders / total_orders * 100 for the percentage; cast to NUMERIC before dividing."
+  ],
+  "explanation": "Order 101: 3 products ✓. Order 102: 1 product ✗. Order 103: 2 products ✓. Order 104: 1 product ✗. Order 105: 3 products ✓. Order 106: 1 product ✗. Order 107: 2 products ✓. Multi-product orders: 4. Rate: 4/7 * 100 = 57.14%.",
+  "companies": ["Amazon", "Shopify", "WooCommerce"],
+  "created_at": "2026-09-27"
+}

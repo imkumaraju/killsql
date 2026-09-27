@@ -1,0 +1,27 @@
+{
+  "id": "330",
+  "slug": "simple-union",
+  "title": "Combine Employees and Contractors with UNION",
+  "difficulty": "easy",
+  "tags": ["UNION", "SET operations", "SELECT"],
+  "description": "Combine two separate tables — employees and contractors — into a single list of all workers. Use `UNION` (which removes duplicate rows) rather than `UNION ALL`.\n\n**Table: employees** — `id`, `name`, `role`\n**Table: contractors** — `id`, `name`, `role`\n\nReturn `name` and `role` for everyone. Order by `name`.",
+  "schema_sql": "CREATE TABLE employees (id INT, name VARCHAR, role VARCHAR); CREATE TABLE contractors (id INT, name VARCHAR, role VARCHAR); INSERT INTO employees VALUES (1,'Alice','Engineer'),(2,'Bob','Manager'),(3,'Carol','Designer'),(4,'Dave','Engineer'),(5,'Eve','Manager'); INSERT INTO contractors VALUES (1,'Frank','Engineer'),(2,'Grace','Designer'),(3,'Hank','Consultant'),(4,'Iris','Engineer');",
+  "solution_sql": "SELECT name, role FROM employees UNION SELECT name, role FROM contractors ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "9 distinct workers (5 employees + 4 contractors, no duplicate name-role pairs)",
+      "expected_row_count": 9,
+      "expected_columns": ["name", "role"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "UNION combines the result sets of two SELECT statements and removes duplicate rows.",
+    "Both SELECT statements must have the same number of columns in the same order.",
+    "Use UNION ALL if you want to keep duplicates (faster, no deduplication step)."
+  ],
+  "explanation": "UNION stacks the two SELECT results and removes duplicate (name, role) pairs. Since no employee and contractor share the same name and role, all 5 + 4 = 9 rows are retained. The ORDER BY clause at the end applies to the combined result.",
+  "companies": ["Accenture", "Deloitte"],
+  "created_at": "2026-09-27"
+}

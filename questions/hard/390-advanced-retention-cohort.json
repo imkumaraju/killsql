@@ -1,0 +1,33 @@
+{
+  "id": "390",
+  "slug": "advanced-retention-cohort",
+  "title": "Weekly Cohort Retention Percentages",
+  "difficulty": "hard",
+  "tags": ["CTE", "DATE_TRUNC", "COUNT DISTINCT", "cohort analysis", "retention", "percentage"],
+  "description": "For each signup-week cohort, compute the **percent of that cohort active** in week 0, 1, 2, … after signup. `retention_pct = active_users / cohort_size * 100`, rounded to 2 decimals.\n\n**Tables:** `users` (`user_id`, `signup_date`), `activity` (`user_id`, `active_date`)\n\nOutput columns: `cohort_week`, `weeks_since_signup`, `cohort_size`, `active_users`, `retention_pct`. Order by `cohort_week`, `weeks_since_signup`.",
+  "schema_sql": "CREATE TABLE users (user_id INT, signup_date DATE); INSERT INTO users VALUES (1,'2026-01-05'),(2,'2026-01-06'),(3,'2026-01-07'),(4,'2026-01-12'),(5,'2026-01-13'); CREATE TABLE activity (user_id INT, active_date DATE); INSERT INTO activity VALUES (1,'2026-01-05'),(1,'2026-01-12'),(1,'2026-01-19'),(2,'2026-01-06'),(2,'2026-01-13'),(3,'2026-01-07'),(4,'2026-01-12'),(4,'2026-01-19'),(5,'2026-01-13');",
+  "solution_sql": "WITH cohorts AS (SELECT user_id, DATE_TRUNC('week', signup_date)::DATE AS cohort_week FROM users), sizes AS (SELECT cohort_week, COUNT(*) AS cohort_size FROM cohorts GROUP BY cohort_week), activity_w AS (SELECT a.user_id, c.cohort_week, (DATE_TRUNC('week', a.active_date)::DATE - c.cohort_week) / 7 AS weeks_since_signup FROM activity a JOIN cohorts c ON c.user_id = a.user_id) SELECT s.cohort_week, w.weeks_since_signup, s.cohort_size, COUNT(DISTINCT w.user_id) AS active_users, ROUND(COUNT(DISTINCT w.user_id)::NUMERIC / s.cohort_size * 100, 2) AS retention_pct FROM sizes s JOIN activity_w w ON w.cohort_week = s.cohort_week WHERE w.weeks_since_signup >= 0 GROUP BY s.cohort_week, w.weeks_since_signup, s.cohort_size ORDER BY s.cohort_week, w.weeks_since_signup",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan 5 cohort: 100%, 66.67%, 33.33%. Jan 12 cohort: 100%, 50%.",
+      "expected_row_count": 5,
+      "expected_columns": ["cohort_week", "weeks_since_signup", "cohort_size", "active_users", "retention_pct"],
+      "expected_rows": [
+        { "cohort_week": "2026-01-05", "weeks_since_signup": 0, "cohort_size": 3, "active_users": 3, "retention_pct": 100 },
+        { "cohort_week": "2026-01-05", "weeks_since_signup": 1, "cohort_size": 3, "active_users": 2, "retention_pct": 66.67 },
+        { "cohort_week": "2026-01-05", "weeks_since_signup": 2, "cohort_size": 3, "active_users": 1, "retention_pct": 33.33 },
+        { "cohort_week": "2026-01-12", "weeks_since_signup": 0, "cohort_size": 2, "active_users": 2, "retention_pct": 100 },
+        { "cohort_week": "2026-01-12", "weeks_since_signup": 1, "cohort_size": 2, "active_users": 1, "retention_pct": 50 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "DATE_TRUNC('week', ...) aligns both signup and activity to Monday week starts.",
+    "Divide distinct active users by the pre-aggregated cohort_size, not by a running count."
+  ],
+  "explanation": "Cohort week 2026-01-05 has 3 users: all active week 0, 2 in week 1 (66.67%), 1 in week 2 (33.33%). Cohort 2026-01-12 has 2 users: 100% then 50%. Retention tables always normalize by original cohort size so later weeks do not look artificially high.",
+  "companies": ["Amplitude", "Mixpanel", "Netflix"],
+  "created_at": "2026-09-27"
+}

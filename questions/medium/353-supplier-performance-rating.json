@@ -1,0 +1,27 @@
+{
+  "id": "353",
+  "slug": "supplier-performance-rating",
+  "title": "Supplier Performance: Promised vs Actual Delivery Days",
+  "difficulty": "medium",
+  "tags": ["JOIN", "GROUP BY", "AVG", "aggregation", "analytics", "supply chain", "SLA"],
+  "description": "For each supplier, calculate the average promised delivery days, average actual delivery days, and the average delay (`avg_actual - avg_promised`). A negative delay means the supplier is faster than promised.\n\n**Table: suppliers** — `supplier_id`, `supplier_name`\n\n**Table: deliveries** — `delivery_id`, `supplier_id`, `promised_days`, `actual_days`\n\nOutput columns: `supplier_id`, `supplier_name`, `avg_promised_days`, `avg_actual_days`, `avg_delay_days`. Order by `avg_delay_days`.",
+  "schema_sql": "CREATE TABLE suppliers (supplier_id INTEGER, supplier_name VARCHAR); CREATE TABLE deliveries (delivery_id INTEGER, supplier_id INTEGER, promised_days INTEGER, actual_days INTEGER); INSERT INTO suppliers VALUES (1,'FastShip Co'),(2,'ReliableGoods'),(3,'Budget Supply'),(4,'Premium Parts'); INSERT INTO deliveries VALUES (1,1,5,4),(2,1,5,3),(3,1,7,8),(4,2,10,10),(5,2,10,9),(6,2,7,7),(7,3,14,18),(8,3,14,20),(9,3,7,10),(10,4,3,3),(11,4,5,4),(12,4,7,6);",
+  "solution_sql": "SELECT s.supplier_id, s.supplier_name, ROUND(AVG(d.promised_days::NUMERIC), 2) AS avg_promised_days, ROUND(AVG(d.actual_days::NUMERIC), 2) AS avg_actual_days, ROUND(AVG(d.actual_days::NUMERIC) - AVG(d.promised_days::NUMERIC), 2) AS avg_delay_days FROM suppliers s JOIN deliveries d ON s.supplier_id = d.supplier_id GROUP BY s.supplier_id, s.supplier_name ORDER BY avg_delay_days;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "4 suppliers; Budget Supply has highest delay (+5.33); FastShip and Premium Parts deliver ahead of schedule",
+      "expected_row_count": 4,
+      "expected_columns": ["supplier_id", "supplier_name", "avg_promised_days", "avg_actual_days", "avg_delay_days"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "JOIN suppliers to deliveries and GROUP BY supplier to aggregate averages.",
+    "avg_delay_days = AVG(actual_days) - AVG(promised_days). A negative value means deliveries are arriving early on average.",
+    "Cast to NUMERIC before AVG for precise decimal results."
+  ],
+  "explanation": "FastShip Co: promised avg 5.67, actual avg 5.0, delay = -0.67 (slightly early). ReliableGoods: promised 9.0, actual 8.67, delay = -0.33 (slightly early). Budget Supply: promised 11.67, actual 16.0, delay = +4.33 (very late). Premium Parts: promised 5.0, actual 4.33, delay = -0.67 (early). Budget Supply is the worst performer.",
+  "companies": ["Amazon", "Walmart", "Maersk"],
+  "created_at": "2026-09-27"
+}

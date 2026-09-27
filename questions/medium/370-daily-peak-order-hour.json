@@ -1,0 +1,27 @@
+{
+  "id": "370",
+  "slug": "daily-peak-order-hour",
+  "title": "Peak Order Hour per Day",
+  "difficulty": "medium",
+  "tags": ["CTE", "window functions", "ROW_NUMBER", "EXTRACT", "HOUR", "timestamp functions", "top N per group", "TOP N per group", "analytics"],
+  "description": "For each day, find the **hour of the day with the most orders**. If there is a tie, pick the earlier hour.\n\n**Table: orders** — `order_id`, `order_timestamp` (TIMESTAMP)\n\nOutput columns: `order_date`, `order_hour`, `order_count`. Order by `order_date`.",
+  "schema_sql": "CREATE TABLE orders (order_id INTEGER, order_timestamp TIMESTAMP); INSERT INTO orders VALUES (1,'2024-01-15 09:15:00'),(2,'2024-01-15 09:30:00'),(3,'2024-01-15 14:00:00'),(4,'2024-01-15 14:30:00'),(5,'2024-01-15 14:45:00'),(6,'2024-01-16 10:00:00'),(7,'2024-01-16 10:15:00'),(8,'2024-01-16 16:00:00'),(9,'2024-01-17 11:00:00'),(10,'2024-01-17 11:30:00'),(11,'2024-01-17 11:45:00'),(12,'2024-01-17 15:00:00');",
+  "solution_sql": "WITH hourly AS (SELECT order_timestamp::DATE AS order_date, EXTRACT(HOUR FROM order_timestamp)::INTEGER AS order_hour, COUNT(*) AS order_count FROM orders GROUP BY order_timestamp::DATE, EXTRACT(HOUR FROM order_timestamp)), ranked AS (SELECT order_date, order_hour, order_count, ROW_NUMBER() OVER (PARTITION BY order_date ORDER BY order_count DESC, order_hour ASC) AS rn FROM hourly) SELECT order_date, order_hour, order_count FROM ranked WHERE rn = 1 ORDER BY order_date;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Jan 15: hour 14 (3 orders) wins; Jan 16: hour 10 (2 orders) wins; Jan 17: hour 11 (3 orders) wins — 3 rows",
+      "expected_row_count": 3,
+      "expected_columns": ["order_date", "order_hour", "order_count"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Cast order_timestamp to DATE with ::DATE and extract the hour with EXTRACT(HOUR FROM order_timestamp).",
+    "GROUP BY date and hour to count orders per hour per day, then apply ROW_NUMBER() OVER (PARTITION BY order_date ORDER BY order_count DESC).",
+    "Filter WHERE rn = 1 to get the peak hour per day."
+  ],
+  "explanation": "Jan 15: hour 9 has 2 orders, hour 14 has 3 orders → peak = 14. Jan 16: hour 10 has 2 orders, hour 16 has 1 → peak = 10. Jan 17: hour 11 has 3 orders, hour 15 has 1 → peak = 11. ROW_NUMBER with PARTITION BY order_date picks one peak hour per day. Secondary sort on order_hour ASC breaks ties toward the earlier hour.",
+  "companies": ["Uber Eats", "DoorDash", "GrubHub"],
+  "created_at": "2026-09-27"
+}

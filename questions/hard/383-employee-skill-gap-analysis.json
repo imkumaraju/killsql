@@ -1,0 +1,31 @@
+{
+  "id": "383",
+  "slug": "employee-skill-gap-analysis",
+  "title": "Required Skills Missing per Employee",
+  "difficulty": "hard",
+  "tags": ["CTE", "LEFT JOIN", "anti-join", "COUNT", "JOIN", "HR analytics"],
+  "description": "Each role has required skills. Compare those to each employee's actual skills and count **how many required skills they are missing** (zero if fully covered).\n\n**Tables:** `required_skills` (`role`, `skill`), `employee_skills` (`employee_id`, `name`, `role`, `skill`)\n\nOutput columns: `employee_id`, `name`, `role`, `missing_skill_count`. Order by `employee_id`.",
+  "schema_sql": "CREATE TABLE required_skills (role VARCHAR, skill VARCHAR); INSERT INTO required_skills VALUES ('Engineer','SQL'),('Engineer','Python'),('Engineer','Git'),('Analyst','SQL'),('Analyst','Excel'),('Analyst','Tableau'); CREATE TABLE employee_skills (employee_id INT, name VARCHAR, role VARCHAR, skill VARCHAR); INSERT INTO employee_skills VALUES (1,'Alice','Engineer','SQL'),(1,'Alice','Engineer','Python'),(2,'Bob','Engineer','SQL'),(2,'Bob','Engineer','Python'),(2,'Bob','Engineer','Git'),(3,'Carol','Analyst','SQL'),(3,'Carol','Analyst','Excel');",
+  "solution_sql": "WITH emps AS (SELECT DISTINCT employee_id, name, role FROM employee_skills), needed AS (SELECT e.employee_id, e.name, e.role, r.skill FROM emps e JOIN required_skills r ON r.role = e.role), gaps AS (SELECT n.employee_id, n.skill FROM needed n LEFT JOIN employee_skills es ON es.employee_id = n.employee_id AND es.skill = n.skill WHERE es.skill IS NULL) SELECT e.employee_id, e.name, e.role, COUNT(g.skill) AS missing_skill_count FROM emps e LEFT JOIN gaps g ON g.employee_id = e.employee_id GROUP BY e.employee_id, e.name, e.role ORDER BY e.employee_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Alice missing Git (1), Bob complete (0), Carol missing Tableau (1)",
+      "expected_row_count": 3,
+      "expected_columns": ["employee_id", "name", "role", "missing_skill_count"],
+      "expected_rows": [
+        { "employee_id": 1, "name": "Alice", "role": "Engineer", "missing_skill_count": 1 },
+        { "employee_id": 2, "name": "Bob", "role": "Engineer", "missing_skill_count": 0 },
+        { "employee_id": 3, "name": "Carol", "role": "Analyst", "missing_skill_count": 1 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Cross each distinct employee with the required skills for their role.",
+    "LEFT JOIN actual skills and keep rows where the actual skill is NULL — those are the gaps."
+  ],
+  "explanation": "Engineer needs SQL, Python, Git. Alice has SQL+Python → 1 gap. Bob has all three → 0. Analyst needs SQL, Excel, Tableau. Carol has SQL+Excel → 1 gap. COUNT on a LEFT JOIN of gaps yields zero for fully skilled employees.",
+  "companies": ["LinkedIn", "Greenhouse", "Workday"],
+  "created_at": "2026-09-27"
+}

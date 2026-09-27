@@ -1,0 +1,26 @@
+{
+  "id": "316",
+  "slug": "integer-division-remainder",
+  "title": "Score Remainder with the Modulo Operator",
+  "difficulty": "easy",
+  "tags": ["SELECT", "arithmetic", "MOD", "math functions", "calculated column"],
+  "description": "Compute the **remainder** when each student's score is divided by 10. This is useful for extracting the last digit of a score (e.g. to create grade bins).\n\n**Table: students** — `id`, `name`, `score`\n\nReturn `id`, `name`, `score`, and `score % 10` aliased as `remainder`. Order by `id`.",
+  "schema_sql": "CREATE TABLE students (id INT, name VARCHAR, score INT); INSERT INTO students VALUES (1,'Alice',95),(2,'Bob',82),(3,'Carol',77),(4,'Dave',63),(5,'Eve',91),(6,'Frank',54),(7,'Grace',88);",
+  "solution_sql": "SELECT id, name, score, score % 10 AS remainder FROM students ORDER BY id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All 7 students returned with their score remainder",
+      "expected_row_count": 7,
+      "expected_columns": ["id", "name", "score", "remainder"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "The % operator computes the modulo (remainder after integer division).",
+    "MOD(score, 10) is an equivalent function call."
+  ],
+  "explanation": "The % operator returns the remainder of integer division. Examples: 95 % 10 = 5, 82 % 10 = 2, 77 % 10 = 7, 63 % 10 = 3, 91 % 10 = 1, 54 % 10 = 4, 88 % 10 = 8. You can also write MOD(score, 10) for the same result.",
+  "companies": ["Khan Academy", "Coursera"],
+  "created_at": "2026-09-27"
+}

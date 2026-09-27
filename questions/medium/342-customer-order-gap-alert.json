@@ -1,0 +1,27 @@
+{
+  "id": "342",
+  "slug": "customer-order-gap-alert",
+  "title": "Customer Order Gap Alert (30–60 Days)",
+  "difficulty": "medium",
+  "tags": ["CTE", "date arithmetic", "BETWEEN", "date filtering", "analytics", "GROUP BY"],
+  "description": "Find customers whose **last order was between 30 and 60 days ago** (inclusive) relative to the most recent order date in the table. Return them along with the days since their last order.\n\n**Table: customers** — `customer_id`, `customer_name`\n\n**Table: orders** — `order_id`, `customer_id`, `order_date`\n\nOutput columns: `customer_id`, `customer_name`, `last_order_date`, `days_since_last_order`. Order by `days_since_last_order`.",
+  "schema_sql": "CREATE TABLE customers (customer_id INTEGER, customer_name VARCHAR); CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, order_date DATE); INSERT INTO customers VALUES (1,'Alice'),(2,'Bob'),(3,'Charlie'),(4,'Diana'),(5,'Eve'),(6,'Frank'),(7,'Grace'),(8,'Henry'); INSERT INTO orders VALUES (1,1,'2024-04-05'),(2,2,'2024-03-10'),(3,3,'2024-02-20'),(4,4,'2024-02-10'),(5,5,'2024-01-15'),(6,6,'2024-04-15'),(7,7,'2024-03-15'),(8,8,'2024-04-05');",
+  "solution_sql": "WITH max_date AS (SELECT MAX(order_date) AS max_dt FROM orders), last_orders AS (SELECT o.customer_id, c.customer_name, MAX(o.order_date) AS last_order_date FROM orders o JOIN customers c ON o.customer_id = c.customer_id GROUP BY o.customer_id, c.customer_name) SELECT lo.customer_id, lo.customer_name, lo.last_order_date, (md.max_dt - lo.last_order_date) AS days_since_last_order FROM last_orders lo, max_date md WHERE (md.max_dt - lo.last_order_date) BETWEEN 30 AND 60 ORDER BY days_since_last_order;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Max date is 2024-04-15. Bob (36 days), Grace (31 days), Charlie (55 days) fall in 30-60 range",
+      "expected_row_count": 3,
+      "expected_columns": ["customer_id", "customer_name", "last_order_date", "days_since_last_order"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Find the table's most recent order date in a CTE using MAX(order_date).",
+    "Compute days_since_last_order as max_dt - last_order_date (DuckDB returns INTEGER for DATE subtraction).",
+    "Use BETWEEN 30 AND 60 to filter the gap window."
+  ],
+  "explanation": "The max order date is 2024-04-15. Alice (Apr 5): 10 days — too recent. Bob (Mar 10): 36 days ✓. Charlie (Feb 20): 55 days ✓. Diana (Feb 10): 65 days — too far. Eve (Jan 15): 91 days — too far. Frank (Apr 15): 0 days. Grace (Mar 15): 31 days ✓. Henry (Apr 5): 10 days. Three customers fall in the 30–60 day window.",
+  "companies": ["HubSpot", "Klaviyo", "Mailchimp"],
+  "created_at": "2026-09-27"
+}

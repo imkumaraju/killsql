@@ -1,0 +1,27 @@
+{
+  "id": "356",
+  "slug": "inventory-turnover-rate",
+  "title": "Inventory Turnover Rate per Product",
+  "difficulty": "medium",
+  "tags": ["SELECT", "arithmetic", "calculated column", "division", "inventory management", "analytics"],
+  "description": "Calculate the **inventory turnover rate** for each product as `units_sold / avg_inventory`. A higher rate means the product sells faster relative to its stock levels.\n\n**Table: inventory** — `product_id`, `product_name`, `units_sold`, `avg_inventory`\n\nOutput columns: `product_id`, `product_name`, `units_sold`, `avg_inventory`, `turnover_rate`. Order by `turnover_rate DESC`.",
+  "schema_sql": "CREATE TABLE inventory (product_id INTEGER, product_name VARCHAR, units_sold INTEGER, avg_inventory DECIMAL(10,2)); INSERT INTO inventory VALUES (1,'Widget A',500,100.0),(2,'Gadget B',300,150.0),(3,'Doohickey C',1200,400.0),(4,'Thingamajig D',800,200.0),(5,'Gizmo E',100,50.0),(6,'Contraption F',750,250.0),(7,'Device G',2000,500.0),(8,'Apparatus H',450,90.0),(9,'Mechanism I',60,30.0),(10,'Instrument J',900,300.0);",
+  "solution_sql": "SELECT product_id, product_name, units_sold, avg_inventory, ROUND(units_sold::NUMERIC / avg_inventory, 2) AS turnover_rate FROM inventory ORDER BY turnover_rate DESC;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "10 products; Widget A and Apparatus H both have turnover 5.0 (highest); Mechanism I has 2.0 (lowest)",
+      "expected_row_count": 10,
+      "expected_columns": ["product_id", "product_name", "units_sold", "avg_inventory", "turnover_rate"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Turnover rate = units_sold / avg_inventory. Cast units_sold to NUMERIC before dividing to get decimal results.",
+    "Use ROUND(..., 2) for clean output.",
+    "A turnover rate of 5.0 means the product sells through its average stock 5 times per period."
+  ],
+  "explanation": "Widget A: 500/100 = 5.0. Gadget B: 300/150 = 2.0. Doohickey C: 1200/400 = 3.0. Thingamajig D: 800/200 = 4.0. Gizmo E: 100/50 = 2.0. Contraption F: 750/250 = 3.0. Device G: 2000/500 = 4.0. Apparatus H: 450/90 = 5.0. Mechanism I: 60/30 = 2.0. Instrument J: 900/300 = 3.0. Widget A and Apparatus H lead with 5.0.",
+  "companies": ["Walmart", "Target", "Costco"],
+  "created_at": "2026-09-27"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "393",
+  "slug": "funnel-drop-off-analysis",
+  "title": "Checkout Funnel Drop-Off Rates",
+  "difficulty": "hard",
+  "tags": ["CTE", "LAG", "COUNT DISTINCT", "percentage", "funnel", "UNION ALL"],
+  "description": "The funnel is view → cart → purchase. Count distinct users at each step, then compute **dropoff_pct = (previous_users - users) / previous_users * 100** (NULL on the first step). Round to 2 decimals.\n\n**Table: events** — `user_id`, `event_name`, `event_ts`\n\nOutput columns: `step`, `users`, `prev_users`, `dropoff_pct`. Order by funnel order (view, cart, purchase).",
+  "schema_sql": "CREATE TABLE events (user_id INT, event_name VARCHAR, event_ts TIMESTAMP); INSERT INTO events VALUES (1,'view','2026-01-01 10:00:00'),(1,'cart','2026-01-01 10:05:00'),(1,'purchase','2026-01-01 10:10:00'),(2,'view','2026-01-01 11:00:00'),(2,'cart','2026-01-01 11:05:00'),(3,'view','2026-01-01 12:00:00'),(4,'view','2026-01-01 13:00:00'),(4,'cart','2026-01-01 13:05:00'),(4,'purchase','2026-01-01 13:10:00'),(5,'view','2026-01-01 14:00:00');",
+  "solution_sql": "WITH steps AS (SELECT 'view' AS step, 1 AS step_order UNION ALL SELECT 'cart', 2 UNION ALL SELECT 'purchase', 3), funnel AS (SELECT s.step, s.step_order, COUNT(DISTINCT e.user_id) AS users FROM steps s LEFT JOIN events e ON e.event_name = s.step GROUP BY s.step, s.step_order) SELECT step, users, LAG(users) OVER (ORDER BY step_order) AS prev_users, ROUND((LAG(users) OVER (ORDER BY step_order) - users)::NUMERIC / LAG(users) OVER (ORDER BY step_order) * 100, 2) AS dropoff_pct FROM funnel ORDER BY step_order",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 viewers, 3 cart (40% drop), 2 purchase (33.33% drop)",
+      "expected_row_count": 3,
+      "expected_columns": ["step", "users", "prev_users", "dropoff_pct"],
+      "expected_rows": [
+        { "step": "view", "users": 5, "prev_users": null, "dropoff_pct": null },
+        { "step": "cart", "users": 3, "prev_users": 5, "dropoff_pct": 40 },
+        { "step": "purchase", "users": 2, "prev_users": 3, "dropoff_pct": 33.33 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Materialize the three steps with an explicit step_order so LAG is deterministic.",
+    "LEFT JOIN events so a missing step would still appear with zero users."
+  ],
+  "explanation": "Users 1–5 viewed. Users 1, 2, 4 added to cart (2 of 5 dropped = 40%). Users 1 and 4 purchased (1 of 3 dropped = 33.33%). LAG of the user counts supplies the denominator for each step.",
+  "companies": ["Shopify", "Stripe", "Amplitude"],
+  "created_at": "2026-09-27"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "338",
+  "slug": "revenue-by-weekday",
+  "title": "Total Revenue by Day of Week",
+  "difficulty": "medium",
+  "tags": ["EXTRACT", "GROUP BY", "SUM", "date functions", "aggregation", "analytics"],
+  "description": "Calculate the **total revenue** for each day of the week across all orders. Use `EXTRACT(DOW FROM order_date)` where 0 = Sunday, 1 = Monday, …, 6 = Saturday.\n\n**Table: orders** — `order_id`, `order_date`, `revenue`\n\nOutput columns: `day_of_week`, `total_revenue`. Order by `day_of_week`.",
+  "schema_sql": "CREATE TABLE orders (order_id INTEGER, order_date DATE, revenue DECIMAL(10,2)); INSERT INTO orders VALUES (1,'2024-01-01',100.00),(2,'2024-01-02',150.00),(3,'2024-01-03',200.00),(4,'2024-01-04',175.00),(5,'2024-01-05',300.00),(6,'2024-01-06',250.00),(7,'2024-01-07',80.00),(8,'2024-01-08',120.00),(9,'2024-01-09',180.00),(10,'2024-01-10',220.00),(11,'2024-01-11',160.00),(12,'2024-01-12',340.00);",
+  "solution_sql": "SELECT EXTRACT(DOW FROM order_date)::INTEGER AS day_of_week, SUM(revenue) AS total_revenue FROM orders GROUP BY EXTRACT(DOW FROM order_date) ORDER BY day_of_week;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "7 distinct days of week covered; Jan 1 2024 is Monday (DOW=1), Jan 7 is Sunday (DOW=0)",
+      "expected_row_count": 7,
+      "expected_columns": ["day_of_week", "total_revenue"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "EXTRACT(DOW FROM date) returns the numeric day of week (0=Sunday through 6=Saturday) in DuckDB.",
+    "GROUP BY the EXTRACT expression to aggregate revenue per day of week.",
+    "Cast the result to INTEGER with ::INTEGER so the output column is a clean integer rather than a float."
+  ],
+  "explanation": "Jan 1, 2024 is a Monday (DOW=1). The 12 orders span both weeks so all 7 days of the week are covered. Monday (DOW=1): 100+120=220. Tuesday (DOW=2): 150+180=330. Wednesday (DOW=3): 200+220=420. Thursday (DOW=4): 175+160=335. Friday (DOW=5): 300+340=640. Saturday (DOW=6): 250. Sunday (DOW=0): 80.",
+  "companies": ["Uber Eats", "DoorDash", "Instacart"],
+  "created_at": "2026-09-27"
+}

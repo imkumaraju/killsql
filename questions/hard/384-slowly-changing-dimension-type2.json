@@ -1,0 +1,31 @@
+{
+  "id": "384",
+  "slug": "slowly-changing-dimension-type2",
+  "title": "Point-in-Time Price from SCD Type 2 History",
+  "difficulty": "hard",
+  "tags": ["LEAD", "window functions", "PARTITION BY", "history table", "date filtering"],
+  "description": "A product price history table stores a new row whenever the price changes (`effective_date` is the start of that version). Reconstruct the **price that was active on 2024-05-01** for every product.\n\nA version is active when `effective_date <= 2024-05-01` and the next version (LEAD of effective_date) is NULL or after that date.\n\n**Table: product_prices** — `product_id`, `product_name`, `price`, `effective_date`\n\nOutput columns: `product_id`, `product_name`, `price`. Order by `product_id`.",
+  "schema_sql": "CREATE TABLE product_prices (product_id INT, product_name VARCHAR, price DECIMAL(10,2), effective_date DATE); INSERT INTO product_prices VALUES (1,'Widget',10.00,'2024-01-01'),(1,'Widget',12.00,'2024-03-01'),(1,'Widget',15.00,'2024-07-01'),(2,'Gadget',20.00,'2024-01-01'),(2,'Gadget',18.00,'2024-04-15'),(3,'Tool',30.00,'2024-02-01');",
+  "solution_sql": "WITH bounds AS (SELECT product_id, product_name, price, effective_date, LEAD(effective_date) OVER (PARTITION BY product_id ORDER BY effective_date) AS next_date FROM product_prices) SELECT product_id, product_name, price FROM bounds WHERE effective_date <= DATE '2024-05-01' AND (next_date IS NULL OR next_date > DATE '2024-05-01') ORDER BY product_id",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "On 2024-05-01: Widget 12, Gadget 18, Tool 30",
+      "expected_row_count": 3,
+      "expected_columns": ["product_id", "product_name", "price"],
+      "expected_rows": [
+        { "product_id": 1, "product_name": "Widget", "price": 12 },
+        { "product_id": 2, "product_name": "Gadget", "price": 18 },
+        { "product_id": 3, "product_name": "Tool", "price": 30 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LEAD(effective_date) OVER (PARTITION BY product_id ORDER BY effective_date) gives the exclusive end of each version.",
+    "Keep the row whose range contains DATE '2024-05-01'."
+  ],
+  "explanation": "Widget versions: 10 from Jan 1, 12 from Mar 1, 15 from Jul 1. May 1 falls in the 12-dollar interval. Gadget dropped to 18 on Apr 15. Tool has a single version from Feb 1. This is how Type-2 dimensions answer as-of queries.",
+  "companies": ["dbt Labs", "Snowflake", "Databricks"],
+  "created_at": "2026-09-27"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "394",
+  "slug": "product-recommendation-collaborative",
+  "title": "Collaborative Filtering Recommendations for User 1",
+  "difficulty": "hard",
+  "tags": ["CTE", "JOIN", "aggregation", "NOT IN", "market basket analysis"],
+  "description": "Recommend products for **user 1**. Similarity of another user is the count of shared products. Score a candidate product as the **sum of similarities of users who bought it**. Exclude products user 1 already bought. Return the top 3 by score, then product name.\n\n**Table: purchases** — `user_id`, `product`\n\nOutput columns: `product`, `score`. Order by `score` DESC, `product`.",
+  "schema_sql": "CREATE TABLE purchases (user_id INT, product VARCHAR); INSERT INTO purchases VALUES (1,'A'),(1,'B'),(2,'A'),(2,'B'),(2,'C'),(3,'A'),(3,'C'),(3,'D'),(4,'B'),(4,'C'),(4,'E');",
+  "solution_sql": "WITH target AS (SELECT product FROM purchases WHERE user_id = 1), overlap AS (SELECT p.user_id, COUNT(*) AS shared FROM purchases p JOIN target t ON t.product = p.product WHERE p.user_id <> 1 GROUP BY p.user_id), recs AS (SELECT p.product, SUM(o.shared) AS score FROM purchases p JOIN overlap o ON o.user_id = p.user_id WHERE p.product NOT IN (SELECT product FROM target) GROUP BY p.product) SELECT product, score FROM recs ORDER BY score DESC, product LIMIT 3",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "C scores 4; D and E score 1",
+      "expected_row_count": 3,
+      "expected_columns": ["product", "score"],
+      "expected_rows": [
+        { "product": "C", "score": 4 },
+        { "product": "D", "score": 1 },
+        { "product": "E", "score": 1 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Join other users to user 1's products to count overlap.",
+    "Sum those overlap weights for every product those users bought that user 1 has not."
+  ],
+  "explanation": "User 1 owns A and B. User 2 shares both (weight 2) and bought C. User 3 shares A (1) and bought C, D. User 4 shares B (1) and bought C, E. C = 2+1+1 = 4; D = 1; E = 1.",
+  "companies": ["Amazon", "Netflix", "Spotify"],
+  "created_at": "2026-09-27"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "368",
+  "slug": "product-affinity-score",
+  "title": "Product Co-Purchase Affinity Score",
+  "difficulty": "medium",
+  "tags": ["self join", "self-join", "GROUP BY", "COUNT", "market basket analysis", "analytics", "multi-table join"],
+  "description": "Find all pairs of products that were purchased together in the same order, and count how many times each pair appears. Return each pair once (lower `product_id` first).\n\n**Table: order_items** — `order_id`, `product_id`, `product_name`\n\nOutput columns: `product1_id`, `product1_name`, `product2_id`, `product2_name`, `co_occurrence_count`. Order by `co_occurrence_count DESC`, `product1_id`.",
+  "schema_sql": "CREATE TABLE order_items (order_id INTEGER, product_id INTEGER, product_name VARCHAR); INSERT INTO order_items VALUES (1,1,'Widget A'),(1,2,'Gadget B'),(1,3,'Doohickey C'),(2,1,'Widget A'),(2,2,'Gadget B'),(3,2,'Gadget B'),(3,3,'Doohickey C'),(4,1,'Widget A'),(4,3,'Doohickey C'),(5,1,'Widget A'),(5,2,'Gadget B');",
+  "solution_sql": "SELECT a.product_id AS product1_id, a.product_name AS product1_name, b.product_id AS product2_id, b.product_name AS product2_name, COUNT(*) AS co_occurrence_count FROM order_items a JOIN order_items b ON a.order_id = b.order_id AND a.product_id < b.product_id GROUP BY a.product_id, a.product_name, b.product_id, b.product_name ORDER BY co_occurrence_count DESC, product1_id;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Widget A + Gadget B co-appear in orders 1,2,5 (count=3); Widget A + Doohickey C in 1,4 (count=2); Gadget B + Doohickey C in 1,3 (count=2) — 3 pairs",
+      "expected_row_count": 3,
+      "expected_columns": ["product1_id", "product1_name", "product2_id", "product2_name", "co_occurrence_count"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Self-join order_items on a.order_id = b.order_id with a.product_id < b.product_id to get unique pairs per order.",
+    "Each matching row represents one co-occurrence; COUNT(*) aggregated by product pair gives the frequency.",
+    "The condition a.product_id < b.product_id prevents duplicate pairs and self-pairs."
+  ],
+  "explanation": "Joining on same order_id with a.product_id < b.product_id finds all product pairs sharing an order. Pair (Widget A, Gadget B): orders 1, 2, 5 = 3 times. Pair (Widget A, Doohickey C): orders 1, 4 = 2 times. Pair (Gadget B, Doohickey C): orders 1, 3 = 2 times. These are the only 3 pairs. High co-occurrence suggests bundling opportunities.",
+  "companies": ["Amazon", "Netflix", "Spotify"],
+  "created_at": "2026-09-27"
+}

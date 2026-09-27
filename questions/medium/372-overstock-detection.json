@@ -1,0 +1,27 @@
+{
+  "id": "372",
+  "slug": "overstock-detection",
+  "title": "Detect Overstocked Products (3× Average Sales)",
+  "difficulty": "medium",
+  "tags": ["SELECT", "WHERE", "arithmetic", "filtering", "inventory management", "threshold filter", "analytics"],
+  "description": "Find products where the current stock level is **more than 3 times the 30-day average daily sales**. Return the products along with the stock-to-sales ratio.\n\n**Table: inventory_snapshot** — `product_id`, `product_name`, `current_stock`, `avg_30day_sales`\n\nOutput columns: `product_id`, `product_name`, `current_stock`, `avg_30day_sales`, `stock_to_sales_ratio`. Order by `stock_to_sales_ratio DESC`.",
+  "schema_sql": "CREATE TABLE inventory_snapshot (product_id INTEGER, product_name VARCHAR, current_stock INTEGER, avg_30day_sales DECIMAL(10,2)); INSERT INTO inventory_snapshot VALUES (1,'Widget A',500,50.0),(2,'Gadget B',200,100.0),(3,'Doohickey C',1200,100.0),(4,'Thingamajig D',150,75.0),(5,'Gizmo E',800,50.0),(6,'Contraption F',300,120.0),(7,'Device G',100,40.0),(8,'Apparatus H',600,60.0),(9,'Mechanism I',250,200.0),(10,'Instrument J',900,80.0);",
+  "solution_sql": "SELECT product_id, product_name, current_stock, avg_30day_sales, ROUND(current_stock::NUMERIC / avg_30day_sales, 2) AS stock_to_sales_ratio FROM inventory_snapshot WHERE current_stock > 3 * avg_30day_sales ORDER BY stock_to_sales_ratio DESC;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Gizmo E (800 > 150), Widget A (500 > 150), Apparatus H (600 > 180), Doohickey C (1200 > 300), Instrument J (900 > 240) = 5 overstocked products",
+      "expected_row_count": 5,
+      "expected_columns": ["product_id", "product_name", "current_stock", "avg_30day_sales", "stock_to_sales_ratio"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "The WHERE condition is current_stock > 3 * avg_30day_sales.",
+    "Compute stock_to_sales_ratio = current_stock / avg_30day_sales; cast to NUMERIC for decimal output.",
+    "A ratio > 3 means the product has more than 3× its typical monthly supply in stock."
+  ],
+  "explanation": "Widget A: 500 > 3*50=150 ✓ (ratio=10.0). Gadget B: 200 > 300? No ✗. Doohickey C: 1200 > 300 ✓ (ratio=12.0). Thingamajig D: 150 > 225? No. Gizmo E: 800 > 150 ✓ (ratio=16.0). Contraption F: 300 > 360? No. Device G: 100 > 120? No. Apparatus H: 600 > 180 ✓ (ratio=10.0). Mechanism I: 250 > 600? No. Instrument J: 900 > 240 ✓ (ratio=11.25). Five overstocked products.",
+  "companies": ["Walmart", "Target", "Amazon"],
+  "created_at": "2026-09-27"
+}

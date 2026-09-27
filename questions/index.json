@@ -3037,7 +3037,7 @@
   },
   {
     "id": "193",
-    "slug": "deduplicate-with-row-number",
+    "slug": "deduplicate-orders-keep-latest",
     "title": "Deduplicate Orders Keeping the Latest Entry",
     "difficulty": "medium",
     "tags": [
@@ -4478,6 +4478,164 @@
     ]
   },
   {
+    "id": "273",
+    "slug": "json-array-counts",
+    "title": "Aggregating JSON Array Element Counts",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "json_array_length",
+      "JSON",
+      "CAST",
+      "ORDER BY",
+      "JSON functions"
+    ],
+    "companies": [
+      "Shopify",
+      "Etsy"
+    ]
+  },
+  {
+    "id": "274",
+    "slug": "max-consecutive-days-streak",
+    "title": "Finding Maximum Streak of Consecutive Login Days",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "ROW_NUMBER",
+      "window functions",
+      "GROUP BY",
+      "MAX",
+      "consecutive days",
+      "streak"
+    ],
+    "companies": [
+      "Duolingo",
+      "Snapchat"
+    ]
+  },
+  {
+    "id": "275",
+    "slug": "customer-segments-quartile",
+    "title": "Customer Segments by Spending Quartile",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "window functions",
+      "NTILE",
+      "GROUP BY",
+      "SUM",
+      "customer segmentation",
+      "quartile"
+    ],
+    "companies": [
+      "Klaviyo",
+      "Salesforce"
+    ]
+  },
+  {
+    "id": "276",
+    "slug": "declining-revenue-categories",
+    "title": "Product Categories with Month-over-Month Revenue Decline",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "window functions",
+      "LAG",
+      "PARTITION BY",
+      "DISTINCT",
+      "revenue trend"
+    ],
+    "companies": [
+      "Tableau",
+      "Looker"
+    ]
+  },
+  {
+    "id": "277",
+    "slug": "employees-promoted-last-6-months",
+    "title": "Employees Promoted in the Last 6 Months",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "JOIN",
+      "WHERE",
+      "date filtering",
+      "history table",
+      "HR analytics",
+      "self join"
+    ],
+    "companies": [
+      "Workday",
+      "LinkedIn"
+    ]
+  },
+  {
+    "id": "278",
+    "slug": "transactions-above-3-std-devs",
+    "title": "Transactions More Than 3 Standard Deviations Above Mean",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "subquery",
+      "AVG",
+      "STDDEV",
+      "NULLIF",
+      "ABS",
+      "z-score",
+      "fraud detection"
+    ],
+    "companies": [
+      "Stripe",
+      "Mastercard"
+    ]
+  },
+  {
+    "id": "279",
+    "slug": "cumulative-sum-reset-partition",
+    "title": "Cumulative Sum That Resets on Partition Change",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "window functions",
+      "SUM OVER",
+      "PARTITION BY",
+      "ROWS BETWEEN",
+      "running total",
+      "quota"
+    ],
+    "companies": [
+      "Salesforce",
+      "HubSpot"
+    ]
+  },
+  {
+    "id": "280",
+    "slug": "multi-step-cte-pipeline",
+    "title": "Multi-Step CTE Pipeline for Complex Analytics",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "CTE",
+      "JOIN",
+      "GROUP BY",
+      "SUM",
+      "RANK",
+      "window functions",
+      "multi-table",
+      "pipeline",
+      "analytics"
+    ],
+    "companies": [
+      "Snowflake",
+      "Databricks",
+      "dbt"
+    ]
+  },
+  {
     "id": "281",
     "slug": "recursive-bom-explosion",
     "title": "Recursive Bill of Materials Explosion",
@@ -4710,7 +4868,7 @@
   },
   {
     "id": "294",
-    "slug": "customer-lifetime-value",
+    "slug": "customer-lifetime-value-projection",
     "title": "Customer Lifetime Value Projection",
     "difficulty": "hard",
     "tags": [
@@ -4842,6 +5000,1866 @@
       "Airbnb",
       "Booking.com",
       "Google"
+    ]
+  },
+  {
+    "id": "301",
+    "slug": "select-with-computed-column",
+    "title": "Compute Profit per Product",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "arithmetic",
+      "calculated column"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "302",
+    "slug": "count-orders-by-status",
+    "title": "Count Orders by Status",
+    "difficulty": "easy",
+    "tags": [
+      "GROUP BY",
+      "COUNT",
+      "aggregate",
+      "aggregation"
+    ],
+    "companies": [
+      "Uber",
+      "DoorDash"
+    ]
+  },
+  {
+    "id": "303",
+    "slug": "find-employees-by-department-name",
+    "title": "Find Employees in a Named Department",
+    "difficulty": "easy",
+    "tags": [
+      "JOIN",
+      "INNER JOIN",
+      "WHERE",
+      "filtering",
+      "multi-table"
+    ],
+    "companies": [
+      "Google",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "304",
+    "slug": "products-below-reorder-level",
+    "title": "Products Below Reorder Level",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "filtering",
+      "filter"
+    ],
+    "companies": [
+      "Walmart",
+      "Target"
+    ]
+  },
+  {
+    "id": "305",
+    "slug": "extract-day-of-week",
+    "title": "Extract Day of Week from Order Date",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "EXTRACT",
+      "date functions",
+      "date"
+    ],
+    "companies": [
+      "Instacart",
+      "Lyft"
+    ]
+  },
+  {
+    "id": "306",
+    "slug": "customers-with-null-phone",
+    "title": "Find Customers with No Phone Number",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "IS NULL",
+      "NULL check",
+      "NULL handling",
+      "filtering"
+    ],
+    "companies": [
+      "Salesforce",
+      "HubSpot"
+    ]
+  },
+  {
+    "id": "307",
+    "slug": "salary-after-bonus",
+    "title": "Calculate Salary After a 10% Bonus",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "arithmetic",
+      "calculated column",
+      "ROUND"
+    ],
+    "companies": [
+      "Workday",
+      "ADP"
+    ]
+  },
+  {
+    "id": "308",
+    "slug": "products-starting-with-letter",
+    "title": "Products Whose Name Starts with 'A'",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "LIKE",
+      "pattern matching",
+      "filtering"
+    ],
+    "companies": [
+      "Whole Foods",
+      "Kroger"
+    ]
+  },
+  {
+    "id": "309",
+    "slug": "total-revenue-per-product",
+    "title": "Total Revenue per Product",
+    "difficulty": "easy",
+    "tags": [
+      "GROUP BY",
+      "SUM",
+      "aggregate",
+      "aggregation",
+      "arithmetic",
+      "calculated column"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "310",
+    "slug": "orders-placed-today",
+    "title": "Filter Orders by a Specific Date",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "date functions",
+      "date filtering",
+      "date"
+    ],
+    "companies": [
+      "DoorDash",
+      "Instacart"
+    ]
+  },
+  {
+    "id": "311",
+    "slug": "employees-sorted-by-hire-date",
+    "title": "Sort Employees by Hire Date",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "ORDER BY",
+      "sorting",
+      "date"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Workday"
+    ]
+  },
+  {
+    "id": "312",
+    "slug": "category-product-count",
+    "title": "Count Products per Category",
+    "difficulty": "easy",
+    "tags": [
+      "GROUP BY",
+      "COUNT",
+      "aggregate",
+      "aggregation"
+    ],
+    "companies": [
+      "Etsy",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "313",
+    "slug": "find-max-and-min-salary",
+    "title": "Find the Highest and Lowest Salary",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "MAX",
+      "MIN",
+      "aggregate",
+      "aggregation",
+      "aggregates"
+    ],
+    "companies": [
+      "Google",
+      "Meta"
+    ]
+  },
+  {
+    "id": "314",
+    "slug": "customers-with-long-names",
+    "title": "Customers with Long Names",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "LENGTH",
+      "string functions",
+      "filtering",
+      "filter"
+    ],
+    "companies": [
+      "Salesforce",
+      "HubSpot"
+    ]
+  },
+  {
+    "id": "315",
+    "slug": "string-initcap",
+    "title": "Uppercase Product Names",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "string functions",
+      "UPPER"
+    ],
+    "companies": [
+      "Shopify",
+      "Etsy"
+    ]
+  },
+  {
+    "id": "316",
+    "slug": "integer-division-remainder",
+    "title": "Score Remainder with the Modulo Operator",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "arithmetic",
+      "MOD",
+      "math functions",
+      "calculated column"
+    ],
+    "companies": [
+      "Khan Academy",
+      "Coursera"
+    ]
+  },
+  {
+    "id": "317",
+    "slug": "calculate-discount-amount",
+    "title": "Calculate the Discount Amount per Product",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "arithmetic",
+      "calculated column",
+      "ROUND",
+      "math functions"
+    ],
+    "companies": [
+      "Shopify",
+      "Square"
+    ]
+  },
+  {
+    "id": "318",
+    "slug": "year-month-grouping",
+    "title": "Count Orders Grouped by Year and Month",
+    "difficulty": "easy",
+    "tags": [
+      "GROUP BY",
+      "COUNT",
+      "EXTRACT",
+      "date functions",
+      "date grouping",
+      "aggregate"
+    ],
+    "companies": [
+      "Stripe",
+      "PayPal"
+    ]
+  },
+  {
+    "id": "319",
+    "slug": "find-rows-between-dates",
+    "title": "Orders in a Date Range (BETWEEN)",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "BETWEEN",
+      "date filtering",
+      "date ranges",
+      "date functions"
+    ],
+    "companies": [
+      "Stripe",
+      "Square"
+    ]
+  },
+  {
+    "id": "320",
+    "slug": "count-nulls-in-column",
+    "title": "Count NULL Values in a Column",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "COUNT",
+      "IS NULL",
+      "NULL handling",
+      "aggregate",
+      "data quality"
+    ],
+    "companies": [
+      "Workday",
+      "BambooHR"
+    ]
+  },
+  {
+    "id": "321",
+    "slug": "case-when-grade",
+    "title": "Assign Letter Grades with CASE WHEN",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "CASE",
+      "CASE WHEN",
+      "conditional logic"
+    ],
+    "companies": [
+      "Khan Academy",
+      "Duolingo"
+    ]
+  },
+  {
+    "id": "322",
+    "slug": "select-random-row",
+    "title": "Fetch the First 3 Products Alphabetically (LIMIT)",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "ORDER BY",
+      "LIMIT",
+      "limiting",
+      "pagination",
+      "sorting"
+    ],
+    "companies": [
+      "Netflix",
+      "Spotify"
+    ]
+  },
+  {
+    "id": "323",
+    "slug": "filter-by-multiple-values-in",
+    "title": "Filter Employees by Status Using IN",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "IN",
+      "filtering",
+      "filter"
+    ],
+    "companies": [
+      "Workday",
+      "Greenhouse"
+    ]
+  },
+  {
+    "id": "324",
+    "slug": "string-padding-format",
+    "title": "Format Order IDs with Zero-Padding",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "LPAD",
+      "string functions",
+      "CAST",
+      "string concatenation"
+    ],
+    "companies": [
+      "Shopify",
+      "Square"
+    ]
+  },
+  {
+    "id": "325",
+    "slug": "right-join-example",
+    "title": "All Departments Including Those with No Employees",
+    "difficulty": "easy",
+    "tags": [
+      "RIGHT JOIN",
+      "JOIN",
+      "joins",
+      "GROUP BY",
+      "COUNT",
+      "NULL handling"
+    ],
+    "companies": [
+      "Oracle",
+      "SAP"
+    ]
+  },
+  {
+    "id": "326",
+    "slug": "cross-join-calendar",
+    "title": "Generate All Month–Category Combinations",
+    "difficulty": "easy",
+    "tags": [
+      "CROSS JOIN",
+      "JOIN",
+      "joins",
+      "Cartesian product"
+    ],
+    "companies": [
+      "Tableau",
+      "Looker"
+    ]
+  },
+  {
+    "id": "327",
+    "slug": "coalesce-chain",
+    "title": "Pick the First Non-NULL Name with COALESCE",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "COALESCE",
+      "NULL handling",
+      "conditional logic"
+    ],
+    "companies": [
+      "Slack",
+      "Discord"
+    ]
+  },
+  {
+    "id": "328",
+    "slug": "having-multiple-conditions",
+    "title": "High-Volume, High-Value Customers (HAVING with AND)",
+    "difficulty": "easy",
+    "tags": [
+      "GROUP BY",
+      "HAVING",
+      "COUNT",
+      "SUM",
+      "aggregate",
+      "aggregation",
+      "filtering"
+    ],
+    "companies": [
+      "Stripe",
+      "Braintree"
+    ]
+  },
+  {
+    "id": "329",
+    "slug": "exists-subquery",
+    "title": "Customers Who Have Placed at Least One Order",
+    "difficulty": "easy",
+    "tags": [
+      "SELECT",
+      "EXISTS",
+      "subquery",
+      "filtering",
+      "filter"
+    ],
+    "companies": [
+      "Shopify",
+      "WooCommerce"
+    ]
+  },
+  {
+    "id": "330",
+    "slug": "simple-union",
+    "title": "Combine Employees and Contractors with UNION",
+    "difficulty": "easy",
+    "tags": [
+      "UNION",
+      "SET operations",
+      "SELECT"
+    ],
+    "companies": [
+      "Accenture",
+      "Deloitte"
+    ]
+  },
+  {
+    "id": "331",
+    "slug": "customers-with-increasing-order-values",
+    "title": "Customers With Strictly Increasing Order Values",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "LAG",
+      "PARTITION BY",
+      "HAVING",
+      "analytics"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "332",
+    "slug": "product-revenue-rank-by-category",
+    "title": "Rank Products by Revenue Within Each Category",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "RANK",
+      "PARTITION BY",
+      "JOIN",
+      "aggregation",
+      "ranking"
+    ],
+    "companies": [
+      "Shopify",
+      "Walmart",
+      "Target"
+    ]
+  },
+  {
+    "id": "333",
+    "slug": "monthly-active-user-count",
+    "title": "Monthly Active User Count",
+    "difficulty": "medium",
+    "tags": [
+      "DATE_TRUNC",
+      "COUNT DISTINCT",
+      "GROUP BY",
+      "date grouping",
+      "analytics",
+      "DAU/MAU"
+    ],
+    "companies": [
+      "Meta",
+      "TikTok",
+      "Spotify"
+    ]
+  },
+  {
+    "id": "334",
+    "slug": "churn-detection-90-days",
+    "title": "Churn Detection: Customers Inactive for 90+ Days",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "subquery",
+      "date arithmetic",
+      "date filtering",
+      "analytics",
+      "GROUP BY",
+      "HAVING"
+    ],
+    "companies": [
+      "Stripe",
+      "HubSpot",
+      "Salesforce"
+    ]
+  },
+  {
+    "id": "335",
+    "slug": "top-product-per-region",
+    "title": "Top-Selling Product in Each Region",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "ROW_NUMBER",
+      "PARTITION BY",
+      "aggregation",
+      "top N per group",
+      "TOP N per group"
+    ],
+    "companies": [
+      "Walmart",
+      "Target",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "336",
+    "slug": "employee-salary-growth",
+    "title": "Employee Salary Growth Over Time",
+    "difficulty": "medium",
+    "tags": [
+      "window functions",
+      "LAG",
+      "PARTITION BY",
+      "analytics",
+      "HR analytics",
+      "salary analysis"
+    ],
+    "companies": [
+      "Workday",
+      "ADP",
+      "SAP"
+    ]
+  },
+  {
+    "id": "337",
+    "slug": "order-items-without-discount",
+    "title": "Order Items With No Discount Applied",
+    "difficulty": "medium",
+    "tags": [
+      "LEFT JOIN",
+      "IS NULL",
+      "anti-join",
+      "NULL handling",
+      "multi-table join"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe",
+      "PayPal"
+    ]
+  },
+  {
+    "id": "338",
+    "slug": "revenue-by-weekday",
+    "title": "Total Revenue by Day of Week",
+    "difficulty": "medium",
+    "tags": [
+      "EXTRACT",
+      "GROUP BY",
+      "SUM",
+      "date functions",
+      "aggregation",
+      "analytics"
+    ],
+    "companies": [
+      "Uber Eats",
+      "DoorDash",
+      "Instacart"
+    ]
+  },
+  {
+    "id": "339",
+    "slug": "product-price-elasticity",
+    "title": "Detect Same-Direction Price and Quantity Changes",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "LAG",
+      "PARTITION BY",
+      "analytics",
+      "price tracking"
+    ],
+    "companies": [
+      "Nielsen",
+      "McKinsey",
+      "Boston Consulting Group"
+    ]
+  },
+  {
+    "id": "340",
+    "slug": "cumulative-orders-by-region",
+    "title": "Cumulative Order Count per Region",
+    "difficulty": "medium",
+    "tags": [
+      "window functions",
+      "SUM OVER",
+      "PARTITION BY",
+      "ROWS BETWEEN",
+      "UNBOUNDED PRECEDING",
+      "running total",
+      "cumulative sum"
+    ],
+    "companies": [
+      "FedEx",
+      "UPS",
+      "DHL"
+    ]
+  },
+  {
+    "id": "341",
+    "slug": "department-salary-percentile",
+    "title": "Salary Percentile Rank Within Department",
+    "difficulty": "medium",
+    "tags": [
+      "window functions",
+      "PERCENT_RANK",
+      "PARTITION BY",
+      "HR analytics",
+      "salary percentile",
+      "ranking"
+    ],
+    "companies": [
+      "Workday",
+      "LinkedIn",
+      "Google"
+    ]
+  },
+  {
+    "id": "342",
+    "slug": "customer-order-gap-alert",
+    "title": "Customer Order Gap Alert (30–60 Days)",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "date arithmetic",
+      "BETWEEN",
+      "date filtering",
+      "analytics",
+      "GROUP BY"
+    ],
+    "companies": [
+      "HubSpot",
+      "Klaviyo",
+      "Mailchimp"
+    ]
+  },
+  {
+    "id": "343",
+    "slug": "products-ordered-by-all-customers",
+    "title": "Products Ordered by Every Customer",
+    "difficulty": "medium",
+    "tags": [
+      "subquery",
+      "GROUP BY",
+      "HAVING",
+      "COUNT DISTINCT",
+      "relational division",
+      "aggregation"
+    ],
+    "companies": [
+      "Amazon",
+      "Salesforce",
+      "Oracle"
+    ]
+  },
+  {
+    "id": "344",
+    "slug": "quarterly-top-salesperson",
+    "title": "Top Salesperson Each Quarter",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "ROW_NUMBER",
+      "PARTITION BY",
+      "EXTRACT",
+      "aggregation",
+      "top N per group",
+      "TOP N per group"
+    ],
+    "companies": [
+      "Salesforce",
+      "HubSpot",
+      "Oracle"
+    ]
+  },
+  {
+    "id": "345",
+    "slug": "invoice-overdue-detection",
+    "title": "Detect Overdue Invoices and Days Late",
+    "difficulty": "medium",
+    "tags": [
+      "CASE WHEN",
+      "date arithmetic",
+      "IS NULL",
+      "filtering",
+      "financial analysis",
+      "billing"
+    ],
+    "companies": [
+      "QuickBooks",
+      "FreshBooks",
+      "Bill.com"
+    ]
+  },
+  {
+    "id": "346",
+    "slug": "average-rating-with-min-reviews",
+    "title": "Average Product Rating (Minimum 5 Reviews Required)",
+    "difficulty": "medium",
+    "tags": [
+      "GROUP BY",
+      "HAVING",
+      "AVG",
+      "COUNT",
+      "aggregation",
+      "filtering",
+      "reviews"
+    ],
+    "companies": [
+      "Amazon",
+      "Yelp",
+      "TripAdvisor"
+    ]
+  },
+  {
+    "id": "347",
+    "slug": "price-range-histogram",
+    "title": "Product Price Range Histogram",
+    "difficulty": "medium",
+    "tags": [
+      "CASE WHEN",
+      "GROUP BY",
+      "COUNT",
+      "conditional logic",
+      "buckets",
+      "histogram",
+      "distribution"
+    ],
+    "companies": [
+      "Best Buy",
+      "Amazon",
+      "Newegg"
+    ]
+  },
+  {
+    "id": "348",
+    "slug": "employee-manager-salary-gap",
+    "title": "Employee vs Manager Salary Gap",
+    "difficulty": "medium",
+    "tags": [
+      "self join",
+      "self-join",
+      "JOIN",
+      "HR analytics",
+      "salary analysis",
+      "calculated column"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Workday",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "349",
+    "slug": "first-vs-repeat-purchase-revenue",
+    "title": "Revenue From First-Time vs Repeat Purchases",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "ROW_NUMBER",
+      "PARTITION BY",
+      "CASE WHEN",
+      "aggregation",
+      "analytics",
+      "one-time buyers",
+      "repeat buyers"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe",
+      "Braintree"
+    ]
+  },
+  {
+    "id": "350",
+    "slug": "rolling-weekly-order-count",
+    "title": "7-Day Rolling Order Count",
+    "difficulty": "medium",
+    "tags": [
+      "window functions",
+      "SUM OVER",
+      "ROWS BETWEEN",
+      "rolling window",
+      "sliding window",
+      "moving average",
+      "analytics"
+    ],
+    "companies": [
+      "Uber",
+      "Lyft",
+      "DoorDash"
+    ]
+  },
+  {
+    "id": "351",
+    "slug": "most-popular-product-per-month",
+    "title": "Most Popular Product Each Month",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "ROW_NUMBER",
+      "PARTITION BY",
+      "top N per group",
+      "TOP N per group",
+      "analytics"
+    ],
+    "companies": [
+      "Shopify",
+      "BigCommerce",
+      "WooCommerce"
+    ]
+  },
+  {
+    "id": "352",
+    "slug": "customers-who-upgraded-tier",
+    "title": "Customers Who Upgraded Their Loyalty Tier",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "LAG",
+      "PARTITION BY",
+      "CASE WHEN",
+      "analytics",
+      "customer segmentation"
+    ],
+    "companies": [
+      "Starbucks",
+      "Delta Airlines",
+      "Marriott"
+    ]
+  },
+  {
+    "id": "353",
+    "slug": "supplier-performance-rating",
+    "title": "Supplier Performance: Promised vs Actual Delivery Days",
+    "difficulty": "medium",
+    "tags": [
+      "JOIN",
+      "GROUP BY",
+      "AVG",
+      "aggregation",
+      "analytics",
+      "supply chain",
+      "SLA"
+    ],
+    "companies": [
+      "Amazon",
+      "Walmart",
+      "Maersk"
+    ]
+  },
+  {
+    "id": "354",
+    "slug": "category-market-share",
+    "title": "Category Market Share of Total Revenue",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "SUM OVER",
+      "percentage",
+      "revenue share",
+      "analytics",
+      "aggregation"
+    ],
+    "companies": [
+      "Nielsen",
+      "McKinsey",
+      "Bain"
+    ]
+  },
+  {
+    "id": "355",
+    "slug": "employee-overlap-in-projects",
+    "title": "Employees Sharing at Least One Project",
+    "difficulty": "medium",
+    "tags": [
+      "self join",
+      "self-join",
+      "GROUP BY",
+      "HAVING",
+      "multi-table join",
+      "analytics"
+    ],
+    "companies": [
+      "Atlassian",
+      "Asana",
+      "Monday.com"
+    ]
+  },
+  {
+    "id": "356",
+    "slug": "inventory-turnover-rate",
+    "title": "Inventory Turnover Rate per Product",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "arithmetic",
+      "calculated column",
+      "division",
+      "inventory management",
+      "analytics"
+    ],
+    "companies": [
+      "Walmart",
+      "Target",
+      "Costco"
+    ]
+  },
+  {
+    "id": "357",
+    "slug": "net-promoter-score",
+    "title": "Calculate Net Promoter Score (NPS)",
+    "difficulty": "medium",
+    "tags": [
+      "FILTER",
+      "conditional aggregation",
+      "COUNT",
+      "arithmetic",
+      "analytics",
+      "metrics",
+      "statistics"
+    ],
+    "companies": [
+      "Medallia",
+      "Qualtrics",
+      "SurveyMonkey"
+    ]
+  },
+  {
+    "id": "358",
+    "slug": "orders-with-all-items-shipped",
+    "title": "Orders Where Every Line Item Is Shipped",
+    "difficulty": "medium",
+    "tags": [
+      "GROUP BY",
+      "HAVING",
+      "FILTER",
+      "conditional aggregation",
+      "aggregation",
+      "analytics"
+    ],
+    "companies": [
+      "Amazon",
+      "FedEx",
+      "Shopify"
+    ]
+  },
+  {
+    "id": "359",
+    "slug": "region-quarter-revenue-matrix",
+    "title": "Region × Quarter Revenue Pivot Matrix",
+    "difficulty": "medium",
+    "tags": [
+      "conditional aggregation",
+      "FILTER",
+      "EXTRACT",
+      "pivot",
+      "GROUP BY",
+      "data reshaping",
+      "analytics"
+    ],
+    "companies": [
+      "Tableau",
+      "Looker",
+      "Snowflake"
+    ]
+  },
+  {
+    "id": "360",
+    "slug": "customer-purchase-interval-median",
+    "title": "Median Days Between Customer Purchases",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "LAG",
+      "PERCENTILE_CONT",
+      "WITHIN GROUP",
+      "ordered-set aggregate",
+      "median",
+      "analytics"
+    ],
+    "companies": [
+      "Stripe",
+      "Shopify",
+      "PayPal"
+    ]
+  },
+  {
+    "id": "361",
+    "slug": "product-return-rate",
+    "title": "Product Return Rate as Percentage",
+    "difficulty": "medium",
+    "tags": [
+      "GROUP BY",
+      "FILTER",
+      "conditional aggregation",
+      "COUNT",
+      "percentage",
+      "analytics",
+      "ratio"
+    ],
+    "companies": [
+      "Amazon",
+      "Zappos",
+      "Nordstrom"
+    ]
+  },
+  {
+    "id": "362",
+    "slug": "monthly-revenue-forecast",
+    "title": "Monthly Revenue With Simple Growth Forecast",
+    "difficulty": "medium",
+    "tags": [
+      "window functions",
+      "LAG",
+      "analytics",
+      "revenue trend",
+      "calculated column",
+      "arithmetic"
+    ],
+    "companies": [
+      "Stripe",
+      "Brex",
+      "Plaid"
+    ]
+  },
+  {
+    "id": "363",
+    "slug": "employees-in-multiple-departments",
+    "title": "Employees Assigned to Multiple Departments",
+    "difficulty": "medium",
+    "tags": [
+      "GROUP BY",
+      "HAVING",
+      "COUNT DISTINCT",
+      "aggregation",
+      "filtering",
+      "HR analytics"
+    ],
+    "companies": [
+      "Google",
+      "Meta",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "364",
+    "slug": "high-value-order-alert",
+    "title": "High-Value Order Alert (2× Customer Average)",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "subquery",
+      "JOIN",
+      "aggregation",
+      "threshold filter",
+      "analytics",
+      "fraud detection"
+    ],
+    "companies": [
+      "Stripe",
+      "Visa",
+      "Mastercard"
+    ]
+  },
+  {
+    "id": "365",
+    "slug": "category-revenue-trend",
+    "title": "Month-Over-Month Revenue Trend by Category",
+    "difficulty": "medium",
+    "tags": [
+      "window functions",
+      "LAG",
+      "PARTITION BY",
+      "analytics",
+      "revenue trend",
+      "period-over-period"
+    ],
+    "companies": [
+      "Tableau",
+      "Looker",
+      "Google"
+    ]
+  },
+  {
+    "id": "366",
+    "slug": "order-status-transition-time",
+    "title": "Time Between Order Status Transitions",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "LAG",
+      "PARTITION BY",
+      "timestamp functions",
+      "analytics",
+      "time analysis"
+    ],
+    "companies": [
+      "Shopify",
+      "Amazon",
+      "FedEx"
+    ]
+  },
+  {
+    "id": "367",
+    "slug": "customer-ltv-tier",
+    "title": "Assign Customer Lifetime Value Tiers",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "CASE WHEN",
+      "GROUP BY",
+      "SUM",
+      "customer segmentation",
+      "segmentation",
+      "analytics"
+    ],
+    "companies": [
+      "Starbucks",
+      "Amazon",
+      "Nordstrom"
+    ]
+  },
+  {
+    "id": "368",
+    "slug": "product-affinity-score",
+    "title": "Product Co-Purchase Affinity Score",
+    "difficulty": "medium",
+    "tags": [
+      "self join",
+      "self-join",
+      "GROUP BY",
+      "COUNT",
+      "market basket analysis",
+      "analytics",
+      "multi-table join"
+    ],
+    "companies": [
+      "Amazon",
+      "Netflix",
+      "Spotify"
+    ]
+  },
+  {
+    "id": "369",
+    "slug": "employee-span-of-control",
+    "title": "Manager Span of Control (Direct Reports Count)",
+    "difficulty": "medium",
+    "tags": [
+      "self join",
+      "self-join",
+      "GROUP BY",
+      "COUNT",
+      "JOIN",
+      "HR analytics",
+      "hierarchy"
+    ],
+    "companies": [
+      "Google",
+      "LinkedIn",
+      "Workday"
+    ]
+  },
+  {
+    "id": "370",
+    "slug": "daily-peak-order-hour",
+    "title": "Peak Order Hour per Day",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "ROW_NUMBER",
+      "EXTRACT",
+      "HOUR",
+      "timestamp functions",
+      "top N per group",
+      "TOP N per group",
+      "analytics"
+    ],
+    "companies": [
+      "Uber Eats",
+      "DoorDash",
+      "GrubHub"
+    ]
+  },
+  {
+    "id": "371",
+    "slug": "regional-sales-rep-performance",
+    "title": "Regional Sales Rep Performance with Rank",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "RANK",
+      "PARTITION BY",
+      "aggregation",
+      "analytics",
+      "ranking"
+    ],
+    "companies": [
+      "Salesforce",
+      "HubSpot",
+      "Oracle"
+    ]
+  },
+  {
+    "id": "372",
+    "slug": "overstock-detection",
+    "title": "Detect Overstocked Products (3× Average Sales)",
+    "difficulty": "medium",
+    "tags": [
+      "SELECT",
+      "WHERE",
+      "arithmetic",
+      "filtering",
+      "inventory management",
+      "threshold filter",
+      "analytics"
+    ],
+    "companies": [
+      "Walmart",
+      "Target",
+      "Amazon"
+    ]
+  },
+  {
+    "id": "373",
+    "slug": "customer-win-back-campaign",
+    "title": "Win-Back: Customers Who Returned After 90-Day Dormancy",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "window functions",
+      "LAG",
+      "PARTITION BY",
+      "date arithmetic",
+      "analytics",
+      "retention"
+    ],
+    "companies": [
+      "HubSpot",
+      "Klaviyo",
+      "Braze"
+    ]
+  },
+  {
+    "id": "374",
+    "slug": "invoice-aging-buckets",
+    "title": "Invoice Aging Bucket Report",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "CASE WHEN",
+      "GROUP BY",
+      "SUM",
+      "COUNT",
+      "date arithmetic",
+      "financial analysis",
+      "billing",
+      "buckets"
+    ],
+    "companies": [
+      "QuickBooks",
+      "Bill.com",
+      "SAP"
+    ]
+  },
+  {
+    "id": "375",
+    "slug": "salary-band-headcount",
+    "title": "Employee Headcount by Salary Band",
+    "difficulty": "medium",
+    "tags": [
+      "CASE WHEN",
+      "GROUP BY",
+      "COUNT",
+      "salary classification",
+      "buckets",
+      "HR analytics",
+      "histogram"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Glassdoor",
+      "Workday"
+    ]
+  },
+  {
+    "id": "376",
+    "slug": "multi-product-order-rate",
+    "title": "Percentage of Orders With Multiple Products",
+    "difficulty": "medium",
+    "tags": [
+      "subquery",
+      "COUNT DISTINCT",
+      "CASE WHEN",
+      "percentage",
+      "analytics",
+      "aggregation",
+      "ratio"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify",
+      "WooCommerce"
+    ]
+  },
+  {
+    "id": "377",
+    "slug": "customer-average-basket-size",
+    "title": "Average Basket Size per Customer",
+    "difficulty": "medium",
+    "tags": [
+      "JOIN",
+      "GROUP BY",
+      "COUNT DISTINCT",
+      "AVG",
+      "derived table",
+      "analytics"
+    ],
+    "companies": [
+      "Amazon",
+      "Shopify",
+      "Walmart"
+    ]
+  },
+  {
+    "id": "378",
+    "slug": "revenue-contribution-cte",
+    "title": "Product Revenue Contribution via CTE",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "percentage",
+      "arithmetic",
+      "CROSS JOIN",
+      "ROUND",
+      "revenue share"
+    ],
+    "companies": [
+      "Google",
+      "Amazon",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "379",
+    "slug": "weekly-cohort-retention",
+    "title": "Weekly Signup Cohort Active Users",
+    "difficulty": "medium",
+    "tags": [
+      "CTE",
+      "DATE_TRUNC",
+      "date grouping",
+      "COUNT DISTINCT",
+      "JOIN",
+      "cohort",
+      "retention"
+    ],
+    "companies": [
+      "Amplitude",
+      "Mixpanel",
+      "Meta"
+    ]
+  },
+  {
+    "id": "380",
+    "slug": "top-3-categories-by-orders",
+    "title": "Top 3 Categories by Order Count",
+    "difficulty": "medium",
+    "tags": [
+      "GROUP BY",
+      "COUNT",
+      "ORDER BY",
+      "LIMIT",
+      "ranking",
+      "aggregation"
+    ],
+    "companies": [
+      "Amazon",
+      "eBay",
+      "Target"
+    ]
+  },
+  {
+    "id": "381",
+    "slug": "interval-scheduling-maximization",
+    "title": "Maximum Non-Overlapping Meetings",
+    "difficulty": "hard",
+    "tags": [
+      "recursive CTE",
+      "ROW_NUMBER",
+      "CTE",
+      "interval algebra",
+      "calendar"
+    ],
+    "companies": [
+      "Google",
+      "Microsoft",
+      "Calendly"
+    ]
+  },
+  {
+    "id": "382",
+    "slug": "moving-median-revenue",
+    "title": "Three-Day Moving Median Revenue",
+    "difficulty": "hard",
+    "tags": [
+      "PERCENTILE_CONT",
+      "WITHIN GROUP",
+      "correlated subquery",
+      "median",
+      "rolling window",
+      "date"
+    ],
+    "companies": [
+      "Databricks",
+      "Snowflake",
+      "Stripe"
+    ]
+  },
+  {
+    "id": "383",
+    "slug": "employee-skill-gap-analysis",
+    "title": "Required Skills Missing per Employee",
+    "difficulty": "hard",
+    "tags": [
+      "CTE",
+      "LEFT JOIN",
+      "anti-join",
+      "COUNT",
+      "JOIN",
+      "HR analytics"
+    ],
+    "companies": [
+      "LinkedIn",
+      "Greenhouse",
+      "Workday"
+    ]
+  },
+  {
+    "id": "384",
+    "slug": "slowly-changing-dimension-type2",
+    "title": "Point-in-Time Price from SCD Type 2 History",
+    "difficulty": "hard",
+    "tags": [
+      "LEAD",
+      "window functions",
+      "PARTITION BY",
+      "history table",
+      "date filtering"
+    ],
+    "companies": [
+      "dbt Labs",
+      "Snowflake",
+      "Databricks"
+    ]
+  },
+  {
+    "id": "385",
+    "slug": "network-influence-score",
+    "title": "Two-Hop Follower Influence Score",
+    "difficulty": "hard",
+    "tags": [
+      "CTE",
+      "JOIN",
+      "aggregation",
+      "graph traversal"
+    ],
+    "companies": [
+      "Twitter",
+      "LinkedIn",
+      "Meta"
+    ]
+  },
+  {
+    "id": "386",
+    "slug": "loan-amortization-schedule",
+    "title": "Three-Period Loan Amortization",
+    "difficulty": "hard",
+    "tags": [
+      "recursive CTE",
+      "ROUND",
+      "arithmetic",
+      "financial analysis"
+    ],
+    "companies": [
+      "Stripe",
+      "Capital One",
+      "Intuit"
+    ]
+  },
+  {
+    "id": "387",
+    "slug": "tournament-bracket-simulation",
+    "title": "Four-Team Single-Elimination Bracket",
+    "difficulty": "hard",
+    "tags": [
+      "CTE",
+      "CASE WHEN",
+      "JOIN",
+      "UNION ALL",
+      "conditional logic"
+    ],
+    "companies": [
+      "ESPN",
+      "Riot Games",
+      "Twitch"
+    ]
+  },
+  {
+    "id": "388",
+    "slug": "hierarchical-budget-rollup",
+    "title": "Org-Chart Budget Rollup",
+    "difficulty": "hard",
+    "tags": [
+      "recursive CTE",
+      "hierarchy",
+      "tree traversal",
+      "aggregation",
+      "SUM"
+    ],
+    "companies": [
+      "Workday",
+      "SAP",
+      "Oracle"
+    ]
+  },
+  {
+    "id": "389",
+    "slug": "customer-journey-attribution",
+    "title": "First, Last, and Linear Touch Attribution",
+    "difficulty": "hard",
+    "tags": [
+      "window functions",
+      "ROW_NUMBER",
+      "COUNT OVER",
+      "aggregation",
+      "marketing analytics",
+      "funnel"
+    ],
+    "companies": [
+      "Google",
+      "HubSpot",
+      "Segment"
+    ]
+  },
+  {
+    "id": "390",
+    "slug": "advanced-retention-cohort",
+    "title": "Weekly Cohort Retention Percentages",
+    "difficulty": "hard",
+    "tags": [
+      "CTE",
+      "DATE_TRUNC",
+      "COUNT DISTINCT",
+      "cohort analysis",
+      "retention",
+      "percentage"
+    ],
+    "companies": [
+      "Amplitude",
+      "Mixpanel",
+      "Netflix"
+    ]
+  },
+  {
+    "id": "391",
+    "slug": "supply-chain-critical-path",
+    "title": "Project Critical Path Length",
+    "difficulty": "hard",
+    "tags": [
+      "recursive CTE",
+      "MAX",
+      "JOIN",
+      "pipeline",
+      "supply chain"
+    ],
+    "companies": [
+      "Amazon",
+      "Tesla",
+      "Autodesk"
+    ]
+  },
+  {
+    "id": "392",
+    "slug": "dynamic-pricing-optimization",
+    "title": "Revenue-Maximizing Price per Product",
+    "difficulty": "hard",
+    "tags": [
+      "ROW_NUMBER",
+      "PARTITION BY",
+      "arithmetic",
+      "top N per group",
+      "analytics"
+    ],
+    "companies": [
+      "Amazon",
+      "Uber",
+      "Airbnb"
+    ]
+  },
+  {
+    "id": "393",
+    "slug": "funnel-drop-off-analysis",
+    "title": "Checkout Funnel Drop-Off Rates",
+    "difficulty": "hard",
+    "tags": [
+      "CTE",
+      "LAG",
+      "COUNT DISTINCT",
+      "percentage",
+      "funnel",
+      "UNION ALL"
+    ],
+    "companies": [
+      "Shopify",
+      "Stripe",
+      "Amplitude"
+    ]
+  },
+  {
+    "id": "394",
+    "slug": "product-recommendation-collaborative",
+    "title": "Collaborative Filtering Recommendations for User 1",
+    "difficulty": "hard",
+    "tags": [
+      "CTE",
+      "JOIN",
+      "aggregation",
+      "NOT IN",
+      "market basket analysis"
+    ],
+    "companies": [
+      "Amazon",
+      "Netflix",
+      "Spotify"
+    ]
+  },
+  {
+    "id": "395",
+    "slug": "time-weighted-average-price",
+    "title": "Intraday Time-Weighted Average Price",
+    "difficulty": "hard",
+    "tags": [
+      "LEAD",
+      "window functions",
+      "weighted average",
+      "timestamp arithmetic",
+      "analytics"
+    ],
+    "companies": [
+      "Jane Street",
+      "Bloomberg",
+      "Citadel"
+    ]
+  },
+  {
+    "id": "396",
+    "slug": "exponential-moving-average",
+    "title": "Exponential Moving Average with Alpha 0.3",
+    "difficulty": "hard",
+    "tags": [
+      "recursive CTE",
+      "ROW_NUMBER",
+      "ROUND",
+      "moving average",
+      "statistics"
+    ],
+    "companies": [
+      "Bloomberg",
+      "Two Sigma",
+      "Citadel"
+    ]
+  },
+  {
+    "id": "397",
+    "slug": "geospatial-distance-ranking",
+    "title": "Nearest Neighbor by Euclidean Distance",
+    "difficulty": "hard",
+    "tags": [
+      "CROSS JOIN",
+      "ROW_NUMBER",
+      "SQRT",
+      "POWER",
+      "nearest match",
+      "ranking"
+    ],
+    "companies": [
+      "Uber",
+      "Google",
+      "Lyft"
+    ]
+  },
+  {
+    "id": "398",
+    "slug": "multi-level-commission-calculation",
+    "title": "Multi-Level Sales Commission",
+    "difficulty": "hard",
+    "tags": [
+      "subquery",
+      "CASE WHEN",
+      "arithmetic",
+      "hierarchy",
+      "HR analytics"
+    ],
+    "companies": [
+      "Salesforce",
+      "Oracle",
+      "HubSpot"
+    ]
+  },
+  {
+    "id": "399",
+    "slug": "portfolio-value-at-risk",
+    "title": "Portfolio Mean, Volatility, and 95% VaR",
+    "difficulty": "hard",
+    "tags": [
+      "JOIN",
+      "STDDEV_POP",
+      "AVG",
+      "aggregation",
+      "statistics",
+      "financial analysis"
+    ],
+    "companies": [
+      "Goldman Sachs",
+      "BlackRock",
+      "Two Sigma"
+    ]
+  },
+  {
+    "id": "400",
+    "slug": "monthly-growth-dashboard",
+    "title": "Monthly Revenue and New-Customer Dashboard",
+    "difficulty": "hard",
+    "tags": [
+      "CTE",
+      "DATE_TRUNC",
+      "LAG",
+      "LEFT JOIN",
+      "growth rate",
+      "pipeline",
+      "analytics"
+    ],
+    "companies": [
+      "Stripe",
+      "Shopify",
+      "Snowflake"
     ]
   }
 ]

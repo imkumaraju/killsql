@@ -1,0 +1,27 @@
+{
+  "id": "362",
+  "slug": "monthly-revenue-forecast",
+  "title": "Monthly Revenue With Simple Growth Forecast",
+  "difficulty": "medium",
+  "tags": ["window functions", "LAG", "analytics", "revenue trend", "calculated column", "arithmetic"],
+  "description": "For each month, show the current revenue, the previous month's revenue (using `LAG`), and a simple **forecast for the following month** calculated as `current_revenue * 1.05` (5% growth assumption).\n\n**Table: monthly_revenue** — `month_date`, `revenue`\n\nOutput columns: `month_date`, `revenue`, `prev_month_revenue`, `forecasted_next_month`. Order by `month_date`.",
+  "schema_sql": "CREATE TABLE monthly_revenue (month_date DATE, revenue DECIMAL(10,2)); INSERT INTO monthly_revenue VALUES ('2024-01-01',10000.00),('2024-02-01',11000.00),('2024-03-01',10500.00),('2024-04-01',12000.00),('2024-05-01',11500.00),('2024-06-01',13000.00);",
+  "solution_sql": "SELECT month_date, revenue, LAG(revenue) OVER (ORDER BY month_date) AS prev_month_revenue, ROUND(revenue * 1.05, 2) AS forecasted_next_month FROM monthly_revenue ORDER BY month_date;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "6 months; Jan row has NULL prev_month_revenue; Jun forecast = 13000 * 1.05 = 13650.00",
+      "expected_row_count": 6,
+      "expected_columns": ["month_date", "revenue", "prev_month_revenue", "forecasted_next_month"],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "LAG(revenue) OVER (ORDER BY month_date) retrieves the previous row's revenue; no PARTITION BY needed for a single time series.",
+    "The first row (January) will have NULL for prev_month_revenue since there is no prior row.",
+    "forecasted_next_month = revenue * 1.05 applies the 5% growth assumption to each month's actual revenue."
+  ],
+  "explanation": "LAG(revenue) looks one row back ordered by month_date. January has no prior month so prev_month_revenue is NULL. February's prev = 10000. The forecast column applies a flat 5% growth: Jan forecast = 10500, Feb = 11550, Mar = 11025, Apr = 12600, May = 12075, Jun = 13650.",
+  "companies": ["Stripe", "Brex", "Plaid"],
+  "created_at": "2026-09-27"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "309",
+  "slug": "total-revenue-per-product",
+  "title": "Total Revenue per Product",
+  "difficulty": "easy",
+  "tags": ["GROUP BY", "SUM", "aggregate", "aggregation", "arithmetic", "calculated column"],
+  "description": "Calculate how much revenue each product has generated across all orders. Revenue for a line item is `quantity × unit_price`.\n\n**Table: order_items** — `id`, `order_id`, `product_name`, `quantity`, `unit_price`\n\nReturn `product_name` and the total revenue aliased as `total_revenue`. Order by `total_revenue` DESC.",
+  "schema_sql": "CREATE TABLE order_items (id INT, order_id INT, product_name VARCHAR, quantity INT, unit_price DECIMAL(10,2)); INSERT INTO order_items VALUES (1,1,'Widget A',2,25.00),(2,1,'Gadget X',1,80.00),(3,2,'Widget A',3,25.00),(4,2,'Tool Pro',1,120.00),(5,3,'Gadget X',2,80.00),(6,3,'Widget B',4,40.00),(7,4,'Tool Pro',2,120.00),(8,4,'Widget B',1,40.00),(9,5,'Gadget X',1,80.00),(10,5,'Sensor Kit',3,50.00);",
+  "solution_sql": "SELECT product_name, SUM(quantity * unit_price) AS total_revenue FROM order_items GROUP BY product_name ORDER BY total_revenue DESC",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "5 distinct products with their respective total revenues",
+      "expected_row_count": 5,
+      "expected_columns": ["product_name", "total_revenue"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Compute quantity * unit_price inside SUM() to get revenue per line item, then sum across all items for each product.",
+    "GROUP BY product_name collapses multiple order lines for the same product."
+  ],
+  "explanation": "SUM(quantity * unit_price) multiplies the two columns first, then aggregates. Results: Tool Pro = (1+2)×120 = 360, Gadget X = (1+2+1)×80 = 320, Widget B = (4+1)×40 = 200, Sensor Kit = 3×50 = 150, Widget A = (2+3)×25 = 125.",
+  "companies": ["Shopify", "Stripe"],
+  "created_at": "2026-09-27"
+}

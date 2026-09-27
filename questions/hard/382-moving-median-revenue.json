@@ -1,0 +1,34 @@
+{
+  "id": "382",
+  "slug": "moving-median-revenue",
+  "title": "Three-Day Moving Median Revenue",
+  "difficulty": "hard",
+  "tags": ["PERCENTILE_CONT", "WITHIN GROUP", "correlated subquery", "median", "rolling window", "date"],
+  "description": "For each day, compute the **median revenue of that day and the two calendar days before it** (a 3-day trailing window that shrinks at the start of the series).\n\n**Table: daily_rev** — `sale_date`, `revenue`\n\nOutput columns: `sale_date`, `revenue`, `moving_median`. Order by `sale_date`.",
+  "schema_sql": "CREATE TABLE daily_rev (sale_date DATE, revenue DECIMAL(10,2)); INSERT INTO daily_rev VALUES ('2026-01-01',10),('2026-01-02',20),('2026-01-03',30),('2026-01-04',40),('2026-01-05',15),('2026-01-06',25);",
+  "solution_sql": "SELECT d.sale_date, d.revenue, (SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY d2.revenue) FROM daily_rev d2 WHERE d2.sale_date BETWEEN d.sale_date - 2 AND d.sale_date) AS moving_median FROM daily_rev d ORDER BY d.sale_date",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "Trailing 3-day medians: 10, 15, 20, 30, 30, 25",
+      "expected_row_count": 6,
+      "expected_columns": ["sale_date", "revenue", "moving_median"],
+      "expected_rows": [
+        { "sale_date": "2026-01-01", "revenue": 10, "moving_median": 10 },
+        { "sale_date": "2026-01-02", "revenue": 20, "moving_median": 15 },
+        { "sale_date": "2026-01-03", "revenue": 30, "moving_median": 20 },
+        { "sale_date": "2026-01-04", "revenue": 40, "moving_median": 30 },
+        { "sale_date": "2026-01-05", "revenue": 15, "moving_median": 30 },
+        { "sale_date": "2026-01-06", "revenue": 25, "moving_median": 25 }
+      ],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY revenue) is the continuous median.",
+    "A correlated subquery filters rows where sale_date is between current_date - 2 and current_date."
+  ],
+  "explanation": "Window contents: [10]; [10,20] interpolates to 15; [10,20,30]=20; [20,30,40]=30; [30,40,15]=30; [40,15,25]=25. PERCENTILE_CONT interpolates between the two central values when the window has an even count.",
+  "companies": ["Databricks", "Snowflake", "Stripe"],
+  "created_at": "2026-09-27"
+}

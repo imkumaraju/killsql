@@ -1,0 +1,26 @@
+{
+  "id": "301",
+  "slug": "select-with-computed-column",
+  "title": "Compute Profit per Product",
+  "difficulty": "easy",
+  "tags": ["SELECT", "arithmetic", "calculated column"],
+  "description": "Each product has a selling price and a manufacturing cost. Compute the **profit** for every product.\n\n**Table: products** — `id`, `name`, `price`, `cost`\n\nReturn `name`, `price`, `cost`, and `price - cost` aliased as `profit`. Order by `name`.",
+  "schema_sql": "CREATE TABLE products (id INT, name VARCHAR, price DECIMAL(10,2), cost DECIMAL(10,2)); INSERT INTO products VALUES (1,'Widget A',25.00,15.00),(2,'Widget B',40.00,22.00),(3,'Gadget X',80.00,45.00),(4,'Gadget Y',60.00,38.00),(5,'Tool Pro',120.00,75.00),(6,'Tool Lite',55.00,30.00);",
+  "solution_sql": "SELECT name, price, cost, price - cost AS profit FROM products ORDER BY name",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "All 6 products returned with correct profit column",
+      "expected_row_count": 6,
+      "expected_columns": ["name", "price", "cost", "profit"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use arithmetic directly in the SELECT list: price - cost.",
+    "Give the computed expression a name with the AS keyword."
+  ],
+  "explanation": "SELECT can contain arithmetic expressions. Writing `price - cost AS profit` creates a new column called profit whose value is calculated for every row. No GROUP BY or subquery needed — this is a simple column-level calculation.",
+  "companies": ["Amazon", "Shopify"],
+  "created_at": "2026-09-27"
+}

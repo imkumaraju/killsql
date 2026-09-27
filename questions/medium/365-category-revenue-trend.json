@@ -1,0 +1,27 @@
+{
+  "id": "365",
+  "slug": "category-revenue-trend",
+  "title": "Month-Over-Month Revenue Trend by Category",
+  "difficulty": "medium",
+  "tags": ["window functions", "LAG", "PARTITION BY", "analytics", "revenue trend", "period-over-period"],
+  "description": "For each category and month, show current revenue, the previous month's revenue, and the change. Use `LAG()` partitioned by category.\n\n**Table: sales** — `sale_id`, `category`, `sale_month` (first of month), `revenue`\n\nOutput columns: `category`, `sale_month`, `revenue`, `prev_month_revenue`, `revenue_change`. Order by `category`, `sale_month`.",
+  "schema_sql": "CREATE TABLE sales (sale_id INTEGER, category VARCHAR, sale_month DATE, revenue DECIMAL(10,2)); INSERT INTO sales VALUES (1,'Clothing','2024-01-01',5000),(2,'Clothing','2024-02-01',4500),(3,'Clothing','2024-03-01',6000),(4,'Electronics','2024-01-01',10000),(5,'Electronics','2024-02-01',12000),(6,'Electronics','2024-03-01',11000),(7,'Food','2024-01-01',3000),(8,'Food','2024-02-01',3500),(9,'Food','2024-03-01',3200);",
+  "solution_sql": "SELECT category, sale_month, revenue, LAG(revenue) OVER (PARTITION BY category ORDER BY sale_month) AS prev_month_revenue, revenue - LAG(revenue) OVER (PARTITION BY category ORDER BY sale_month) AS revenue_change FROM sales ORDER BY category, sale_month;",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "9 rows (3 categories × 3 months); first month of each category has NULL prev_month_revenue",
+      "expected_row_count": 9,
+      "expected_columns": ["category", "sale_month", "revenue", "prev_month_revenue", "revenue_change"],
+      "validate_order": false
+    }
+  ],
+  "hints": [
+    "Use LAG(revenue) OVER (PARTITION BY category ORDER BY sale_month) to get the previous month's revenue within each category.",
+    "revenue_change = revenue - LAG(revenue). A positive value means growth; negative means decline.",
+    "The first month per category returns NULL for prev_month_revenue and revenue_change."
+  ],
+  "explanation": "PARTITION BY category ensures each category's LAG window is independent. Clothing: Jan=5000 (NULL), Feb=4500 (change=-500), Mar=6000 (change=+1500). Electronics: Jan=10000 (NULL), Feb=12000 (+2000), Mar=11000 (-1000). Food: Jan=3000 (NULL), Feb=3500 (+500), Mar=3200 (-300). All 9 rows are returned with trend context.",
+  "companies": ["Tableau", "Looker", "Google"],
+  "created_at": "2026-09-27"
+}

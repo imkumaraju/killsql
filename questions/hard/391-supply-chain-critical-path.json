@@ -1,0 +1,27 @@
+{
+  "id": "391",
+  "slug": "supply-chain-critical-path",
+  "title": "Project Critical Path Length",
+  "difficulty": "hard",
+  "tags": ["recursive CTE", "MAX", "JOIN", "pipeline", "supply chain"],
+  "description": "Tasks have durations and predecessor edges. Walk every path from tasks with no dependency to the sinks and return the **longest path length** (critical path in days).\n\n**Tables:** `tasks` (`task_id`, `duration`), `deps` (`task_id`, `depends_on`)\n\nOutput one row: `critical_path_days`.",
+  "schema_sql": "CREATE TABLE tasks (task_id VARCHAR, duration INT); INSERT INTO tasks VALUES ('A',3),('B',2),('C',4),('D',2),('E',1),('F',3); CREATE TABLE deps (task_id VARCHAR, depends_on VARCHAR); INSERT INTO deps VALUES ('B','A'),('C','A'),('D','B'),('E','C'),('F','D'),('F','E');",
+  "solution_sql": "WITH RECURSIVE paths AS (SELECT t.task_id, t.duration AS total FROM tasks t WHERE NOT EXISTS (SELECT 1 FROM deps d WHERE d.task_id = t.task_id) UNION ALL SELECT t.task_id, p.total + t.duration FROM paths p JOIN deps d ON d.depends_on = p.task_id JOIN tasks t ON t.task_id = d.task_id) SELECT MAX(total) AS critical_path_days FROM paths",
+  "test_cases": [
+    {
+      "id": "tc1",
+      "description": "A-C-E-F = 3+4+1+3 = 11 beats A-B-D-F = 10",
+      "expected_row_count": 1,
+      "expected_columns": ["critical_path_days"],
+      "expected_rows": [{ "critical_path_days": 11 }],
+      "validate_order": true
+    }
+  ],
+  "hints": [
+    "Anchor on tasks that do not appear as task_id in deps (no predecessors).",
+    "Recursive join deps.depends_on = current task, add duration, then MAX the totals."
+  ],
+  "explanation": "Two complete paths reach F: A-B-D-F (3+2+2+3=10) and A-C-E-F (3+4+1+3=11). The critical path is 11 days. F has two predecessors so both paths are explored.",
+  "companies": ["Amazon", "Tesla", "Autodesk"],
+  "created_at": "2026-09-27"
+}
