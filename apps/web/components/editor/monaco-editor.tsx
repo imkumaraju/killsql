@@ -113,7 +113,10 @@ export function MonacoEditor({ value, onChange, onRun, tables = [] }: Props) {
       defaultLanguage="sql"
       theme="killsql-dark"
       value={value}
-      onChange={(next) => onChange(next ?? "")}
+      onChange={(next) => {
+        const sql = next ?? "";
+        if (sql !== value) onChange(sql);
+      }}
       onMount={handleMount}
       options={{
         minimap: { enabled: false },

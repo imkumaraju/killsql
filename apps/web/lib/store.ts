@@ -11,7 +11,9 @@ export const useWorkspaceStore = create<WorkspaceState>()(
     (set) => ({
       drafts: {},
       setDraft: (slug, sql) =>
-        set((state) => ({ drafts: { ...state.drafts, [slug]: sql } })),
+        set((state) =>
+          state.drafts[slug] === sql ? state : { drafts: { ...state.drafts, [slug]: sql } },
+        ),
     }),
     { name: "killsql-drafts" },
   ),

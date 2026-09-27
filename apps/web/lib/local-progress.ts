@@ -24,7 +24,8 @@ export const useProgressStore = create<ProgressState>()(
       solved: [],
       lastSlug: null,
       attempts: {},
-      markVisited: (slug) => set({ lastSlug: slug }),
+      markVisited: (slug) =>
+        set((state) => (state.lastSlug === slug ? state : { lastSlug: slug })),
       markSolved: (slug) =>
         set((state) =>
           state.solved.includes(slug) ? state : { solved: [...state.solved, slug] },
